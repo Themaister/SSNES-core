@@ -7,6 +7,7 @@
 #include "ppu.h"
 
 #define CPU state.cpu
+#define REGS state.cpu.regs
 #define SMP state.smp
 #define DSP state.dsp
 #define PPU state.ppu

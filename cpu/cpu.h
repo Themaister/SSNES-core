@@ -7,9 +7,15 @@
 void cpu_init(void);
 void cpu_entry(void);
 
+typedef void (*cpu_op_t)(void);
+
 struct cpu_regs
 {
    word_reg_t a, x, y;
+
+   // Temp-read reg? (Only used in instructions)
+   word_reg_t rd;
+   word_reg_t aa;
 
    struct
    {
@@ -91,6 +97,8 @@ struct cpu_status
 
    // $4218-$421f
    uint16_t joy1, joy2, joy3, joy4;
+
+   cpu_op_t optable[256];
 };
 
 struct cpu_state
