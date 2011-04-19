@@ -3,114 +3,77 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "memory.h"
+#include "table.h"
 
 void cpu_init(void);
-void cpu_entry(void);
+void cpu_run_frame(void);
+void cpu_reset(void);
 
-typedef void (*cpu_op_t)(void);
+static inline cpu_set_p(uint8_t data)
+{
+   REGS.p.z = data & (1 << 7);
+   REGS.p.v = data & (1 << 6);
+   REGS.p.m = data & (1 << 5);
+   REGS.p.x = data & (1 << 4);
+   REGS.p.d = data & (1 << 3);
+   REGS.p.i = data & (1 << 2);
+   REGS.p.z = data & (1 << 1);
+   REGS.p.c = data & (1 << 0);
+
+   cpu_update_table();
+}
+
+static inline uint8_t cpu_get_p(void)
+{
+   return
+      (REGS.p.z << 7) ||
+      (REGS.p.v << 6) ||
+      (REGS.p.m << 5) ||
+      (REGS.p.x << 4) ||
+      (REGS.p.d << 3) ||
+      (REGS.p.i << 2) ||
+      (REGS.p.z << 1) ||
+      (REGS.p.c << 0);
+}
+
 
 struct cpu_regs
 {
+   // GPP and index regs
    word_reg_t a, x, y;
 
-   // Temp-read reg? (Only used in instructions)
-   word_reg_t rd;
-   word_reg_t aa;
+   // Stack pointer and PC
+   uint16_t sp;
+   uint32_t pc;
 
+   // Processor flags
    struct
    {
       bool n, v, m, x, d, i, z, c;
    } p;
    bool e;
 
-   bool irq;
-   bool wai;
-   uint8_t mdr;
+   uint32_t mbk;
+   uint32_t dp;
 };
 
 struct cpu_status
 {
-   bool irq_pending;
-   uint16_t irq_vector;
+};
 
-   // ?!
-   unsigned clock_count;
-   unsigned line_clocks;
-
-   // NMI
-   bool nmi_valid;
-   bool nmi_line;
-   bool nmi_transition;
-   bool nmi_pending;
-   bool nmi_hold;
-
-   // IRQ
-   bool irq_valid;
-   bool irq_line;
-   bool irq_transition;
-   bool irq_pending;
-   bool irq_hold;
-
-   bool reset_pending;
-
-   // DMA/HDMA
-   bool dma_active;
-   unsigned dma_counter;
-   unsigned dma_clocks;
-   bool dma_pending;
-   bool hdma_pending;
-   bool hdma_mode;
-
-   // Auto-joypad polling
-   bool auto_joypad_active;
-
-   // MMIO
-   // $2140-$217f
-   uint8_t port[4];
-
-   // $2181-$2183
-   uint32_t wram_addr;
-
-   // $4200
-   bool nmi_enabled;
-   bool hirq_enabled, virq_enabled;
-   bool auto_joypad_poll;
-
-   // $4201
-   uint8_t pio;
-
-   // $4202-$4203
-   uint8_t wrmpya, wrmpyb;
-
-   // $4204-$4206
-   uint8_t wrdiva, wrdivb;
-
-   // $4207-$420a
-   uint16_t hirq_pos;
-   uint16_t virq_pos;
-
-   unsigned rom_speed;
-
-   // $4214-$4217
-   uint16_t rddiv;
-   uint16_t rdmpy;
-
-   // $4218-$421f
-   uint16_t joy1, joy2, joy3, joy4;
-
-   cpu_op_t optable[256];
+struct cpu_alu_state
+{
+   unsigned mpyctr;
+   unsigned divctr;
+   unsigned shift;
 };
 
 struct cpu_state
 {
    struct cpu_regs regs;
    struct cpu_status status;
-   struct
-   {
-      unsigned mpyctr;
-      unsigned divctr;
-      unsigned shift;
-   } alu;
+   struct cpu_alu_state alu;
 };
 
 #endif
