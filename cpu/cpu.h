@@ -44,8 +44,8 @@ struct cpu_regs
    word_reg_t a, x, y;
 
    // Stack pointer and PC
-   uint16_t sp;
-   uint32_t pc;
+   word_reg_t sp;
+   long_reg_t pc; // Includes the PBK
 
    // Processor flags
    struct
@@ -54,8 +54,8 @@ struct cpu_regs
    } p;
    bool e;
 
-   uint32_t mbk;
-   uint32_t dp;
+   uint32_t mbk; // Data bank
+   uint32_t dp; // Direct page
 };
 
 struct cpu_status
