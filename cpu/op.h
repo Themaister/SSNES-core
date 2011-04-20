@@ -8,5 +8,6 @@
 #include "op_read.h"
 #include "op_misc.h"
 #include "op_rmw.h"
+#include "op_write.h"
 
 #endif

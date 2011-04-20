@@ -10,14 +10,14 @@
 #define CPU_OP_READ_CONST_B(op) \
    static inline void CPU_OP_READ_CONST_DECL(op) (void) \
    { \
-      op(cpu_read_pc()); \
+      cpu_op_##op##_b (cpu_read_pc()); \
    }
 
 #define CPU_OP_READ_CONST_W_DECL(op) cpu_op_read_const_w_##op
 #define CPU_OP_READ_CONST_W(op) \
    static inline void CPU_OP_READ_CONST_W(op) (void) \
    { \
-      op(cpu_readw_pc()); \
+      cpu_op_##op##_w (cpu_readw_pc()); \
    }
 
 // Not sure what this is. Testing bits for comparison?
@@ -38,7 +38,7 @@ static inline void cpu_op_read_bit_const_w(void)
    static inline void CPU_OP_READ_ADDR_B_DECL(op) (void) \
    { \
       uint16_t addr = cpu_readw_pc(); \
-      op(cpu_read(addr)); \
+      cpu_op_##op##_b (cpu_read(addr)); \
    }
 
 #define CPU_OP_READ_ADDR_W_DECL(op) cpu_op_read_addr_w_##op
@@ -46,7 +46,7 @@ static inline void cpu_op_read_bit_const_w(void)
    static inline void CPU_OP_READ_ADDR_W_DECL(op) (void) \
    { \
       uint16_t addr = cpu_readw_pc(); \
-      op(cpu_readw(addr)); \
+      cpu_op_##op##_w (cpu_readw(addr)); \
    }
 
 
@@ -56,7 +56,7 @@ static inline void cpu_op_read_bit_const_w(void)
    static inline void CPU_OP_READ_ADDRX_B_DECL(op) (void) \
    { \
       uint16_t addr = cpu_readw_pc() + REGS.x.w; \
-      op(cpu_read(addr)); \
+      cpu_op_##op##_b (cpu_read(addr)); \
    }
 
 #define CPU_OP_READ_ADDRX_W_DECL(op) cpu_op_read_addrx_w_##op
@@ -64,7 +64,7 @@ static inline void cpu_op_read_bit_const_w(void)
    static inline void CPU_OP_READ_ADDRX_W_DECL(op) (void) \
    { \
       uint16_t addr = cpu_readw_pc() + REGS.x.w; \
-      op(cpu_readw(addr)); \
+      cpu_op_##op##_w (cpu_readw(addr)); \
    }
 
 
@@ -74,7 +74,7 @@ static inline void cpu_op_read_bit_const_w(void)
    static inline void CPU_OP_READ_ADDRY_B_DECL(op) (void) \
    { \
       uint16_t addr = cpu_readw_pc() + REGS.y.w; \
-      op(cpu_read(addr)); \
+      cpu_op_##op##_b (cpu_read(addr)); \
    }
 
 #define CPU_OP_READ_ADDRY_W_DECL(op) cpu_op_read_addry_w_##op
@@ -82,7 +82,7 @@ static inline void cpu_op_read_bit_const_w(void)
    static inline void CPU_OP_READ_ADDRY_W_DECL(op) (void) \
    { \
       uint16_t addr = cpu_readw_pc() + REGS.y.w; \
-      op(cpu_readw(addr)); \
+      cpu_op_##op##_w (cpu_readw(addr)); \
    }
 
 
@@ -91,14 +91,14 @@ static inline void cpu_op_read_bit_const_w(void)
 #define CPU_OP_READ_LONG_B(op) \
    static inline void CPU_OP_READ_LONG_B_DECL(op) (void) \
    { \
-      op(cpu_readl(cpu_readl_pc())); \
+      cpu_op_##op##_b (cpu_readl(cpu_readl_pc())); \
    }
 
 #define CPU_OP_READ_LONG_W_DECL(op) cpu_op_read_long_w_##op
 #define CPU_OP_READ_LONG_W(op) \
    static inline void CPU_OP_READ_LONG_W_DECL(op) (void) \
    { \
-      op(cpu_readlw(cpu_readl_pc())); \
+      cpu_op_##op##_w (cpu_readlw(cpu_readl_pc())); \
    }
 
 
@@ -107,14 +107,14 @@ static inline void cpu_op_read_bit_const_w(void)
 #define CPU_OP_READ_LONGX_B(op) \
    static inline void CPU_OP_READ_LONGX_B_DECL(op) (void) \
    { \
-      op(cpu_readl(cpu_readl_pc() + REGS.x.w)); \
+      cpu_op_##op##_b (cpu_readl(cpu_readl_pc() + REGS.x.w)); \
    }
 
 #define CPU_OP_READ_LONGX_W_DECL(op) cpu_op_read_longx_w_##op
 #define CPU_OP_READ_LONGX_W(op) \
    static inline void CPU_OP_READ_LONGX_W_DECL(op) (void) \
    { \
-      op(cpu_readlw(cpu_readl_pc() + REGS.x.w)); \
+      cpu_op_##op##_w (cpu_readlw(cpu_readl_pc() + REGS.x.w)); \
    }
 
 
@@ -123,14 +123,14 @@ static inline void cpu_op_read_bit_const_w(void)
 #define CPU_OP_READ_DP_B(op) \
    static inline void CPU_OP_READ_DP_B_DECL(op) (void) \
    { \
-      op(cpu_read_dp(cpu_read_pc())); \
+      cpu_op_##op##_b (cpu_read_dp(cpu_read_pc())); \
    }
 
 #define CPU_OP_READ_DP_W_DECL(op) cpu_op_read_dp_w_##op
 #define CPU_OP_READ_DP_W(op) \
    static inline void CPU_OP_READ_DP_W_DECL(op) (void) \
    { \
-      op(cpu_readw_dp(cpu_read_pc())); \
+      cpu_op_##op##_w (cpu_readw_dp(cpu_read_pc())); \
    }
 
 
@@ -139,14 +139,14 @@ static inline void cpu_op_read_bit_const_w(void)
 #define CPU_OP_READ_DPR_B(op, reg) \
    static inline void CPU_OP_READ_DPR_B(op, reg) (void) \
    { \
-      op(cpu_read_dp(cpu_read_pc() + REGS.reg.w)); \
+      cpu_op_##op##_b (cpu_read_dp(cpu_read_pc() + REGS.reg.w)); \
    }
 
 #define CPU_OP_READ_DPR_W_DECL(op, reg) cpu_op_read_dpr_w_##op_##reg
 #define CPU_OP_READ_DPR_W(op, reg) \
    static inline void CPU_OP_READ_DPR_W(op, reg) (void) \
    { \
-      op(cpu_readw_dp(cpu_read_pc() + REGS.reg.w)); \
+      cpu_op_##op##_w (cpu_readw_dp(cpu_read_pc() + REGS.reg.w)); \
    }
 
 
@@ -158,7 +158,7 @@ static inline void cpu_op_read_bit_const_w(void)
    static inline void CPU_OP_READ_IDP_B_DECL(op) (void) \
    { \
       uint16_t addr = cpu_read_dp(cpu_read_pc()); \
-      op(cpu_read(addr)); \
+      cpu_op_##op##_b (cpu_read(addr)); \
    }
 
 #define CPU_OP_READ_IDP_W_DECL(op) cpu_op_read_idp_w_##op
@@ -166,7 +166,7 @@ static inline void cpu_op_read_bit_const_w(void)
    static inline void CPU_OP_READ_IDP_W_DECL(op) (void) \
    { \
       uint16_t addr = cpu_read_dp(cpu_read_pc()); \
-      op(cpu_readw(addr)); \
+      cpu_op_##op##_w (cpu_readw(addr)); \
    }
 
 
@@ -177,7 +177,7 @@ static inline void cpu_op_read_bit_const_w(void)
    { \
       uint8_t dp = cpu_read_pc() + REGS.x.w; \
       uint16_t addr = cpu_readw_dp(dp); \
-      op(cpu_read(addr)); \
+      cpu_op_##op##_b (cpu_read(addr)); \
    }
 
 #define CPU_OP_READ_IDPX_W_DECL(op) cpu_op_read_idpx_w_##op
@@ -186,7 +186,7 @@ static inline void cpu_op_read_bit_const_w(void)
    { \
       uint8_t dp = cpu_read_pc() + REGS.x.w; \
       uint16_t addr = cpu_readw_dp(dp); \
-      op(cpu_readw(addr)); \
+      cpu_op_##op##_w (cpu_readw(addr)); \
    }
 
 
@@ -197,7 +197,7 @@ static inline void cpu_op_read_bit_const_w(void)
    { \
       uint8_t dp = cpu_read_pc(); \
       uint16_t addr = cpu_readw_dp(dp); \
-      op(cpu_read(addr + REGS.y.w)); \
+      cpu_op_##op##_b (cpu_read(addr + REGS.y.w)); \
    }
 
 #define CPU_OP_READ_IDPY_W_DECL(op) cpu_op_read_idpy_w_##op
@@ -206,7 +206,7 @@ static inline void cpu_op_read_bit_const_w(void)
    { \
       uint8_t dp = cpu_read_pc(); \
       uint16_t addr = cpu_readw_dp(dp); \
-      op(cpu_readw(addr + REGS.y.w)); \
+      cpu_op_##op##_w (cpu_readw(addr + REGS.y.w)); \
    }
 
 
@@ -218,7 +218,7 @@ static inline void cpu_op_read_bit_const_w(void)
    { \
       uint8_t dp = cpu_read_pc(); \
       uint32_t addr = cpu_readl_dp(dp); \
-      op(cpu_readl(addr)); \
+      cpu_op_##op##_b (cpu_readl(addr)); \
    }
 
 #define CPU_OP_READ_ILDP_W_DECL(op) cpu_op_read_ildp_w_##op
@@ -227,7 +227,7 @@ static inline void cpu_op_read_bit_const_w(void)
    { \
       uint8_t dp = cpu_read_pc(); \
       uint32_t addr = cpu_readl_dp(dp); \
-      op(cpu_readlw(addr)); \
+      cpu_op_##op##_w (cpu_readlw(addr)); \
    }
 
 
@@ -239,7 +239,7 @@ static inline void cpu_op_read_bit_const_w(void)
    { \
       uint8_t dp = cpu_read_pc(); \
       uint32_t addr = cpu_readl_dp(dp); \
-      op(cpu_readl(addr + REGS.y.w)); \
+      cpu_op_##op##_b (cpu_readl(addr + REGS.y.w)); \
    }
 
 #define CPU_OP_READ_ILDPY_W_DECL(op) cpu_op_read_ildpy_w_##op
@@ -248,7 +248,7 @@ static inline void cpu_op_read_bit_const_w(void)
    { \
       uint8_t dp = cpu_read_pc(); \
       uint32_t addr = cpu_readl_dp(dp); \
-      op(cpu_readlw(addr + REGS.y.w)); \
+      cpu_op_##op##_w (cpu_readlw(addr + REGS.y.w)); \
    }
 
 
@@ -258,14 +258,14 @@ static inline void cpu_op_read_bit_const_w(void)
 #define CPU_OP_READ_SR_B(op) \
    static inline void CPU_OP_READ_SR_B_DECL(op) (void) \
    { \
-      op(cpu_read_sp(cpu_read_pc())); \
+      cpu_op_##op##_b (cpu_read_sp(cpu_read_pc())); \
    }
 
 #define CPU_OP_READ_SR_W_DECL(op) cpu_op_read_sr_w_##op
 #define CPU_OP_READ_SR_W(op) \
    static inline void CPU_OP_READ_SR_W_DECL(op) (void) \
    { \
-      op(cpu_readw_sp(cpu_read_pc())); \
+      cpu_op_##op##_w (cpu_readw_sp(cpu_read_pc())); \
    }
 
 
@@ -276,7 +276,7 @@ static inline void cpu_op_read_bit_const_w(void)
    static inline void CPU_OP_READ_ISRY_B_DECL(op) (void) \
    { \
       uint16_t addr = cpu_readw_sp(cpu_read_pc()) + REGS.y.w; \
-      op(cpu_read(addr)); \
+      cpu_op_##op##_b (cpu_read(addr)); \
    }
 
 #define CPU_OP_READ_ISRY_W_DECL(op) cpu_op_read_isry_w_##op
@@ -284,7 +284,7 @@ static inline void cpu_op_read_bit_const_w(void)
    static inline void CPU_OP_READ_ISRY_W_DECL(op) (void) \
    { \
       uint16_t addr = cpu_readw_sp(cpu_read_pc()) + REGS.y.w; \
-      op(cpu_readw(addr)); \
+      cpu_op_##op##_w (cpu_readw(addr)); \
    }
 
 #endif

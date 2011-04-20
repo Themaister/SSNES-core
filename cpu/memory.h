@@ -135,12 +135,12 @@ static inline uint16_t cpu_readw_sp(uint16_t addr)
    return res;
 }
 
-static inline void cpu_write_sp(uint16_t addr, uint8_t data)
+static inline void cpu_write_sp(uint8_t addr, uint8_t data)
 {
    cpu_writel(REGS.sp.w + addr, data);
 }
 
-static inline void cpu_writew_sp(uint16_t addr, uint16_t data)
+static inline void cpu_writew_sp(uint8_t addr, uint16_t data)
 {
    cpu_writel(REGS.sp.w + addr, data & 0xFF);
    cpu_writel(REGS.sp.w + addr + 1, data >> 8);
