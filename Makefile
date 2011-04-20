@@ -5,8 +5,8 @@ PIC = -fPIC
 CFLAGS += -O3 -g -Wall -std=gnu99 $(PIC)
 LDFLAGS += -shared
 
-OBJ = cpu/cpu.o cpu/table.o ppu/ppu.o smp/smp.o dsp/dsp.o system/system.o
-
+SOURCES = $(wildcard */*.c)
+OBJ = $(SOURCES:.c=.o)
 
 all: $(TARGET)
 

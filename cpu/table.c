@@ -2,8 +2,6 @@
 #include "op.h"
 #include <stddef.h>
 
-const cpu_op_t *op_table = NULL;
-
 cpu_op_t op_table_EMUL[256];
 cpu_op_t op_table_mx[256];
 cpu_op_t op_table_mX[256];
@@ -15,6 +13,9 @@ uint8_t cycle_table_mx[256];
 uint8_t cycle_table_mX[256];
 uint8_t cycle_table_Mx[256];
 uint8_t cycle_table_MX[256];
+
+const cpu_op_t *op_table = op_table_EMUL;
+const uint8_t *cycle_table = cycle_table_EMUL;
 
 const cpu_op_t* op_table_index[] = {
    op_table_mx,

@@ -22,11 +22,12 @@ void cpu_reset(void)
 
 static void cpu_check_cycles(void)
 {
-   // Meh. Probably do IRQ updates, PPU swaps, SMP swaps... etc here.
+   // Check when to jump to SMP/PPU, etc.
 }
 
 static void cpu_check_irq(void)
 {
+   // Update IRQ status here.
    //system_refresh_frame();
 }
 
@@ -39,11 +40,13 @@ void cpu_run_frame(void)
    {
       if (CPU.status.pending_irq.reset)
       {
+         REGS.wai = false;
          state.cpu.status.pending_irq.reset = false;
          cpu_op_interrupt_reset_e();
       }
       else if (CPU.status.pending_irq.nmi)
       {
+         REGS.wai = false;
          CPU.status.pending_irq.nmi = false;
 
          if (REGS.e)
@@ -53,6 +56,7 @@ void cpu_run_frame(void)
       }
       else if (CPU.status.pending_irq.irq)
       {
+         REGS.wai = false;
          state.cpu.status.pending_irq.irq = false;
 
          if (REGS.e)
