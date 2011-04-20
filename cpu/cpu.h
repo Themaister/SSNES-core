@@ -12,7 +12,7 @@ void cpu_reset(void);
 
 static inline cpu_set_p(uint8_t data)
 {
-   REGS.p.z = data & (1 << 7);
+   REGS.p.n = data & (1 << 7);
    REGS.p.v = data & (1 << 6);
    REGS.p.m = data & (1 << 5);
    REGS.p.x = data & (1 << 4);
@@ -27,7 +27,7 @@ static inline cpu_set_p(uint8_t data)
 static inline uint8_t cpu_get_p(void)
 {
    return
-      (REGS.p.z << 7) ||
+      (REGS.p.n << 7) ||
       (REGS.p.v << 6) ||
       (REGS.p.m << 5) ||
       (REGS.p.x << 4) ||

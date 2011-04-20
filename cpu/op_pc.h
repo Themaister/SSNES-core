@@ -3,20 +3,32 @@
 
 #include <stdint.h>
 
-#if 0
-template<int bit, int val> 
-static inline void cpu_op_branch(void) {
-   if((bool)(regs.p & bit) != val) {
-      L   REGS.rd.l = cpu_op_readpc();
-   } else {
-      REGS.rd.l = cpu_op_readpc();
-      REGS.aa.w = regs.pc.d + (int8)REGS.rd.l;
-      cpu_op_io_cond6(REGS.aa.w);
-      L   cpu_op_io();
-      regs.pc.w = REGS.aa.w;
+#define CPU_OP_BRANCH_REG_DECL(reg) cpu_op_branch_##reg
+#define CPU_OP_BRANCH_REG(reg) \
+   static inline CPU_OP_BRANCH_REG_DECL(reg) (void) \
+   { \
+      int8_t rel = cpu_read_pc(); \
+      uint16_t addr = REGS.pc.w.l; \
+      REGS.pc.w.l = isel_if(REGS.p.reg, addr + rel, addr); \
    }
-}
-#endif
+
+#define CPU_OP_BRANCH_REG_N_DECL(reg) cpu_op_branch_n_##reg
+#define CPU_OP_BRANCH_REG_N(reg) \
+   static inline CPU_OP_BRANCH_REG_N_DECL(reg) (void) \
+   { \
+      int8_t rel = cpu_read_pc(); \
+      uint16_t addr = REGS.pc.w.l; \
+      REGS.pc.w.l = isel_if(REGS.p.reg, addr + rel, addr); \
+   }
+
+CPU_OP_BRANCH_REG(n) // bmi
+CPU_OP_BRANCH_REG(v) // bvs
+CPU_OP_BRANCH_REG(z) // beq
+CPU_OP_BRANCH_REG(c) // bcs
+CPU_OP_BRANCH_N_REG(n) // bpl
+CPU_OP_BRANCH_N_REG(v) // bvc
+CPU_OP_BRANCH_N_REG(z) // bne
+CPU_OP_BRANCH_N_REG(c) // bcc
 
 static inline void cpu_op_bra(void) 
 {

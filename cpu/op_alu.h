@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+// Straight ALU ops. Performed on A register.
 static inline void cpu_op_adc_b(uint8_t rd)
 {
    int result;
@@ -279,6 +280,7 @@ static inline void cpu_op_sbc_w(uint16_t rd)
    REGS.a.w = result;
 }
 
+// Modifying ALU ops. Data is read, modified and written back.
 static inline uint8_t cpu_op_inc_b(uint8_t rd)
 {
    rd++;
