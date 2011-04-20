@@ -290,6 +290,22 @@ CPU_OP_READ_DPR_W(sbc, x);
       cpu_op_##op##_w (cpu_readw(addr)); \
    }
 
+CPU_OP_READ_IDP_B(adc);
+CPU_OP_READ_IDP_W(adc);
+CPU_OP_READ_IDP_B(and);
+CPU_OP_READ_IDP_W(and);
+CPU_OP_READ_IDP_B(cmp);
+CPU_OP_READ_IDP_W(cmp);
+CPU_OP_READ_IDP_B(eor);
+CPU_OP_READ_IDP_W(eor);
+CPU_OP_READ_IDP_B(lda);
+CPU_OP_READ_IDP_W(lda);
+CPU_OP_READ_IDP_B(ora);
+CPU_OP_READ_IDP_W(ora);
+CPU_OP_READ_IDP_B(sbc);
+CPU_OP_READ_IDP_W(sbc);
+
+
 
 // Indirect direct page, X indexed, e.g lda ($00, x)
 #define CPU_OP_READ_IDPX_B_DECL(op) cpu_op_read_idpx_b_##op
