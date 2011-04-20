@@ -19,13 +19,24 @@ struct cpu_regs
       bool n, v, m, x, d, i, z, c;
    } p;
    bool e;
+   bool wai;
+   bool stp;
 
    uint32_t db; // Data bank
    uint32_t dp; // Direct page
+
 };
 
 struct cpu_status
 {
+   struct
+   {
+      bool reset;
+      bool nmi;
+      bool irq;
+   } pending_irq;
+
+   unsigned cycles_per_frame;
 };
 
 struct cpu_alu_state
@@ -38,6 +49,7 @@ struct cpu_alu_state
 struct cpu_state
 {
    struct cpu_regs regs;
+   struct cpu_status status;
 };
 
 #endif

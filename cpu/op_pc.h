@@ -132,7 +132,6 @@ static inline void cpu_op_rti_n(void)
    REGS.pc.b.ll = cpu_stack_pull();
    REGS.pc.b.lh = cpu_stack_pull();
    REGS.pc.b.hl = cpu_stack_pull();
-   cpu_update_table();
 }
 
 static inline void cpu_op_rts(void) 
@@ -154,5 +153,42 @@ static inline void cpu_op_rtl_e(void)
    REGS.sp.b.h = 0x01;
 }
 
+// Not really a CPU op, but here we jump to IRQ target.
+#define CPU_OP_INTERRUPT_E_DECL(type) cpu_op_interrupt_##type##_e
+#define CPU_OP_INTERRUPT_E(type, vector) \
+   static inline void CPU_OP_INTERRUPT_E_DECL(type) (void) \
+   { \
+      cpu_stack_push(REGS.pc.b.lh); \
+      cpu_stack_push(REGS.pc.b.ll); \
+      cpu_stack_push(cpu_get_p()); \
+      uint16_t irq_addr = cpu_readlw(vector); \
+      REGS.p.i = true; \
+      REGS.p.d = false; \
+      REGS.pc.l = irq_addr; \
+   }
+
+#define CPU_OP_INTERRUPT_N_DECL(type) cpu_op_interrupt_##type##_n
+#define CPU_OP_INTERRUPT_N(type, vector) \
+   static inline void CPU_OP_INTERRUPT_N_DECL(type) (void) \
+   { \
+      cpu_stack_push(REGS.pc.b.hl); \
+      cpu_stack_push(REGS.pc.b.lh); \
+      cpu_stack_push(REGS.pc.b.ll); \
+      cpu_stack_push(cpu_get_p()); \
+      uint16_t irq_addr = cpu_readlw(vector); \
+      REGS.p.i = true; \
+      REGS.p.d = false; \
+      REGS.pc.l = irq_addr; \
+   }
+
+CPU_OP_INTERRUPT_N(brk, 0xffe6)
+CPU_OP_INTERRUPT_N(nmi, 0xffea)
+CPU_OP_INTERRUPT_N(irq, 0xffee)
+
+CPU_OP_INTERRUPT_E(cop, 0xfff4)
+CPU_OP_INTERRUPT_E(nmi, 0xfffa)
+CPU_OP_INTERRUPT_E(reset, 0xfffc) // Execution begins here
+CPU_OP_INTERRUPT_E(brk, 0xfffe)
+CPU_OP_INTERRUPT_E(irq, 0xfffe)
 
 #endif

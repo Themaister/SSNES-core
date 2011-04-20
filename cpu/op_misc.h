@@ -259,6 +259,16 @@ static inline void cpu_op_per_e(void)
    REGS.sp.b.h = 0x01;
 }
 
+static inline void cpu_op_wai(void)
+{
+   REGS.wai = true;
+}
+
+static inline void cpu_op_stp(void)
+{
+   REGS.wai = true;
+   REGS.stp = true;
+}
 
 
 #endif
