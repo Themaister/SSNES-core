@@ -4,6 +4,41 @@
 // C templates ;)
 // Here we have all the batshit crazy addressing modes of the 65c816 chip.
 // All reading modes have byte or word variants depending on register flags (8/16-bit A, X, Y ...)
+//
+
+// Group 1 instruction. They have access to all addressing modes.
+#define DECL_GROUP_ONE(instr) \
+   CPU_OP_##instr##_B(adc) \
+   CPU_OP_##instr##_W(adc) \
+   CPU_OP_##instr##_B(and) \
+   CPU_OP_##instr##_W(and) \
+   CPU_OP_##instr##_B(cmp) \
+   CPU_OP_##instr##_W(cmp) \
+   CPU_OP_##instr##_B(eor) \
+   CPU_OP_##instr##_W(eor) \
+   CPU_OP_##instr##_B(lda) \
+   CPU_OP_##instr##_W(lda) \
+   CPU_OP_##instr##_B(ora) \
+   CPU_OP_##instr##_W(ora) \
+   CPU_OP_##instr##_B(sbc) \
+   CPU_OP_##instr##_W(sbc)
+
+#define DECL_GROUP_ONE_REG(instr, reg) \
+   CPU_OP_##instr##_B(adc, reg) \
+   CPU_OP_##instr##_W(adc, reg) \
+   CPU_OP_##instr##_B(and, reg) \
+   CPU_OP_##instr##_W(and, reg) \
+   CPU_OP_##instr##_B(cmp, reg) \
+   CPU_OP_##instr##_W(cmp, reg) \
+   CPU_OP_##instr##_B(eor, reg) \
+   CPU_OP_##instr##_W(eor, reg) \
+   CPU_OP_##instr##_B(lda, reg) \
+   CPU_OP_##instr##_W(lda, reg) \
+   CPU_OP_##instr##_B(ora, reg) \
+   CPU_OP_##instr##_W(ora, reg) \
+   CPU_OP_##instr##_B(sbc, reg) \
+   CPU_OP_##instr##_W(sbc, reg)
+
 
 // Constant, e.g. lda #$ff
 #define CPU_OP_READ_CONST_B_DECL(op) cpu_op_read_const_b_##op
@@ -20,21 +55,7 @@
       cpu_op_##op##_w (cpu_readw_pc()); \
    }
 
-// Group 1
-CPU_OP_READ_CONST_B(adc);
-CPU_OP_READ_CONST_W(adc);
-CPU_OP_READ_CONST_B(and);
-CPU_OP_READ_CONST_W(and);
-CPU_OP_READ_CONST_B(cmp);
-CPU_OP_READ_CONST_W(cmp);
-CPU_OP_READ_CONST_B(eor);
-CPU_OP_READ_CONST_W(eor);
-CPU_OP_READ_CONST_B(lda);
-CPU_OP_READ_CONST_W(lda);
-CPU_OP_READ_CONST_B(ora);
-CPU_OP_READ_CONST_W(ora);
-CPU_OP_READ_CONST_B(sbc);
-CPU_OP_READ_CONST_W(sbc);
+DECL_GROUP_ONE(READ_CONST)
 
 // Not sure what this is. Testing bits for comparison?
 static inline void cpu_op_read_bit_const_b(void) 
@@ -65,21 +86,7 @@ static inline void cpu_op_read_bit_const_w(void)
       cpu_op_##op##_w (cpu_readw(addr)); \
    }
 
-CPU_OP_READ_ADDR_B(adc);
-CPU_OP_READ_ADDR_W(adc);
-CPU_OP_READ_ADDR_B(and);
-CPU_OP_READ_ADDR_W(and);
-CPU_OP_READ_ADDR_B(cmp);
-CPU_OP_READ_ADDR_W(cmp);
-CPU_OP_READ_ADDR_B(eor);
-CPU_OP_READ_ADDR_W(eor);
-CPU_OP_READ_ADDR_B(lda);
-CPU_OP_READ_ADDR_W(lda);
-CPU_OP_READ_ADDR_B(ora);
-CPU_OP_READ_ADDR_W(ora);
-CPU_OP_READ_ADDR_B(sbc);
-CPU_OP_READ_ADDR_W(sbc);
-
+DECL_GROUP_ONE(READ_ADDR)
 
 // Absolute address, X indexed, e.g. lda $1337, x
 #define CPU_OP_READ_ADDRX_B_DECL(op) cpu_op_read_addrx_b_##op
@@ -98,21 +105,7 @@ CPU_OP_READ_ADDR_W(sbc);
       cpu_op_##op##_w (cpu_readw(addr)); \
    }
 
-CPU_OP_READ_ADDRX_B(adc);
-CPU_OP_READ_ADDRX_W(adc);
-CPU_OP_READ_ADDRX_B(and);
-CPU_OP_READ_ADDRX_W(and);
-CPU_OP_READ_ADDRX_B(cmp);
-CPU_OP_READ_ADDRX_W(cmp);
-CPU_OP_READ_ADDRX_B(eor);
-CPU_OP_READ_ADDRX_W(eor);
-CPU_OP_READ_ADDRX_B(lda);
-CPU_OP_READ_ADDRX_W(lda);
-CPU_OP_READ_ADDRX_B(ora);
-CPU_OP_READ_ADDRX_W(ora);
-CPU_OP_READ_ADDRX_B(sbc);
-CPU_OP_READ_ADDRX_W(sbc);
-
+DECL_GROUP_ONE(READ_ADDRX)
 
 // Absolute address, Y indexed, e.g. lda $1337, y
 #define CPU_OP_READ_ADDRY_B_DECL(op) cpu_op_read_addry_b_##op
@@ -131,21 +124,7 @@ CPU_OP_READ_ADDRX_W(sbc);
       cpu_op_##op##_w (cpu_readw(addr)); \
    }
 
-CPU_OP_READ_ADDRY_B(adc);
-CPU_OP_READ_ADDRY_W(adc);
-CPU_OP_READ_ADDRY_B(and);
-CPU_OP_READ_ADDRY_W(and);
-CPU_OP_READ_ADDRY_B(cmp);
-CPU_OP_READ_ADDRY_W(cmp);
-CPU_OP_READ_ADDRY_B(eor);
-CPU_OP_READ_ADDRY_W(eor);
-CPU_OP_READ_ADDRY_B(lda);
-CPU_OP_READ_ADDRY_W(lda);
-CPU_OP_READ_ADDRY_B(ora);
-CPU_OP_READ_ADDRY_W(ora);
-CPU_OP_READ_ADDRY_B(sbc);
-CPU_OP_READ_ADDRY_W(sbc);
-
+DECL_GROUP_ONE(READ_ADDRY)
 
 // Long addressing (24-bit address), e.g. lda.l $7e1337
 #define CPU_OP_READ_LONG_B_DECL(op) cpu_op_read_long_b_##op
@@ -162,21 +141,7 @@ CPU_OP_READ_ADDRY_W(sbc);
       cpu_op_##op##_w (cpu_readlw(cpu_readl_pc())); \
    }
 
-CPU_OP_READ_LONG_B(adc);
-CPU_OP_READ_LONG_W(adc);
-CPU_OP_READ_LONG_B(and);
-CPU_OP_READ_LONG_W(and);
-CPU_OP_READ_LONG_B(cmp);
-CPU_OP_READ_LONG_W(cmp);
-CPU_OP_READ_LONG_B(eor);
-CPU_OP_READ_LONG_W(eor);
-CPU_OP_READ_LONG_B(lda);
-CPU_OP_READ_LONG_W(lda);
-CPU_OP_READ_LONG_B(ora);
-CPU_OP_READ_LONG_W(ora);
-CPU_OP_READ_LONG_B(sbc);
-CPU_OP_READ_LONG_W(sbc);
-
+DECL_GROUP_ONE(READ_LONG)
 
 // Long addressing, X indexed.
 #define CPU_OP_READ_LONGX_B_DECL(op) cpu_op_read_longx_b_##op
@@ -193,21 +158,7 @@ CPU_OP_READ_LONG_W(sbc);
       cpu_op_##op##_w (cpu_readlw(cpu_readl_pc() + REGS.x.w)); \
    }
 
-CPU_OP_READ_LONGX_B(adc);
-CPU_OP_READ_LONGX_W(adc);
-CPU_OP_READ_LONGX_B(and);
-CPU_OP_READ_LONGX_W(and);
-CPU_OP_READ_LONGX_B(cmp);
-CPU_OP_READ_LONGX_W(cmp);
-CPU_OP_READ_LONGX_B(eor);
-CPU_OP_READ_LONGX_W(eor);
-CPU_OP_READ_LONGX_B(lda);
-CPU_OP_READ_LONGX_W(lda);
-CPU_OP_READ_LONGX_B(ora);
-CPU_OP_READ_LONGX_W(ora);
-CPU_OP_READ_LONGX_B(sbc);
-CPU_OP_READ_LONGX_W(sbc);
-
+DECL_GROUP_ONE(READ_LONGX)
 
 // Direct page, e.g. lda $14
 #define CPU_OP_READ_DP_B_DECL(op) cpu_op_read_dp_b_##op
@@ -224,21 +175,7 @@ CPU_OP_READ_LONGX_W(sbc);
       cpu_op_##op##_w (cpu_readw_dp(cpu_read_pc())); \
    }
 
-CPU_OP_READ_DP_B(adc);
-CPU_OP_READ_DP_W(adc);
-CPU_OP_READ_DP_B(and);
-CPU_OP_READ_DP_W(and);
-CPU_OP_READ_DP_B(cmp);
-CPU_OP_READ_DP_W(cmp);
-CPU_OP_READ_DP_B(eor);
-CPU_OP_READ_DP_W(eor);
-CPU_OP_READ_DP_B(lda);
-CPU_OP_READ_DP_W(lda);
-CPU_OP_READ_DP_B(ora);
-CPU_OP_READ_DP_W(ora);
-CPU_OP_READ_DP_B(sbc);
-CPU_OP_READ_DP_W(sbc);
-
+DECL_GROUP_ONE(READ_DP)
 
 // Direct page, register indexed, e.g. lda $04, x
 #define CPU_OP_READ_DPR_B_DECL(op, reg) cpu_op_read_dpr_b_##op##_##reg
@@ -255,21 +192,7 @@ CPU_OP_READ_DP_W(sbc);
       cpu_op_##op##_w (cpu_readw_dp(cpu_read_pc() + REGS.reg.w)); \
    }
 
-CPU_OP_READ_DPR_B(adc, x);
-CPU_OP_READ_DPR_W(adc, x);
-CPU_OP_READ_DPR_B(and, x);
-CPU_OP_READ_DPR_W(and, x);
-CPU_OP_READ_DPR_B(cmp, x);
-CPU_OP_READ_DPR_W(cmp, x);
-CPU_OP_READ_DPR_B(eor, x);
-CPU_OP_READ_DPR_W(eor, x);
-CPU_OP_READ_DPR_B(lda, x);
-CPU_OP_READ_DPR_W(lda, x);
-CPU_OP_READ_DPR_B(ora, x);
-CPU_OP_READ_DPR_W(ora, x);
-CPU_OP_READ_DPR_B(sbc, x);
-CPU_OP_READ_DPR_W(sbc, x);
-
+DECL_GROUP_ONE_REG(READ_DPR, x)
 
 // Indirect direct page. Effective address is fetched from direct page address. 
 // Double pointers ftw? :)
@@ -290,21 +213,7 @@ CPU_OP_READ_DPR_W(sbc, x);
       cpu_op_##op##_w (cpu_readw(addr)); \
    }
 
-CPU_OP_READ_IDP_B(adc);
-CPU_OP_READ_IDP_W(adc);
-CPU_OP_READ_IDP_B(and);
-CPU_OP_READ_IDP_W(and);
-CPU_OP_READ_IDP_B(cmp);
-CPU_OP_READ_IDP_W(cmp);
-CPU_OP_READ_IDP_B(eor);
-CPU_OP_READ_IDP_W(eor);
-CPU_OP_READ_IDP_B(lda);
-CPU_OP_READ_IDP_W(lda);
-CPU_OP_READ_IDP_B(ora);
-CPU_OP_READ_IDP_W(ora);
-CPU_OP_READ_IDP_B(sbc);
-CPU_OP_READ_IDP_W(sbc);
-
+DECL_GROUP_ONE(READ_IDP)
 
 
 // Indirect direct page, X indexed, e.g lda ($00, x)
@@ -326,6 +235,7 @@ CPU_OP_READ_IDP_W(sbc);
       cpu_op_##op##_w (cpu_readw(addr)); \
    }
 
+DECL_GROUP_ONE(READ_IDPX)
 
 // Indirect direct page, Y indexed, e.g. lda ($00), y
 #define CPU_OP_READ_IDPY_B_DECL(op) cpu_op_read_idpy_b_##op
@@ -346,6 +256,7 @@ CPU_OP_READ_IDP_W(sbc);
       cpu_op_##op##_w (cpu_readw(addr + REGS.y.w)); \
    }
 
+DECL_GROUP_ONE(READ_IDPY)
 
 // Indirect long addressed direct page. (This is getting pretty crazy now!)
 // E.g. lda [$00]
@@ -367,6 +278,7 @@ CPU_OP_READ_IDP_W(sbc);
       cpu_op_##op##_w (cpu_readlw(addr)); \
    }
 
+DECL_GROUP_ONE(READ_ILDP)
 
 // Indirect long addressed direct page, Y indexed. (It's not over yet! :D)
 // E.g. lda [$00], y
@@ -388,6 +300,7 @@ CPU_OP_READ_IDP_W(sbc);
       cpu_op_##op##_w (cpu_readlw(addr + REGS.y.w)); \
    }
 
+DECL_GROUP_ONE(READ_ILDPY)
 
 // Stack-relative.
 // E.g. lda 1, s
@@ -405,6 +318,7 @@ CPU_OP_READ_IDP_W(sbc);
       cpu_op_##op##_w (cpu_readw_sp(cpu_read_pc())); \
    }
 
+DECL_GROUP_ONE(READ_SR)
 
 // Indirect stack relative, Y indexed (Here be mighty dragons :D)
 // E.g. lda (1, s), y
@@ -423,5 +337,8 @@ CPU_OP_READ_IDP_W(sbc);
       uint16_t addr = cpu_readw_sp(cpu_read_pc()) + REGS.y.w; \
       cpu_op_##op##_w (cpu_readw(addr)); \
    }
+
+DECL_GROUP_ONE(READ_ISRY)
+
 
 #endif
