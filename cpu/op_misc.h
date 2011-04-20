@@ -288,5 +288,21 @@ static inline void cpu_op_mvp(void)
    REGS.pc.w.l = isel_if(REGS.a.w--, REGS.pc.w.l - 3, REGS.pc.w.l);
 }
 
+#define CPU_OP_RESET_FLAG_DECL(flag) cpu_op_reset_flag_##flag
+#define CPU_OP_RESET_FLAG(flag) \
+   static inline void CPU_OP_RESET_FLAG_DECL(flag) (void) \
+   { \
+      REGS.p.flag = false; \
+   }
+
+#define CPU_OP_SET_FLAG_DECL(flag) cpu_op_set_flag_##flag
+#define CPU_OP_SET_FLAG(flag) \
+   static inline void CPU_OP_SET_FLAG_DECL(flag) (void) \
+   { \
+      REGS.p.flag = true; \
+   }
+
+CPU_OP_SET_FLAG(c)
+CPU_OP_RESET_FLAG(c)
 
 #endif
