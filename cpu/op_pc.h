@@ -2,10 +2,12 @@
 #define __OP_PC_H
 
 #include <stdint.h>
+#include "util.h"
+#include "memory.h"
 
 #define CPU_OP_BRANCH_REG_DECL(reg) cpu_op_branch_##reg
 #define CPU_OP_BRANCH_REG(reg) \
-   static inline CPU_OP_BRANCH_REG_DECL(reg) (void) \
+   static inline void CPU_OP_BRANCH_REG_DECL(reg) (void) \
    { \
       int8_t rel = cpu_read_pc(); \
       uint16_t addr = REGS.pc.w.l; \
@@ -14,7 +16,7 @@
 
 #define CPU_OP_BRANCH_REG_N_DECL(reg) cpu_op_branch_n_##reg
 #define CPU_OP_BRANCH_REG_N(reg) \
-   static inline CPU_OP_BRANCH_REG_N_DECL(reg) (void) \
+   static inline void CPU_OP_BRANCH_REG_N_DECL(reg) (void) \
    { \
       int8_t rel = cpu_read_pc(); \
       uint16_t addr = REGS.pc.w.l; \
@@ -25,10 +27,10 @@ CPU_OP_BRANCH_REG(n) // bmi
 CPU_OP_BRANCH_REG(v) // bvs
 CPU_OP_BRANCH_REG(z) // beq
 CPU_OP_BRANCH_REG(c) // bcs
-CPU_OP_BRANCH_N_REG(n) // bpl
-CPU_OP_BRANCH_N_REG(v) // bvc
-CPU_OP_BRANCH_N_REG(z) // bne
-CPU_OP_BRANCH_N_REG(c) // bcc
+CPU_OP_BRANCH_REG_N(n) // bpl
+CPU_OP_BRANCH_REG_N(v) // bvc
+CPU_OP_BRANCH_REG_N(z) // bne
+CPU_OP_BRANCH_REG_N(c) // bcc
 
 static inline void cpu_op_bra(void) 
 {
@@ -77,8 +79,8 @@ static inline void cpu_op_jmp_iladdr(void)
 static inline void cpu_op_jsr_addr(void) 
 {
    uint16_t addr = cpu_readw_pc();
-   cpu_push_stack(REGS.pc.b.ll);
-   cpu_push_stack(REGS.pc.b.lh);
+   cpu_stack_push(REGS.pc.b.ll);
+   cpu_stack_push(REGS.pc.b.lh);
 
    REGS.pc.w.l = addr;
 }
@@ -86,23 +88,23 @@ static inline void cpu_op_jsr_addr(void)
 static inline void cpu_op_jsr_long_n(void) 
 {
    uint32_t addr = cpu_readl_pc();
-   cpu_push_stack(REGS.pc.b.hl);
-   cpu_push_stack(REGS.pc.b.lh);
-   cpu_push_stack(REGS.pc.b.ll);
+   cpu_stack_push(REGS.pc.b.hl);
+   cpu_stack_push(REGS.pc.b.lh);
+   cpu_stack_push(REGS.pc.b.ll);
    REGS.pc.l = addr;
 }
 
 static inline void cpu_op_jsr_long_e(void) 
 {
    cpu_op_jsr_long_n();
-   REGS.sp.h = 0x01;
+   REGS.sp.b.h = 0x01;
 }
 
 static inline void cpu_op_jsr_iaddrx_n(void) 
 {
    uint16_t addr = cpu_readw_pc();
-   cpu_push_stack(REGS.pc.b.ll);
-   cpu_push_stack(REGS.pc.b.lh);
+   cpu_stack_push(REGS.pc.b.ll);
+   cpu_stack_push(REGS.pc.b.lh);
    uint16_t jmp_addr = cpu_readl((((uint32_t)REGS.pc.b.hl) << 16) | addr);
    REGS.pc.w.l = jmp_addr;
 }
@@ -110,40 +112,40 @@ static inline void cpu_op_jsr_iaddrx_n(void)
 static inline void cpu_op_jsr_iaddrx_e(void) 
 {
    cpu_op_jsr_iaddrx_n();
-   REGS.sp.h = 0x01;
+   REGS.sp.b.h = 0x01;
 }
 
 
 static inline void cpu_op_rti_e(void) 
 {
-   cpu_set_p(cpu_pull_stack() | 0x30);
-   REGS.pc.b.ll = cpu_pull_stack();
-   REGS.pc.b.lh = cpu_pull_stack();
+   cpu_set_p(cpu_stack_pull() | 0x30);
+   REGS.pc.b.ll = cpu_stack_pull();
+   REGS.pc.b.lh = cpu_stack_pull();
 }
 
 static inline void cpu_op_rti_n(void) 
 {
-   cpu_set_p(cpu_pull_stack());
+   cpu_set_p(cpu_stack_pull());
    REGS.x.b.h = isel_if(REGS.p.x, 0x00, REGS.x.b.h);
    REGS.y.b.h = isel_if(REGS.p.x, 0x00, REGS.y.b.h);
 
-   REGS.pc.b.ll = cpu_pull_stack();
-   REGS.pc.b.lh = cpu_pull_stack();
-   REGS.pc.b.hl = cpu_pull_stack();
-   update_table();
+   REGS.pc.b.ll = cpu_stack_pull();
+   REGS.pc.b.lh = cpu_stack_pull();
+   REGS.pc.b.hl = cpu_stack_pull();
+   cpu_update_table();
 }
 
 static inline void cpu_op_rts(void) 
 {
-   REGS.pc.b.ll = cpu_pull_stack();
-   REGS.pc.b.lh = cpu_pull_stack();
+   REGS.pc.b.ll = cpu_stack_pull();
+   REGS.pc.b.lh = cpu_stack_pull();
 }
 
 static inline void cpu_op_rtl_n(void) 
 {
-   REGS.pc.b.ll = cpu_pull_stack();
-   REGS.pc.b.lh = cpu_pull_stack();
-   REGS.pc.b.hl = cpu_pull_stack();
+   REGS.pc.b.ll = cpu_stack_pull();
+   REGS.pc.b.lh = cpu_stack_pull();
+   REGS.pc.b.hl = cpu_stack_pull();
 }
 
 static inline void cpu_op_rtl_e(void) 

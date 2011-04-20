@@ -2,6 +2,7 @@
 #define __CPU_STATE_H
 
 #include "util.h"
+#include <stdbool.h>
 
 struct cpu_regs
 {
@@ -19,7 +20,7 @@ struct cpu_regs
    } p;
    bool e;
 
-   uint32_t mbk; // Data bank
+   uint32_t db; // Data bank
    uint32_t dp; // Direct page
 };
 

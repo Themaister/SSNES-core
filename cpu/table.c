@@ -1,13 +1,20 @@
 #include "table.h"
 #include "op.h"
+#include <stddef.h>
 
-cpu_op_t *op_table = NULL;
+const cpu_op_t *op_table = NULL;
 
 cpu_op_t op_table_EMUL[256];
 cpu_op_t op_table_mx[256];
 cpu_op_t op_table_mX[256];
 cpu_op_t op_table_Mx[256];
 cpu_op_t op_table_MX[256];
+
+uint8_t cycle_table_EMUL[256];
+uint8_t cycle_table_mx[256];
+uint8_t cycle_table_mX[256];
+uint8_t cycle_table_Mx[256];
+uint8_t cycle_table_MX[256];
 
 const cpu_op_t* op_table_index[] = {
    op_table_mx,
@@ -33,6 +40,7 @@ const uint8_t* cycle_table_index[] = {
 
 void cpu_init_tables(void)
 {
+   CPU_OP_RMW_REG_B_DECL(a, inc) ();
 
 
 }

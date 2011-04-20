@@ -19,12 +19,12 @@ static inline void cpu_writel(uint32_t addr, uint8_t data)
 
 static inline uint8_t cpu_read(uint16_t addr)
 {
-   return cpu_readl(REGS.mbk | addr);
+   return cpu_readl(REGS.db | addr);
 }
 
 static inline void cpu_write(uint16_t addr, uint8_t data)
 {
-   cpu_writel(REGS.mbk | addr, data);
+   cpu_writel(REGS.db | addr, data);
 }
 
 static inline uint16_t cpu_readw(uint16_t addr)

@@ -1,6 +1,9 @@
 #ifndef __TABLE_H
 #define __TABLE_H
 
+#include <stdint.h>
+#include "state.h"
+
 typedef void (*cpu_op_t)(void);
 extern const cpu_op_t *op_table;
 extern const uint8_t *cycle_table;
