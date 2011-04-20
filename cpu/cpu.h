@@ -1,8 +1,11 @@
-#ifndef __CPU_H
-#define __CPU_H
+#ifndef __SSNES_CPU_H
+#define __SSNES_CPU_H
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "util.h"
+#include "cpu_state.h"
+#include "state.h"
 #include "memory.h"
 #include "table.h"
 
@@ -10,7 +13,7 @@ void cpu_init(void);
 void cpu_run_frame(void);
 void cpu_reset(void);
 
-static inline cpu_set_p(uint8_t data)
+static inline void cpu_set_p(uint8_t data)
 {
    REGS.p.n = data & (1 << 7);
    REGS.p.v = data & (1 << 6);
@@ -37,43 +40,5 @@ static inline uint8_t cpu_get_p(void)
       (REGS.p.c << 0);
 }
 
-
-struct cpu_regs
-{
-   // GPP and index regs
-   word_reg_t a, x, y;
-
-   // Stack pointer and PC
-   word_reg_t sp;
-   long_reg_t pc; // Includes the PBK
-
-   // Processor flags
-   struct
-   {
-      bool n, v, m, x, d, i, z, c;
-   } p;
-   bool e;
-
-   uint32_t mbk; // Data bank
-   uint32_t dp; // Direct page
-};
-
-struct cpu_status
-{
-};
-
-struct cpu_alu_state
-{
-   unsigned mpyctr;
-   unsigned divctr;
-   unsigned shift;
-};
-
-struct cpu_state
-{
-   struct cpu_regs regs;
-   struct cpu_status status;
-   struct cpu_alu_state alu;
-};
 
 #endif

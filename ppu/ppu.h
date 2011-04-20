@@ -3,6 +3,7 @@
 
 struct ppu_state
 {
+   char foo;
 };
 
 #endif

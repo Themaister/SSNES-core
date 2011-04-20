@@ -1,7 +1,7 @@
 #ifndef __STATE_H
 #define __STATE_H
 
-#include "cpu.h"
+#include "cpu_state.h"
 #include "smp.h"
 #include "dsp.h"
 #include "ppu.h"
@@ -34,6 +34,6 @@ struct snes_state
    struct ppu_state ppu;
 };
 
-extern snes_state state;
+extern struct snes_state state;
 
 #endif

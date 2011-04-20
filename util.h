@@ -51,9 +51,10 @@ typedef union
 } long_reg_t;
 
 // Branchless ternary operation. cond ? a : b
+// Relies on arithmetic right shift semantics.
 static inline unsigned isel_if(int32_t cond, unsigned a, unsigned b)
 {
-   unsigned mask = cond | (-cond);
+   unsigned mask = (cond | (-cond)) >> 31;
    return (a & mask) | (b & ~mask);
 }
 

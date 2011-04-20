@@ -1,7 +1,6 @@
 #ifndef __OP_H
 #define __OP_H
 
-#include "state.h"
 #include "op_alu.h"
 #include "op_pc.h"
 #include "op_read.h"

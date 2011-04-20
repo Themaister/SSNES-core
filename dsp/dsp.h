@@ -3,6 +3,7 @@
 
 struct dsp_state
 {
+   char foo;
 };
 
 #endif

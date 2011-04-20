@@ -1,11 +1,11 @@
 TARGET = libsnes.so
 HEADERS = $(wildcard */*.h)
-INCDIRS = -Icpu -Ismp -Ippu -Isystem
+INCDIRS = -Icpu -Ismp -Idsp -Ippu -Isystem -I.
 PIC = -fPIC
 CFLAGS += -O3 -g -Wall -std=gnu99 $(PIC)
 LDFLAGS += -shared
 
-OBJ = cpu/cpu.o apu/apu.o smp/smp.o dsp/dsp.o system/system.o
+OBJ = cpu/cpu.o ppu/ppu.o smp/smp.o dsp/dsp.o system/system.o
 
 
 all: $(TARGET)

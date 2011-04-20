@@ -3,6 +3,7 @@
 
 struct smp_state
 {
+   char foo;
 };
 
 #endif

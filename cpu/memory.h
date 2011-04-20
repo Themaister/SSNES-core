@@ -1,6 +1,10 @@
 #ifndef __CPU_MEMORY_H
 #define __CPU_MEMORY_H
 
+#include "cpu.h"
+#include "state.h"
+#include "util.h"
+
 // No MMIO yet.
 static inline uint8_t cpu_readl(uint32_t addr)
 {
@@ -53,23 +57,23 @@ static inline void cpu_writelw(uint32_t addr, uint16_t data)
 
 static inline uint8_t cpu_read_pc(void)
 {
-   return cpu_readl(REGS.pc++);
+   return cpu_readl(REGS.pc.w.l++);
 }
 
 static inline uint16_t cpu_readw_pc(void)
 {
    uint16_t res = 0;
-   res |= cpu_readl(REGS.pc++);
-   res |= ((uint16_t)cpu_readl(REGS.pc++)) << 8;
+   res |= cpu_readl(REGS.pc.w.l++);
+   res |= ((uint16_t)cpu_readl(REGS.pc.w.l++)) << 8;
    return res;
 }
 
 static inline uint32_t cpu_readl_pc(void)
 {
    uint32_t res = 0;
-   res |= cpu_readl(REGS.pc++);
-   res |= ((uint16_t)cpu_readl(REGS.pc++)) << 8;
-   res |= ((uint32_t)cpu_readl(REGS.pc++)) << 16;
+   res |= cpu_readl(REGS.pc.w.l++);
+   res |= ((uint16_t)cpu_readl(REGS.pc.w.l++)) << 8;
+   res |= ((uint32_t)cpu_readl(REGS.pc.w.l++)) << 16;
    return res;
 }
 
@@ -120,7 +124,7 @@ static inline void cpu_writew_dp(uint8_t addr, uint16_t data)
 // Stack-relative
 static inline uint8_t cpu_read_sp(uint16_t addr)
 {
-   return cpu_readl(REGS.sp + addr);
+   return cpu_readl(REGS.sp.w + addr);
 }
 
 static inline uint16_t cpu_readw_sp(uint16_t addr)
@@ -133,13 +137,13 @@ static inline uint16_t cpu_readw_sp(uint16_t addr)
 
 static inline void cpu_write_sp(uint16_t addr, uint8_t data)
 {
-   cpu_writel(REGS.sp + addr, data);
+   cpu_writel(REGS.sp.w + addr, data);
 }
 
 static inline void cpu_writew_sp(uint16_t addr, uint16_t data)
 {
-   cpu_writel(REGS.sp + addr, data & 0xFF);
-   cpu_writel(REGS.sp + addr + 1, data >> 8);
+   cpu_writel(REGS.sp.w + addr, data & 0xFF);
+   cpu_writel(REGS.sp.w + addr + 1, data >> 8);
 }
 
 #endif

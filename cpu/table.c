@@ -1,4 +1,5 @@
 #include "table.h"
+#include "op.h"
 
 cpu_op_t *op_table = NULL;
 
@@ -17,6 +18,17 @@ const cpu_op_t* op_table_index[] = {
    op_table_EMUL,
    op_table_EMUL,
    op_table_EMUL
+};
+
+const uint8_t* cycle_table_index[] = {
+   cycle_table_mx,
+   cycle_table_mX,
+   cycle_table_Mx,
+   cycle_table_MX,
+   cycle_table_EMUL,
+   cycle_table_EMUL,
+   cycle_table_EMUL,
+   cycle_table_EMUL
 };
 
 void cpu_init_tables(void)

@@ -50,7 +50,7 @@ CPU_OP_RMW_REG_W(a, ror);
    { \
       uint16_t addr = cpu_readw_pc(); \
       uint8_t res = op(cpu_read(addr)); \
-      cpu_write(res); \
+      cpu_write(addr, res); \
    }
 
 #define CPU_OP_RMW_ADDR_W_DECL(op) cpu_op_rmw_addr_w_##op
@@ -59,7 +59,7 @@ CPU_OP_RMW_REG_W(a, ror);
    { \
       uint16_t addr = cpu_readw_pc(); \
       uint16_t res = op(cpu_readw(addr)); \
-      cpu_writew(res); \
+      cpu_writew(addr, res); \
    }
 
 // Absolute addressing, X indexed.
@@ -69,7 +69,7 @@ CPU_OP_RMW_REG_W(a, ror);
    { \
       uint16_t addr = cpu_readw_pc(); \
       uint8_t res = op(cpu_read(addr)); \
-      cpu_write(res); \
+      cpu_write(addr, res); \
    }
 
 #define CPU_OP_RMW_ADDRX_W_DECL(op) cpu_op_rmw_addrx_w_##op
@@ -78,9 +78,45 @@ CPU_OP_RMW_REG_W(a, ror);
    { \
       uint16_t addr = cpu_readw_pc() + REGS.x.w; \
       uint16_t res = op(cpu_readw(addr)); \
-      cpu_writew(res); \
+      cpu_writew(addr, res); \
    }
 
+// Direct page
+#define CPU_OP_RMW_DP_B_DECL(op) cpu_op_rmw_dp_b_##op
+#define CPU_OP_RMW_DP_B(op) \
+   static inline void CPU_OP_RMW_RMW_DP_B_DECL(op) (void) \
+   { \
+      uint8_t dp = cpu_read_pc(); \
+      uint8_t res = op(cpu_read_dp(dp)); \
+      cpu_write_dp(dp, res); \
+   }
 
+#define CPU_OP_RMW_DP_W_DECL(op) cpu_op_rmw_dp_w_##op
+#define CPU_OP_RMW_DP_W(op) \
+   static inline void CPU_OP_RMW_RMW_DP_W_DECL(op) (void) \
+   { \
+      uint8_t dp = cpu_read_pc(); \
+      uint16_t res = op(cpu_readw_dp(dp)); \
+      cpu_writew_dp(dp, res); \
+   }
+
+// Direct page, X indexed
+#define CPU_OP_RMW_DPX_B_DECL(op) cpu_op_rmw_dpx_b_##op
+#define CPU_OP_RMW_DPX_B(op) \
+   static inline void CPU_OP_RMW_DPX_B_DECL(op) (void) \
+   { \
+      uint8_t dp = cpu_read_pc() + REGS.x.w; \
+      uint8_t res = op(cpu_read_dp(dp)); \
+      cpu_write_dp(dp, res); \
+   }
+
+#define CPU_OP_RMW_DPX_W_DECL(op) cpu_op_rmw_dpx_w_##op
+#define CPU_OP_RMW_DPX_W(op) \
+   static inline void CPU_OP_RMW_DPX_W_DECL(op) (void) \
+   { \
+      uint8_t dp = cpu_read_pc() + REGS.x.w; \
+      uint16_t res = op(cpu_readw_dp(dp)); \
+      cpu_writew_dp(dp, res); \
+   }
 
 #endif
