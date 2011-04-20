@@ -57,18 +57,6 @@
 
 DECL_GROUP_ONE(READ_CONST)
 
-// Not sure what this is. Testing bits for comparison?
-static inline void cpu_op_read_bit_const_b(void) 
-{
-   REGS.p.z = ((cpu_read_pc() & REGS.a.b.l) == 0);
-}
-
-static inline void cpu_op_read_bit_const_w(void) 
-{
-   REGS.p.z = ((cpu_readw_pc() & REGS.a.w) == 0);
-}
-
-
 // Absolute addressing, e.g. lda $1337
 #define CPU_OP_READ_ADDR_B_DECL(op) cpu_op_read_addr_b_##op
 #define CPU_OP_READ_ADDR_B(op) \

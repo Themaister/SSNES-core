@@ -75,6 +75,8 @@ CPU_OP_RMW_REG_W(a, ror);
    }
 
 DECL_GROUP_TWO(ADDR)
+CPU_OP_RMW_ADDR_B(tsb)
+CPU_OP_RMW_ADDR_W(tsb)
 
 // Absolute addressing, X indexed.
 #define CPU_OP_RMW_ADDRX_B_DECL(op) cpu_op_rmw_addrx_b_##op
@@ -119,6 +121,8 @@ DECL_GROUP_TWO(ADDRX)
    }
 
 DECL_GROUP_TWO(DP)
+CPU_OP_RMW_DP_B(tsb)
+CPU_OP_RMW_DP_W(tsb)
 
 // Direct page, X indexed
 #define CPU_OP_RMW_DPX_B_DECL(op) cpu_op_rmw_dpx_b_##op

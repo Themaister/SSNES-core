@@ -8,18 +8,18 @@ typedef void (*cpu_op_t)(void);
 extern const cpu_op_t *op_table;
 extern const uint8_t *cycle_table;
 
-extern cpu_op_t op_table_EMUL[256];
-extern cpu_op_t op_table_mx[256];
-extern cpu_op_t op_table_mX[256];
-extern cpu_op_t op_table_Mx[256];
-extern cpu_op_t op_table_MX[256];
+extern const cpu_op_t op_table_EMUL[256];
+extern const cpu_op_t op_table_mx[256];
+extern const cpu_op_t op_table_mX[256];
+extern const cpu_op_t op_table_Mx[256];
+extern const cpu_op_t op_table_MX[256];
 extern const cpu_op_t *op_table_index[];
 
-extern uint8_t cycle_table_EMUL[256];
-extern uint8_t cycle_table_mx[256];
-extern uint8_t cycle_table_mX[256];
-extern uint8_t cycle_table_Mx[256];
-extern uint8_t cycle_table_MX[256];
+extern const uint8_t cycle_table_EMUL[256];
+extern const uint8_t cycle_table_mx[256];
+extern const uint8_t cycle_table_mX[256];
+extern const uint8_t cycle_table_Mx[256];
+extern const uint8_t cycle_table_MX[256];
 extern const uint8_t* cycle_table_index[];
 
 static inline void cpu_update_table(void)
