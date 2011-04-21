@@ -75,6 +75,7 @@ DECL_GROUP_ONE(READ_CONST)
    }
 
 DECL_GROUP_ONE(READ_ADDR)
+CPU_OP_READ_ADDR_B(bit)
 
 // Absolute address, X indexed, e.g. lda $1337, x
 #define CPU_OP_READ_ADDRX_B_DECL(op) cpu_op_read_addrx_b_##op
@@ -164,6 +165,7 @@ DECL_GROUP_ONE(READ_LONGX)
    }
 
 DECL_GROUP_ONE(READ_DP)
+CPU_OP_READ_DP_B(bit)
 
 // Direct page, register indexed, e.g. lda $04, x
 #define CPU_OP_READ_DPR_B_DECL(op, reg) cpu_op_read_dpr_b_##op##_##reg

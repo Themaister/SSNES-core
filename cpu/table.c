@@ -43,6 +43,19 @@ const cpu_op_t op_table_MX[256] = {
    ALUOP(LONGX_B, ora),             // 1f
    cpu_op_jsr_addr,                 // 20
    ALUOP(IDPX_B, and),              // 21
+   cpu_op_jsr_long_n,               // 22
+   ALUOP(SR_B, and),                // 23
+   ALUOP(DP_B, bit),                // 24
+   ALUOP(DP_B, and),                // 25
+   RMWOP(DP_B, rol),                // 26
+   ALUOP(ILDP_B, and),              // 27
+   cpu_op_plp_n,                    // 28
+   ALUOP(CONST_B, and),             // 29
+   CPU_OP_RMW_REG_B_DECL(a, rol),   // 2a
+   cpu_op_pld,                      // 2b
+   ALUOP(ADDR_B, bit),              // 2c
+   ALUOP(ADDR_B, and),              // 2d
+   
 
 
 };
