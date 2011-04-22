@@ -1,22 +1,28 @@
-TARGET = libsnes.so
+TARGET = libsnes.a
+TEST_TARGET = main_test
 HEADERS = $(wildcard */*.h)
 INCDIRS = -Icpu -Ismp -Idsp -Ippu -Isystem -I.
-PIC = -fPIC
+PIC =
 CFLAGS += -O3 -g -Wall -std=gnu99 $(PIC)
-LDFLAGS += -shared
 
 SOURCES = $(wildcard */*.c)
 OBJ = $(SOURCES:.c=.o)
+TEST_OBJ = main_test.o
 
-all: $(TARGET)
+all: $(TEST_TARGET)
+
+$(TEST_TARGET): $(TEST_OBJ) lib
+	$(CC) -o $@ $(TEST_OBJ) $(TARGET)
+
+lib: $(TARGET)
 
 %.o: %.c $(HEADERS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(INCDIRS)
 
 $(TARGET): $(OBJ)
-	$(CC) -o $@ -shared $(OBJ) $(LDFLAGS)
+	$(AR) rcs $@ $(OBJ) $(LDFLAGS)
 
 clean:
-	rm -f $(OBJ) $(TARGET)
+	rm -f $(OBJ) $(TARGET) $(TEST_OBJ) $(TEST_TARGET)
 
-.PHONY: clean
+.PHONY: clean lib

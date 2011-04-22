@@ -34,7 +34,7 @@ static void cpu_check_irq(void)
 void cpu_run_frame(void)
 {
    CPU.status.cycles = 0;
-   unsigned cycles_per_frame = 100;
+   unsigned cycles_per_frame = 1000;
 
    while (CPU.status.cycles < cycles_per_frame)
    {

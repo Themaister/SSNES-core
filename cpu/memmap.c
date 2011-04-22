@@ -10,8 +10,10 @@ memmap_write_t memmap_write_table[256 * 8];
 
 static uint8_t lorom_read(uint32_t addr)
 {
+   uint8_t ret = MEM.cart.rom[((addr & 0x3f0000) >> 1) | (0x7fff & addr)];
+   fprintf(stderr, "Read 0x%x from addr 0x%x.\n", (unsigned)ret, (unsigned)addr);
    CPU.status.cycles += 8; // SlowROM
-   return MEM.cart.rom[((addr & 0x3f0000) >> 1) | (0x7fff & addr)];
+   return ret;
 }
 
 static uint8_t lorom_read_fastrom(uint32_t addr)
@@ -66,12 +68,15 @@ static void hirom_write_fastrom(uint32_t addr, uint8_t data)
 
 static uint8_t lowram_read(uint32_t addr)
 {
+   uint8_t ret = MEM.wram[addr & 0x1fff];
+   fprintf(stderr, "Read 0x%x from addr 0x%x.\n", (unsigned)ret, (unsigned)addr);
    CPU.status.cycles += 8;
-   return MEM.wram[addr & 0x1fff];
+   return ret;
 }
 
 static void lowram_write(uint32_t addr, uint8_t data)
 {
+   fprintf(stderr, "Wrote 0x%x to 0x%x.\n", (unsigned)data, (unsigned)addr);
    CPU.status.cycles += 8;
    MEM.wram[addr & 0x1fff] = data;
 }
