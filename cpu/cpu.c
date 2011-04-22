@@ -88,7 +88,7 @@ void cpu_run_frame(void)
          fprintf(stderr, "======================================\n");
          fprintf(stderr, "PC: %04x\n", (unsigned)REGS.pc.w.l);
          uint8_t opcode = cpu_read_pc();
-         fprintf(stderr, "Opcode: 0x%02x\n", (unsigned)opcode);
+         fprintf(stderr, "Opcode: 0x%02x || %s\n", (unsigned)opcode, opcode_names[opcode]);
          op_table[opcode]();
          CPU.status.cycles += cycle_table[opcode];
          print_registers();

@@ -1334,9 +1334,89 @@ const uint8_t* cycle_table_index[] = {
    cycle_table_EMUL
 };
 
-void cpu_init_tables(void)
-{
-   CPU_OP_RMW_REG_B_DECL(a, inc) ();
+const char* opcode_names[] = {
+   "brk",         "ora (idpx)",     "cop",         "ora (sr)",             // 0x00
+   "tsb (dp)",    "ora (dp)",       "asl (dp)",    "ora (ildp)",           // 0x04
+   "php",         "ora (imm)",      "asl A",       "phd",                  // 0x08
+   "tsb (addr)",  "ora (addr)",     "asl (addr)",  "ora (long)",           // 0x0c
+
+   "bpl",         "ora (idpy)",     "ora (idp)",   "ora (isry)",           // 0x10
+   "trb (dp)",    "ora (dpx)",      "asl (dpx)",   "ora (ildpy)",          // 0x14
+   "clc",         "ora (addry)",    "inc A",       "tcs",                  // 0x18
+   "trb (addr)",  "ora (addrx)",    "asl (addrx)", "ora (longx)",          // 0x1c
+
+   "jsr (addr)",  "and (idpx)",     "jsr (long)",  "and (sr)",             // 0x20
+   "bit (dp)",    "and (dp)",       "rol (dp)",    "and (ildp)",           // 0x24
+   "plp",         "and (imm)",      "rol A",       "pld",                  // 0x28
+   "bit (addr)",  "and (addr)",     "rol (addr)",  "and (long)",           // 0x2c
+
+   "bmi",         "and (idpy)",     "and (idp)",   "and (isry)",           // 0x30
+   "bit (dpx)",   "and (dpx)",      "rol (dpx)",   "and (ildpy)",          // 0x34
+   "sec",         "and (addry)",    "dec",         "tsc",                  // 0x38
+   "bit (addrx)", "and (addrx)",    "rol (addrx)", "and (longx)",          // 0x3c
+
+   "rti",         "eor (idpx)",     "wdm",         "eor (idpx)",           // 0x40
+   "mvp",         "eor (dp)",       "lsr (dp)",    "eor (ildp)",           // 0x44
+   "pha",         "eor (imm)",      "lsr A",       "phk",                  // 0x48
+   "jmp (addr)",  "eor (addr)",     "lsr (addr)",  "eor (long)",           // 0x4c
+
+   "bvc",         "eor (idpy)",     "eor (idp)",   "eor (isry)",           // 0x50
+   "mvn",         "eor (dpx)",      "lsr (dpx)",   "eor (ildpy)",          // 0x54
+   "cli",         "eor (addry)",    "phy",         "tcd",                  // 0x58
+   "jml",         "eor (addrx)",    "lsr (addrx)", "eor (longx)",          // 0x5c
+
+   "rts",         "adc (idpx)",     "per",         "adc (sr)",             // 0x60
+   "stz (dp)",    "adc (dp)",       "ror (dp)",    "adc (ildp)",           // 0x64
+   "pla",         "adc (imm)",      "ror A",       "rtl",                  // 0x68
+   "jmp (iaddr)", "adc (addr)",     "ror (addr)",  "adc (long)",           // 0x6c
+
+   "bvs",         "adc (idpy)",     "adc (idp)",   "adc (isry)",           // 0x70
+   "stz (dpx)",   "adc (dpx)",      "ror (dpx)",   "adc (ildpy)",          // 0x74
+   "sei",         "adc (addry)",    "ply",         "tdc",                  // 0x78
+   "jmp (ilong)", "adc (addrx)",    "ror (addrx)", "adc (longx)",          // 0x7c
+
+   "bra",         "sta (idpx)",     "brl",         "sta (sr)",             // 0x80
+   "sty (dp)",    "sta (dp)",       "stx (dp)",    "sta (ildp)",           // 0x84
+   "dey",         "bit (imm)",      "txa",         "phb",                  // 0x88
+   "sty (addr)",  "sta (addr)",     "stx (addr)",  "sta (long)",           // 0x8c
+
+   "bcc",         "sta (idpy)",     "sta (idp)",   "sta (isry)",           // 0x90
+   "sty (dpx)",   "sta (dpx)",      "stx (dpy)",   "sta (ildpy)",          // 0x94
+   "tya",         "sta (addry)",    "txs",         "txy",                  // 0x98
+   "stz (addr)",  "sta (addrx)",    "stz (addrx)", "sta (longx)",          // 0x9c
+
+   "ldy (imm)",   "lda (idpx)",     "ldx (imm)",   "lda (sr)",             // 0xa0
+   "ldy (dp)",    "lda (dp)",       "lda (dp)",    "lda (ildp)",           // 0xa4
+   "tay",         "lda (imm)",      "tax",         "plb",                  // 0xa8
+   "ldy (addr)",  "lda (addr)",     "ldx (addr)",  "lda (long)",           // 0xac
+
+   "bcs",         "lda (idpy)",     "lda (idp)",   "lda (isry)",           // 0xb0
+   "ldy (dpx)",   "lda (dpx)",      "ldx (dpy)",   "lda (ildpy)",          // 0xb4
+   "clv",         "lda (addry)",    "tsx",         "tyx",                  // 0xb8
+   "ldy (addrx)", "lda (addrx)",    "ldx (addry)", "lda (longx)",          // 0xbc
+
+   "cpy (imm)",   "cmp (idpx)",     "rep",         "cmp (sr)",             // 0xc0
+   "cpy (dp)",    "cmp (dp)",       "dec (dp)",    "cmp (ildp)",           // 0xc4
+   "iny",         "cmp (imm)",      "dex",         "wai",                  // 0xc8
+   "cpy (addr)",  "cmp (addr)",     "dec (addr)",  "cmp (long)",           // 0xcc
+
+   "bne",         "cmp (idpy)",     "cmp (idp)",   "cmp (isry)",           // 0xd0
+   "pei",         "cmp (dpx)",      "dec (dpx)",   "cmp (ildpy)",          // 0xd4
+   "cld",         "cmp (addry)",    "phx",         "stp",                  // 0xd8
+   "jmp (ilong)", "cmp (addrx)",    "dec (addrx)", "cmp (longx)",          // 0xdc
+
+   "cpx (imm)",   "sbc (idpx)",     "sep",         "sbc (sr)",             // 0xe0
+   "cpx (dp)",    "sbc (dp)",       "inc (dp)",    "sbc (ildp)",           // 0xe4
+   "inx",         "sbc (imm)",      "nop",         "xba",                  // 0xe8
+   "cpx (addr)",  "sbc (addr)",     "inc (addr)",  "sbc (long)",           // 0xec
+
+   "beq",         "sbc (idpy)",     "sbc (idp)",   "sbc (isry)",           // 0xf0
+   "pea",         "sbc (dpx)",      "inc (dpx)",   "sbc (ildpy)",          // 0xf4
+   "sed",         "sbc (addry)",    "plx",         "xce",                  // 0xf8
+   "jsr (iaddr)", "sbc (addrx)",    "inc (addrx)", "sbc (longx)",          // 0xfc
 
 
-}
+
+
+
+};

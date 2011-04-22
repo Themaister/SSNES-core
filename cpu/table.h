@@ -23,6 +23,8 @@ extern const uint8_t cycle_table_Mx[256];
 extern const uint8_t cycle_table_MX[256];
 extern const uint8_t* cycle_table_index[];
 
+extern const char* opcode_names[];
+
 static inline void cpu_update_table(void)
 {
    unsigned reg_val = (REGS.e << 2) | (REGS.p.m << 1) | REGS.p.x;
