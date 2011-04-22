@@ -76,6 +76,7 @@ DECL_GROUP_ONE(READ_CONST)
 
 DECL_GROUP_ONE(READ_ADDR)
 CPU_OP_READ_ADDR_B(bit)
+CPU_OP_READ_ADDR_W(bit)
 
 // Absolute address, X indexed, e.g. lda $1337, x
 #define CPU_OP_READ_ADDRX_B_DECL(op) cpu_op_read_addrx_b_##op
@@ -95,6 +96,8 @@ CPU_OP_READ_ADDR_B(bit)
    }
 
 DECL_GROUP_ONE(READ_ADDRX)
+CPU_OP_READ_ADDRX_B(bit)
+CPU_OP_READ_ADDRX_W(bit)
 
 // Absolute address, Y indexed, e.g. lda $1337, y
 #define CPU_OP_READ_ADDRY_B_DECL(op) cpu_op_read_addry_b_##op
@@ -166,6 +169,7 @@ DECL_GROUP_ONE(READ_LONGX)
 
 DECL_GROUP_ONE(READ_DP)
 CPU_OP_READ_DP_B(bit)
+CPU_OP_READ_DP_W(bit)
 
 // Direct page, register indexed, e.g. lda $04, x
 #define CPU_OP_READ_DPR_B_DECL(op, reg) cpu_op_read_dpr_b_##op##_##reg
@@ -183,6 +187,8 @@ CPU_OP_READ_DP_B(bit)
    }
 
 DECL_GROUP_ONE_REG(READ_DPR, x)
+CPU_OP_READ_DPR_B(bit, x)
+CPU_OP_READ_DPR_W(bit, x)
 
 // Indirect direct page. Effective address is fetched from direct page address. 
 // Double pointers ftw? :)

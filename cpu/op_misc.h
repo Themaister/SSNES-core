@@ -51,6 +51,14 @@ static inline void cpu_op_tcs_n(void)
    REGS.sp.w = REGS.a.w;
 }
 
+static inline void cpu_op_tsc(void)
+{
+   uint16_t trans = REGS.sp.w;
+   REGS.a.w = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x8000);
+}
+
 static inline void cpu_op_tsx_b(void)
 {
    REGS.x.b.l = REGS.sp.b.l;

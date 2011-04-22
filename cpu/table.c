@@ -55,6 +55,36 @@ const cpu_op_t op_table_MX[256] = {
    cpu_op_pld,                      // 2b
    ALUOP(ADDR_B, bit),              // 2c
    ALUOP(ADDR_B, and),              // 2d
+   RMWOP(ADDR_B, rol),              // 2e
+   ALUOP(LONG_B, and),              // 2f
+   CPU_OP_BRANCH_REG_DECL(n),       // 30
+   ALUOP(IDPY_B, and),              // 31
+   ALUOP(IDP_B, and),               // 32
+   ALUOP(ISRY_B, and),              // 33
+   CPU_OP_READ_DPR_B_DECL(bit, x),  // 34
+   CPU_OP_READ_DPR_B_DECL(and, x),  // 35
+   RMWOP(DPX_B, rol),               // 36
+   ALUOP(ILDPY_B, and),             // 37
+   CPU_OP_SET_FLAG_DECL(c),         // 38
+   ALUOP(ADDRY_B, and),             // 39
+   CPU_OP_RMW_REG_B_DECL(a, dec),   // 3a
+   cpu_op_tsc,                      // 3b
+   ALUOP(ADDRX_B, bit),             // 3c
+   ALUOP(ADDRX_B, and),             // 3d
+   RMWOP(ADDRX_B, rol),             // 3e
+   ALUOP(LONGX_B, and),             // 3f
+   cpu_op_rti_n,                    // 40
+   ALUOP(IDPX_B, eor),              // 41
+   cpu_op_wdm,                      // 42
+   ALUOP(SR_B, eor),                // 43
+   cpu_op_mvp,                      // 44
+   ALUOP(DP_B, eor),                // 45
+   RMWOP(DP_B, lsr),                // 46
+   ALUOP(ILDP_B, eor),              // 47
+   cpu_op_pha_b,                    // 48
+   ALUOP(CONST_B, eor),             // 49
+   CPU_OP_RMW_REG_B_DECL(a, lsr),   // 4a
+
    
 
 
