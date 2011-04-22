@@ -79,8 +79,8 @@ static inline void cpu_op_jmp_iladdr(void)
 static inline void cpu_op_jsr_addr(void) 
 {
    uint16_t addr = cpu_readw_pc();
-   cpu_stack_push(REGS.pc.b.ll);
    cpu_stack_push(REGS.pc.b.lh);
+   cpu_stack_push(REGS.pc.b.ll);
 
    REGS.pc.w.l = addr;
 }
@@ -103,8 +103,8 @@ static inline void cpu_op_jsr_long_e(void)
 static inline void cpu_op_jsr_iaddrx_n(void) 
 {
    uint16_t addr = cpu_readw_pc();
-   cpu_stack_push(REGS.pc.b.ll);
    cpu_stack_push(REGS.pc.b.lh);
+   cpu_stack_push(REGS.pc.b.ll);
    uint16_t jmp_addr = cpu_readl((((uint32_t)REGS.pc.b.hl) << 16) | addr);
    REGS.pc.w.l = jmp_addr;
 }

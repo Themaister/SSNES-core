@@ -52,7 +52,7 @@ static void print_registers(void)
 void cpu_run_frame(void)
 {
    CPU.status.cycles = 0;
-   unsigned cycles_per_frame = 1000;
+   unsigned cycles_per_frame = 10000;
 
    while (CPU.status.cycles < cycles_per_frame)
    {
