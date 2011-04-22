@@ -23,6 +23,12 @@ struct mem_state
    uint8_t cgram[512];
 
    uint8_t apuram[64 * 1024];
+
+   struct
+   {
+      uint8_t *sram;
+      uint8_t *rom;
+   } cart;
 };
 
 struct snes_state

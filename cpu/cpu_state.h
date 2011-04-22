@@ -38,6 +38,7 @@ struct cpu_status
    } pending_irq;
 
    unsigned cycles_per_frame;
+   unsigned cycles;
 };
 
 struct cpu_alu_state

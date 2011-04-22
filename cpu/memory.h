@@ -4,18 +4,18 @@
 #include "cpu.h"
 #include "state.h"
 #include "util.h"
+#include "memmap.h"
 
-// No MMIO yet.
+// Somewhat memory mapped ...
 static inline uint8_t cpu_readl(uint32_t addr)
 {
-   return MEM.wram[addr];
+   return memmap_read_table[addr >> 14](addr);
 }
 
 static inline void cpu_writel(uint32_t addr, uint8_t data)
 {
-   MEM.wram[addr] = data;
+   memmap_write_table[addr >> 14](addr, data);
 }
-
 
 static inline uint8_t cpu_read(uint16_t addr)
 {
