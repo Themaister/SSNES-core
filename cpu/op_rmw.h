@@ -53,7 +53,8 @@ CPU_OP_RMW_REG_W(a, ror);
    CPU_OP_RMW_##instr##_W(lsr) \
    CPU_OP_RMW_##instr##_B(rol) \
    CPU_OP_RMW_##instr##_W(rol) \
-   CPU_OP_RMW_##instr##_B(ror)
+   CPU_OP_RMW_##instr##_B(ror) \
+   CPU_OP_RMW_##instr##_W(ror)
 
 // Absolute addressing
 #define CPU_OP_RMW_ADDR_B_DECL(op) cpu_op_rmw_addr_b_##op

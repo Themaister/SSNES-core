@@ -55,14 +55,8 @@
 #define DECL_GROUP_TWO_REG(instr, reg) \
    CPU_OP_##instr##_B(bit, reg) \
    CPU_OP_##instr##_W(bit, reg) \
-   CPU_OP_##instr##_B(ldx, reg) \
-   CPU_OP_##instr##_W(ldx, reg) \
    CPU_OP_##instr##_B(ldy, reg) \
    CPU_OP_##instr##_W(ldy, reg) \
-   CPU_OP_##instr##_B(cpx, reg) \
-   CPU_OP_##instr##_W(cpx, reg) \
-   CPU_OP_##instr##_B(cpy, reg) \
-   CPU_OP_##instr##_W(cpy, reg)
 
 
 // Constant, e.g. lda #$ff
@@ -211,6 +205,8 @@ DECL_GROUP_TWO(READ_DP)
 
 DECL_GROUP_ONE_REG(READ_DPR, x)
 DECL_GROUP_TWO_REG(READ_DPR, x)
+CPU_OP_READ_DPR_B(ldx, y)
+CPU_OP_READ_DPR_W(ldx, y)
 
 // Indirect direct page. Effective address is fetched from direct page address. 
 // Double pointers ftw? :)
