@@ -1,6 +1,7 @@
 #include "cpu.h"
 #include "cpu/op_pc.h"
 #include <string.h>
+#include <stdio.h>
 
 void cpu_init(void)
 {
@@ -10,6 +11,7 @@ void cpu_init(void)
 static void cpu_init_registers(void)
 {
    REGS.e = true;
+   cpu_set_p(0x30);
    REGS.sp.b.h = 0x01;
    CPU.status.pending_irq.reset = true;
 }
@@ -29,6 +31,22 @@ static void cpu_check_irq(void)
 {
    // Update IRQ status here.
    //system_refresh_frame();
+}
+
+static void print_registers(void)
+{
+   fprintf(stderr, "\tA: %04x  X: %04x  Y: %04x  ", (unsigned)REGS.a.w, (unsigned)REGS.x.w, (unsigned)REGS.y.w);
+   fprintf(stderr, "DP: %04x  SP: %04x  ", (unsigned)(REGS.dp >> 8), (unsigned)REGS.sp.w);
+   fprintf(stderr, "DB: %02x  PB: %02x  ", (unsigned)(REGS.db >> 16), (unsigned)REGS.pc.w.h);
+   fputc(REGS.p.n ? 'N' : 'n', stderr);
+   fputc(REGS.p.v ? 'V' : 'v', stderr);
+   fputc(REGS.p.m ? 'M' : 'm', stderr);
+   fputc(REGS.p.x ? 'X' : 'x', stderr);
+   fputc(REGS.p.d ? 'D' : 'd', stderr);
+   fputc(REGS.p.i ? 'I' : 'i', stderr);
+   fputc(REGS.p.z ? 'Z' : 'z', stderr);
+   fputc(REGS.p.c ? 'C' : 'c', stderr);
+   fputc('\n', stderr);
 }
 
 void cpu_run_frame(void)
@@ -67,9 +85,14 @@ void cpu_run_frame(void)
 
       if (!REGS.wai && !REGS.stp)
       {
+         fprintf(stderr, "======================================\n");
+         fprintf(stderr, "PC: %04x\n", (unsigned)REGS.pc.w.l);
          uint8_t opcode = cpu_read_pc();
+         fprintf(stderr, "Opcode: 0x%02x\n", (unsigned)opcode);
          op_table[opcode]();
          CPU.status.cycles += cycle_table[opcode];
+         print_registers();
+         fprintf(stderr, "======================================\n");
       }
 
       cpu_check_cycles();

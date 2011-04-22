@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "state.h"
+#include <stdio.h>
 
 typedef void (*cpu_op_t)(void);
 extern const cpu_op_t *op_table;
@@ -27,6 +28,7 @@ static inline void cpu_update_table(void)
    unsigned reg_val = (REGS.e << 2) | (REGS.p.m << 1) | REGS.p.x;
    op_table = op_table_index[reg_val];
    cycle_table = cycle_table_index[reg_val];
+   fprintf(stderr, "Opcode table updated! Value: %u\n", reg_val);
 }
 
 void cpu_init_tables(void);

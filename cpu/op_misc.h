@@ -1,16 +1,22 @@
 #ifndef __CPU_OP_MISC_H
 #define __CPU_OP_MISC_H
 
+#include <stdio.h>
+
 static inline void cpu_op_rep(void)
 {
    uint8_t mask = cpu_read_pc();
-   cpu_set_p(cpu_get_p() & ~mask);
+   uint8_t old_mask = cpu_get_p();
+   fprintf(stderr, "Old mask: 0x%x, Reset flags: 0x%x\n", (unsigned)old_mask, (unsigned)mask);
+   cpu_set_p(old_mask & (~mask));
 }
 
 static inline void cpu_op_sep(void)
 {
    uint8_t mask = cpu_read_pc();
-   cpu_set_p(cpu_get_p() | mask);
+   uint8_t old_mask = cpu_get_p();
+   fprintf(stderr, "Old mask: 0x%x, Set flags: 0x%x\n", (unsigned)old_mask, (unsigned)mask);
+   cpu_set_p(old_mask | mask);
 }
 
 static inline void cpu_op_nop(void)
