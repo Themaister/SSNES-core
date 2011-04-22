@@ -417,7 +417,7 @@ static inline void cpu_op_plp_n(void)
    REGS.y.b.h = isel_if(REGS.p.x, 0x00, REGS.y.b.h);
 }
 
-static inline void cpu_op_pea_e(void)
+static inline void cpu_op_pea(void)
 {
    word_reg_t addr; 
    addr.w = cpu_readw_pc();

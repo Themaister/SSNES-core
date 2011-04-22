@@ -246,10 +246,26 @@ const cpu_op_t op_table_MX[256] = {
    ALUOP(CONST_B, sbc),             // e9
    NOP,                             // ea
    cpu_op_xba,                      // eb
-   ALUOP(ADDRX_B, cpx),              // ec
-   
-
-
+   ALUOP(ADDR_B, cpx),              // ec
+   ALUOP(ADDR_B, sbc),              // ed
+   RMWOP(ADDR_B, inc),              // ee
+   ALUOP(LONG_B, sbc),              // ef
+   CPU_OP_BRANCH_REG_DECL(z),       // f0
+   ALUOP(IDPY_B, sbc),              // f1
+   ALUOP(IDP_B, sbc),               // f2
+   ALUOP(ISRY_B, sbc),              // f3
+   cpu_op_pea,                      // f4
+   CPU_OP_READ_DPR_B_DECL(sbc, x),  // f5
+   RMWOP(DPX_B, inc),               // f6
+   ALUOP(ILDPY_B, sbc),             // f7
+   CPU_OP_SET_FLAG_DECL(d),         // f8
+   ALUOP(ADDRY_B, sbc),             // f9
+   cpu_op_plx_b,                    // fa
+   cpu_op_xce,                      // fb
+   cpu_op_jsr_iaddrx_n,             // fc
+   ALUOP(ADDRX_B, sbc),             // fd
+   RMWOP(ADDRX_B, inc),             // fe
+   ALUOP(LONGX_B, sbc)              // ff
 };
 
 const cpu_op_t op_table_mx[256];
