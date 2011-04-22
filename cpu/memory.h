@@ -110,12 +110,12 @@ static inline uint32_t cpu_readl_dp(uint8_t addr)
    return res;
 }
 
-static inline void cpu_write_dp(uint8_t addr, uint8_t data)
+static inline void cpu_write_dp(uint16_t addr, uint8_t data)
 {
-   cpu_writel(REGS.dp | addr, data);
+   cpu_writel(REGS.dp + addr, data);
 }
 
-static inline void cpu_writew_dp(uint8_t addr, uint16_t data)
+static inline void cpu_writew_dp(uint16_t addr, uint16_t data)
 {
    cpu_write_dp(addr, data & 0xFF);
    cpu_write_dp(addr + 1, data >> 8);

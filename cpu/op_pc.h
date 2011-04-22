@@ -20,7 +20,7 @@
    { \
       int8_t rel = cpu_read_pc(); \
       uint16_t addr = REGS.pc.w.l; \
-      REGS.pc.w.l = isel_if(REGS.p.reg, addr + rel, addr); \
+      REGS.pc.w.l = isel_if(REGS.p.reg, addr, addr + rel); \
    }
 
 CPU_OP_BRANCH_REG(n) // bmi
