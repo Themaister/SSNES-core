@@ -26,7 +26,7 @@ const cpu_op_t op_table_MX[256] = {
    ALUOP(ADDR_B, ora),              // 0d
    RMWOP(ADDR_B, asl),              // 0e
    ALUOP(LONG_B, ora),              // 0f
-   CPU_OP_BRANCH_REG_N_DECL(n),     // 10 ?!?!
+   CPU_OP_BRANCH_REG_N_DECL(n),     // 10
    ALUOP(IDPY_B, ora),              // 11
    ALUOP(IDP_B, ora),               // 12
    ALUOP(ISRY_B, ora),              // 13
@@ -134,7 +134,7 @@ const cpu_op_t op_table_MX[256] = {
    ALUOP(ADDRY_B, adc),             // 79
    cpu_op_ply_b,                    // 7a
    cpu_op_tdc,                      // 7b
-   cpu_op_jmp_iaddrx,               // 7c ?!?!?
+   cpu_op_jmp_iaddrx,               // 7c
    ALUOP(ADDRX_B, adc),             // 7d
    RMWOP(ADDRX_B, ror),             // 7e
    ALUOP(LONGX_B, adc),             // 7f
@@ -202,6 +202,52 @@ const cpu_op_t op_table_MX[256] = {
    ALUOP(ADDRX_B, lda),             // bd
    ALUOP(ADDRX_B, ldx),             // be
    ALUOP(LONGX_B, lda),             // bf
+   ALUOP(CONST_B, cpy),             // c0
+   ALUOP(IDPX_B, cmp),              // c1
+   cpu_op_rep,                      // c2
+   ALUOP(SR_B, cmp),                // c3
+   ALUOP(DP_B, cpy),                // c4
+   ALUOP(DP_B, cmp),                // c5
+   RMWOP(DP_B, dec),                // c6
+   ALUOP(ILDP_B, cmp),              // c7
+   CPU_OP_RMW_REG_B_DECL(y, inc),   // c8
+   ALUOP(CONST_B, cmp),             // c9
+   CPU_OP_RMW_REG_B_DECL(x, dec),   // ca
+   cpu_op_wai,                      // cb
+   ALUOP(ADDR_B, cpy),              // cc
+   ALUOP(ADDR_B, cmp),              // cd
+   RMWOP(ADDR_B, dec),              // ce
+   ALUOP(LONG_B, cmp),              // cf
+   CPU_OP_BRANCH_REG_N_DECL(z),     // d0
+   ALUOP(IDPY_B, cmp),              // d1
+   ALUOP(IDP_B, cmp),               // d2
+   ALUOP(ISRY_B, cmp),              // d3
+   cpu_op_pei_n,                    // d4
+   CPU_OP_READ_DPR_B_DECL(cmp, x),  // d5
+   RMWOP(DPX_B, dec),               // d6
+   ALUOP(ILDPY_B, cmp),             // d7
+   CPU_OP_RESET_FLAG_DECL(d),       // d8
+   ALUOP(ADDRY_B, cmp),             // d9
+   cpu_op_phx_b,                    // da
+   cpu_op_stp,                      // db
+   cpu_op_jmp_iladdr,               // dc
+   ALUOP(ADDRX_B, cmp),             // dd
+   RMWOP(ADDRX_B, dec),             // de
+   ALUOP(LONGX_B, cmp),             // df
+   ALUOP(CONST_B, cpx),             // e0
+   ALUOP(IDPX_B, sbc),              // e1
+   ALUOP(CONST_B, cpx),             // e2
+   ALUOP(SR_B, sbc),                // e3
+   ALUOP(DP_B, cpx),                // e4
+   ALUOP(DP_B, sbc),                // e5
+   RMWOP(DP_B, inc),                // e6
+   ALUOP(ILDP_B, sbc),              // e7
+   CPU_OP_RMW_REG_B_DECL(x, inc),   // e8
+   ALUOP(CONST_B, sbc),             // e9
+   NOP,                             // ea
+   cpu_op_xba,                      // eb
+   ALUOP(ADDRX_B, cpx),              // ec
+   
 
 
 };

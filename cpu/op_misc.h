@@ -1,6 +1,18 @@
 #ifndef __CPU_OP_MISC_H
 #define __CPU_OP_MISC_H
 
+static inline void cpu_op_rep(void)
+{
+   uint8_t mask = cpu_read_pc();
+   cpu_set_p(cpu_get_p() & ~mask);
+}
+
+static inline void cpu_op_sep(void)
+{
+   uint8_t mask = cpu_read_pc();
+   cpu_set_p(cpu_get_p() | mask);
+}
+
 static inline void cpu_op_nop(void)
 {}
 
@@ -491,6 +503,8 @@ CPU_OP_RESET_FLAG(c)
 CPU_OP_SET_FLAG(i)
 CPU_OP_RESET_FLAG(i)
 CPU_OP_RESET_FLAG(v)
+CPU_OP_SET_FLAG(d)
+CPU_OP_RESET_FLAG(d)
 
 
 #endif
