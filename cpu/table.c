@@ -1345,7 +1345,7 @@ const char* opcode_names[] = {
    "clc",         "ora (addry)",    "inc A",       "tcs",                  // 0x18
    "trb (addr)",  "ora (addrx)",    "asl (addrx)", "ora (longx)",          // 0x1c
 
-   "jsr (addr)",  "and (idpx)",     "jsr (long)",  "and (sr)",             // 0x20
+   "jsr (addr)",  "and (idpx)",     "jsl",          "and (sr)",             // 0x20
    "bit (dp)",    "and (dp)",       "rol (dp)",    "and (ildp)",           // 0x24
    "plp",         "and (imm)",      "rol A",       "pld",                  // 0x28
    "bit (addr)",  "and (addr)",     "rol (addr)",  "and (long)",           // 0x2c
