@@ -163,6 +163,102 @@ static inline void cpu_op_tya_Mx(void)
    REGS.p.n = (trans & 0x80);
 }
 
+static inline void cpu_op_tay_mx(void)
+{
+   uint16_t trans = REGS.a.w;
+   REGS.y.w = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x8000);
+}
+
+static inline void cpu_op_tay_MX(void)
+{
+   uint8_t trans = REGS.a.b.l;
+   REGS.y.b.l = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x80);
+}
+
+static inline void cpu_op_tay_Mx(void)
+{
+   uint8_t trans = REGS.a.b.l;
+   REGS.y.w = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x80);
+}
+
+static inline void cpu_op_tay_mX(void)
+{
+   uint8_t trans = REGS.a.b.l;
+   REGS.y.b.l = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x80);
+}
+
+static inline void cpu_op_tax_mx(void)
+{
+   uint16_t trans = REGS.a.w;
+   REGS.x.w = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x8000);
+}
+
+static inline void cpu_op_tax_MX(void)
+{
+   uint8_t trans = REGS.a.b.l;
+   REGS.x.b.l = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x80);
+}
+
+static inline void cpu_op_tax_Mx(void)
+{
+   uint8_t trans = REGS.a.b.l;
+   REGS.x.w = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x80);
+}
+
+static inline void cpu_op_tax_mX(void)
+{
+   uint8_t trans = REGS.a.b.l;
+   REGS.x.b.l = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x80);
+}
+
+static inline void cpu_op_tyx_b(void)
+{
+   uint8_t trans = REGS.y.b.l;
+   REGS.x.b.l = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x80);
+}
+
+static inline void cpu_op_tyx_w(void)
+{
+   uint16_t trans = REGS.y.w;
+   REGS.x.w = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x8000);
+}
+
+static inline void cpu_op_txy_b(void)
+{
+   uint8_t trans = REGS.x.b.l;
+   REGS.y.b.l = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x80);
+}
+
+static inline void cpu_op_txy_w(void)
+{
+   uint16_t trans = REGS.x.w;
+   REGS.y.w = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x8000);
+}
+
 static inline void cpu_op_pha_b(void)
 {
    cpu_stack_push(REGS.a.b.l);
@@ -394,5 +490,7 @@ CPU_OP_SET_FLAG(c)
 CPU_OP_RESET_FLAG(c)
 CPU_OP_SET_FLAG(i)
 CPU_OP_RESET_FLAG(i)
+CPU_OP_RESET_FLAG(v)
+
 
 #endif

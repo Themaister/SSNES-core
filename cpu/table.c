@@ -163,6 +163,45 @@ const cpu_op_t op_table_MX[256] = {
    CPU_OP_STORE_DPR_B_DECL(x, y),   // 96
    cpu_op_sta_ildpy_b,              // 97
    cpu_op_tya_MX,                   // 98
+   CPU_OP_STORE_ADDR_REGI_B_DECL(a, y),  // 99
+   cpu_op_txs_n,                    // 9a
+   cpu_op_txy_b,                    // 9b
+   STOREOP(ADDR_B, zero),           // 9c
+   CPU_OP_STORE_ADDR_REGI_B_DECL(a, x),  // 9d
+   CPU_OP_STORE_ADDR_REGI_B_DECL(zero, x),  // 9e
+   cpu_op_sta_longx_b,              // 9f
+   ALUOP(CONST_B, ldy),             // a0
+   ALUOP(IDPX_B, lda),              // a1
+   ALUOP(CONST_B, ldx),             // a2
+   ALUOP(SR_B, lda),                // a3
+   ALUOP(DP_B, ldy),                // a4
+   ALUOP(DP_B, lda),                // a5
+   ALUOP(DP_B, ldx),                // a6
+   ALUOP(ILDP_B, lda),              // a7
+   cpu_op_tay_MX,                   // a8
+   ALUOP(CONST_B, lda),             // a9
+   cpu_op_tax_MX,                   // aa
+   cpu_op_plb,                      // ab
+   ALUOP(ADDR_B, ldy),              // ac
+   ALUOP(ADDR_B, lda),              // ad
+   ALUOP(ADDR_B, ldx),              // ae
+   ALUOP(LONG_B, lda),              // af
+   CPU_OP_BRANCH_REG_DECL(c),       // b0
+   ALUOP(IDPY_B, lda),              // b1
+   ALUOP(IDP_B, lda),               // b2
+   ALUOP(ISRY_B, lda),              // b3
+   CPU_OP_READ_DPR_B_DECL(ldy, x),  // b4
+   CPU_OP_READ_DPR_B_DECL(ldy, x),  // b5
+   CPU_OP_READ_DPR_B_DECL(ldy, x),  // b6
+   ALUOP(ILDPY_B, lda),             // b7
+   CPU_OP_RESET_FLAG_DECL(v),       // b8
+   ALUOP(ADDRY_B, lda),             // b9
+   cpu_op_tsx_b,                    // ba
+   cpu_op_tyx_b,                    // bb
+   ALUOP(ADDRX_B, ldy),             // bc
+   ALUOP(ADDRX_B, lda),             // bd
+   ALUOP(ADDRX_B, ldx),             // be
+   ALUOP(LONGX_B, lda),             // bf
 
 
 };

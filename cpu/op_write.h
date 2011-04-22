@@ -26,16 +26,18 @@ CPU_OP_STORE_ADDR_B(x); // stx $1337
 CPU_OP_STORE_ADDR_W(x);
 CPU_OP_STORE_ADDR_B(y); // sty $1337
 CPU_OP_STORE_ADDR_W(y);
+CPU_OP_STORE_ADDR_B(zero); // stz $1337
+CPU_OP_STORE_ADDR_W(zero);
 
 // Absolute address, register indexed.
-#define CPU_OP_STORE_ADDR_REGI_B_DECL(reg, regindex) cpu_op_store_addr_regi_b_##reg_##regindex
+#define CPU_OP_STORE_ADDR_REGI_B_DECL(reg, regindex) cpu_op_store_addr_regi_b_##reg##_##regindex
 #define CPU_OP_STORE_ADDR_REGI_B(reg, regindex) \
    static inline void CPU_OP_STORE_ADDR_REGI_B_DECL(reg, regindex) (void) \
    { \
       cpu_write(cpu_readw_pc() + REGS.regindex.w, REGS.reg.b.l); \
    }
 
-#define CPU_OP_STORE_ADDR_REGI_W_DECL(reg, regindex) cpu_op_store_addr_regi_w_##reg_##regindex
+#define CPU_OP_STORE_ADDR_REGI_W_DECL(reg, regindex) cpu_op_store_addr_regi_w_##reg##_##regindex
 #define CPU_OP_STORE_ADDR_REGI_W(reg, regindex) \
    static inline void CPU_OP_STORE_ADDR_REGI_W_DECL(reg, regindex) (void) \
    { \
@@ -46,17 +48,19 @@ CPU_OP_STORE_ADDR_REGI_B(a, x); // sta $1337, x
 CPU_OP_STORE_ADDR_REGI_W(a, x);
 CPU_OP_STORE_ADDR_REGI_B(a, y); // sta $1337, y
 CPU_OP_STORE_ADDR_REGI_W(a, y);
+CPU_OP_STORE_ADDR_REGI_B(zero, x); // stz $1337, y
+CPU_OP_STORE_ADDR_REGI_W(zero, x);
 
 
 // Long address, register indexed.
-#define CPU_OP_STORE_LONG_REGI_B_DECL(reg, regindex) cpu_op_store_long_regi_b_##reg_##regindex
+#define CPU_OP_STORE_LONG_REGI_B_DECL(reg, regindex) cpu_op_store_long_regi_b_##reg##_##regindex
 #define CPU_OP_STORE_LONG_REGI_B(reg, regindex) \
    static inline void CPU_OP_STORE_LONG_REGI_B_DECL(reg, regindex) (void) \
    { \
       cpu_writel(cpu_readl_pc() + REGS.regindex.w, REGS.reg.b.l); \
    }
 
-#define CPU_OP_STORE_LONG_REGI_W_DECL(reg, regindex) cpu_op_store_long_regi_w_##reg_##regindex
+#define CPU_OP_STORE_LONG_REGI_W_DECL(reg, regindex) cpu_op_store_long_regi_w_##reg##_##regindex
 #define CPU_OP_STORE_LONG_REGI_W(reg, regindex) \
    static inline void CPU_OP_STORE_LONG_REGI_W_DECL(reg, regindex) (void) \
    { \
@@ -125,6 +129,19 @@ static inline void cpu_op_sta_long_b(void)
 static inline void cpu_op_sta_long_w(void)
 {
    uint32_t addr = cpu_readl_pc();
+   cpu_writelw(addr, REGS.a.w);
+}
+
+// Long address, X indexed.
+static inline void cpu_op_sta_longx_b(void)
+{
+   uint32_t addr = cpu_readl_pc() + REGS.x.w;
+   cpu_writel(addr, REGS.a.b.l);
+}
+
+static inline void cpu_op_sta_longx_w(void)
+{
+   uint32_t addr = cpu_readl_pc() + REGS.x.w;
    cpu_writelw(addr, REGS.a.w);
 }
 
