@@ -87,6 +87,8 @@ CPU_OP_STORE_DP_B(x); // stx $dp
 CPU_OP_STORE_DP_W(x);
 CPU_OP_STORE_DP_B(y); // sty $dp
 CPU_OP_STORE_DP_W(y);
+CPU_OP_STORE_DP_B(zero); // stz $dp
+CPU_OP_STORE_DP_W(zero);
 
 // Direct page, register index.
 #define CPU_OP_STORE_DPR_B_DECL(reg, regindex) cpu_op_store_dpr_b_##reg##_##regindex
@@ -109,7 +111,22 @@ CPU_OP_STORE_DPR_B(x, y); // stx $dp, y
 CPU_OP_STORE_DPR_W(x, y);
 CPU_OP_STORE_DPR_B(y, x); // sty $dp, x
 CPU_OP_STORE_DPR_W(y, x);
+CPU_OP_STORE_DPR_B(zero, x); // stz $dp, x
+CPU_OP_STORE_DPR_W(zero, x);
 
+
+// Long address.
+static inline void cpu_op_sta_long_b(void)
+{
+   uint32_t addr = cpu_readl_pc();
+   cpu_writel(addr, REGS.a.b.l);
+}
+
+static inline void cpu_op_sta_long_w(void)
+{
+   uint32_t addr = cpu_readl_pc();
+   cpu_writelw(addr, REGS.a.w);
+}
 
 // Indirect direct page.
 static inline void cpu_op_sta_idp_b(void)

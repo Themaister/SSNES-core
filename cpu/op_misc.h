@@ -73,6 +73,22 @@ static inline void cpu_op_tsx_w(void)
    REGS.p.z = (REGS.x.w == 0);
 }
 
+static inline void cpu_op_tcd(void)
+{
+   uint32_t trans = REGS.a.w;
+   REGS.dp = trans << 8;
+   REGS.p.n = trans & 0x8000;
+   REGS.p.z = (trans == 0);
+}
+
+static inline void cpu_op_tdc(void)
+{
+   uint16_t trans = REGS.dp >> 8;
+   REGS.a.w = trans;
+   REGS.p.n = trans & 0x8000;
+   REGS.p.z = (trans == 0);
+}
+
 static inline void cpu_op_txs_e(void)
 {
    REGS.sp.b.l = REGS.x.b.l;
@@ -81,6 +97,70 @@ static inline void cpu_op_txs_e(void)
 static inline void cpu_op_txs_n(void)
 {
    REGS.sp.w = REGS.x.w;
+}
+
+static inline void cpu_op_txa_mx(void)
+{
+   uint16_t trans = REGS.x.w;
+   REGS.a.w = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x8000);
+}
+
+static inline void cpu_op_txa_MX(void)
+{
+   uint8_t trans = REGS.x.b.l;
+   REGS.a.b.l = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x8000);
+}
+
+static inline void cpu_op_txa_Mx(void)
+{
+   uint8_t trans = REGS.x.b.l;
+   REGS.a.b.l = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x80);
+}
+
+static inline void cpu_op_txa_mX(void)
+{
+   uint8_t trans = REGS.x.b.l;
+   REGS.a.w = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x80);
+}
+
+static inline void cpu_op_tya_mx(void)
+{
+   uint16_t trans = REGS.y.w;
+   REGS.a.w = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x8000);
+}
+
+static inline void cpu_op_tya_MX(void)
+{
+   uint8_t trans = REGS.y.b.l;
+   REGS.a.b.l = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x80);
+}
+
+static inline void cpu_op_tya_mX(void)
+{
+   uint8_t trans = REGS.y.b.l;
+   REGS.a.w = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x80);
+}
+
+static inline void cpu_op_tya_Mx(void)
+{
+   uint8_t trans = REGS.y.b.l;
+   REGS.a.b.l = trans;
+   REGS.p.z = (trans == 0);
+   REGS.p.n = (trans & 0x80);
 }
 
 static inline void cpu_op_pha_b(void)
@@ -312,5 +392,7 @@ static inline void cpu_op_mvp(void)
 
 CPU_OP_SET_FLAG(c)
 CPU_OP_RESET_FLAG(c)
+CPU_OP_SET_FLAG(i)
+CPU_OP_RESET_FLAG(i)
 
 #endif

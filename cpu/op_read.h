@@ -56,6 +56,8 @@
    }
 
 DECL_GROUP_ONE(READ_CONST)
+CPU_OP_READ_CONST_B(bit)
+CPU_OP_READ_CONST_W(bit)
 
 // Absolute addressing, e.g. lda $1337
 #define CPU_OP_READ_ADDR_B_DECL(op) cpu_op_read_addr_b_##op

@@ -8,6 +8,7 @@ struct cpu_regs
 {
    // GPP and index regs
    word_reg_t a, x, y;
+   word_reg_t zero; // Just holds a zero value for STZ.
 
    // Stack pointer and PC
    word_reg_t sp;

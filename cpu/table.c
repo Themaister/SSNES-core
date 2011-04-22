@@ -4,6 +4,7 @@
 
 #define ALUOP(op, alu) CPU_OP_READ_##op##_DECL(alu)
 #define RMWOP(mode, op) CPU_OP_RMW_##mode##_DECL(op)
+#define STOREOP(op, reg) CPU_OP_STORE_##op##_DECL(reg)
 #define NOP cpu_op_nop
 
 const cpu_op_t op_table_EMUL[256];
@@ -84,8 +85,84 @@ const cpu_op_t op_table_MX[256] = {
    cpu_op_pha_b,                    // 48
    ALUOP(CONST_B, eor),             // 49
    CPU_OP_RMW_REG_B_DECL(a, lsr),   // 4a
-
-   
+   cpu_op_phk,                      // 4b
+   cpu_op_jmp_addr,                 // 4c
+   ALUOP(CONST_B, eor),             // 4d
+   RMWOP(ADDR_B, lsr),              // 4e
+   ALUOP(LONG_B, eor),              // 4f
+   CPU_OP_BRANCH_REG_N_DECL(v),     // 50
+   ALUOP(IDPY_B, eor),              // 51
+   ALUOP(IDP_B, eor),               // 52
+   ALUOP(ISRY_B, eor),              // 53
+   cpu_op_mvn,                      // 54
+   CPU_OP_READ_DPR_B_DECL(eor, x),  // 55
+   RMWOP(DPX_B, lsr),               // 56
+   ALUOP(ILDPY_B, eor),             // 57
+   CPU_OP_RESET_FLAG_DECL(i),       // 58
+   ALUOP(ADDRY_B, eor),             // 59
+   cpu_op_phy_b,                    // 5a
+   cpu_op_tcd,                      // 5b
+   cpu_op_jmp_long,                 // 5c
+   ALUOP(ADDRX_B, eor),             // 5d
+   RMWOP(ADDRX_B, lsr),             // 5e
+   ALUOP(LONGX_B, eor),             // 5f
+   cpu_op_rts,                      // 60
+   ALUOP(IDPX_B, adc),              // 61
+   cpu_op_per_n,                    // 62
+   ALUOP(SR_B, adc),                // 63
+   STOREOP(DP_B, zero),             // 64
+   ALUOP(DP_B, adc),                // 65
+   RMWOP(DP_B, ror),                // 66
+   ALUOP(ILDP_B, adc),              // 67
+   cpu_op_pla_b,                    // 68
+   ALUOP(CONST_B, adc),             // 69
+   CPU_OP_RMW_REG_B_DECL(a, ror),   // 6a
+   cpu_op_rtl_n,                    // 6b
+   cpu_op_jmp_iaddr,                // 6c
+   ALUOP(ADDR_B, adc),              // 6d
+   RMWOP(ADDR_B, ror),              // 6e 
+   ALUOP(LONG_B, adc),              // 6f
+   CPU_OP_BRANCH_REG_DECL(v),       // 70
+   ALUOP(IDPY_B, adc),              // 71
+   ALUOP(IDP_B, adc),               // 72
+   ALUOP(ISRY_B, adc),              // 73
+   CPU_OP_STORE_DPR_B_DECL(zero, x),// 74
+   CPU_OP_READ_DPR_B_DECL(adc, x),  // 75
+   RMWOP(DPX_B, ror),               // 76
+   ALUOP(ILDPY_B, adc),             // 77
+   CPU_OP_SET_FLAG_DECL(i),         // 78
+   ALUOP(ADDRY_B, adc),             // 79
+   cpu_op_ply_b,                    // 7a
+   cpu_op_tdc,                      // 7b
+   cpu_op_jmp_iaddrx,               // 7c ?!?!?
+   ALUOP(ADDRX_B, adc),             // 7d
+   RMWOP(ADDRX_B, ror),             // 7e
+   ALUOP(LONGX_B, adc),             // 7f
+   cpu_op_bra,                      // 80
+   cpu_op_sta_idpx_b,               // 81
+   cpu_op_brl,                      // 82
+   cpu_op_sta_sr_b,                 // 83
+   STOREOP(DP_B, y),                // 84
+   STOREOP(DP_B, a),                // 85
+   STOREOP(DP_B, x),                // 86
+   cpu_op_sta_ildp_b,               // 87
+   CPU_OP_RMW_REG_B_DECL(y, dec),   // 88
+   ALUOP(CONST_B, bit),             // 89
+   cpu_op_txa_MX,                   // 8a
+   cpu_op_phb,                      // 8b
+   STOREOP(ADDR_B, y),              // 8c
+   STOREOP(ADDR_B, a),              // 8d
+   STOREOP(ADDR_B, x),              // 8e
+   cpu_op_sta_long_b,               // 8f
+   CPU_OP_BRANCH_REG_N_DECL(c),     // 90
+   cpu_op_sta_idpy_b,               // 91
+   cpu_op_sta_idp_b,                // 92
+   cpu_op_sta_isry_b,               // 93
+   CPU_OP_STORE_DPR_B_DECL(y, x),   // 94
+   CPU_OP_STORE_DPR_B_DECL(a, x),   // 95
+   CPU_OP_STORE_DPR_B_DECL(x, y),   // 96
+   cpu_op_sta_ildpy_b,              // 97
+   cpu_op_tya_MX,                   // 98
 
 
 };
