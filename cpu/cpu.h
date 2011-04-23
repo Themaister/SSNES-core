@@ -5,6 +5,8 @@
 #include "util.h"
 
 void ssnes_cpu_init(void);
+void ssnes_cpu_deinit(void);
+
 void ssnes_cpu_run_frame(void);
 void ssnes_cpu_reset(void);
 

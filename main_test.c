@@ -1,4 +1,5 @@
 #include "cpu.h"
+#include "system.h"
 #include "cart.h"
 #include <stdio.h>
 #include <assert.h>
@@ -20,7 +21,7 @@ int main(int argc, char **argv)
 
    fread(buf, 1, len, file);
 
-   ssnes_cpu_init();
+   ssnes_init();
    ssnes_cartridge_load(buf, len);
 
    fclose(file);
@@ -29,4 +30,5 @@ int main(int argc, char **argv)
    ssnes_cpu_run_frame();
 
    ssnes_cartridge_unload();
+   ssnes_deinit();
 }

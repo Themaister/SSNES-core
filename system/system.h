@@ -1,7 +1,8 @@
 #ifndef __SYSTEM_H
 #define __SYSTEM_H
 
-void system_init(void);
+void ssnes_init(void);
+void ssnes_deinit(void);
 
 
 #endif

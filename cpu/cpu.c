@@ -10,6 +10,9 @@ void ssnes_cpu_init(void)
    ssnes_cpu_reset();
 }
 
+void ssnes_cpu_deinit(void)
+{}
+
 static void cpu_init_registers(void)
 {
    REGS.e = true;
@@ -70,9 +73,7 @@ static inline unsigned update_ppu_cycles(unsigned last_cycles)
       STATUS.ppu.scanline_ready = true;
 
       if (STATUS.ppu.vcount == 224)
-      {
          STATUS.ppu.nmi_ready = true;
-      }
       else if (STATUS.ppu.vcount >= 262)
          STATUS.ppu.vcount = 0;
    }
@@ -80,20 +81,21 @@ static inline unsigned update_ppu_cycles(unsigned last_cycles)
    return STATUS.cycles;
 }
 
+#define CYCLES_PER_FRAME (262 * 1364)
+
 void ssnes_cpu_run_frame(void)
 {
    STATUS.cycles = 0;
    STATUS.ppu.vcount = 0;
    STATUS.ppu.hcount = 0;
-   unsigned cycles_per_frame = 10000;
    unsigned last_cycles = 0;
 
-   while (STATUS.cycles < cycles_per_frame)
+   while (STATUS.cycles < CYCLES_PER_FRAME)
    {
       if (STATUS.pending_irq.reset)
       {
          REGS.wai = false;
-         ssnes_state.cpu.status.pending_irq.reset = false;
+         STATUS.pending_irq.reset = false;
          cpu_op_interrupt_reset_e();
       }
       else if (STATUS.pending_irq.nmi)
