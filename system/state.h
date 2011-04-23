@@ -1,17 +1,10 @@
 #ifndef __STATE_H
 #define __STATE_H
 
-#include "cpu_state.h"
+#include "cpu.h"
 #include "smp.h"
 #include "dsp.h"
 #include "ppu.h"
-
-#define CPU state.cpu
-#define REGS state.cpu.regs
-#define SMP state.smp
-#define DSP state.dsp
-#define PPU state.ppu
-#define MEM state.mem
 
 #include <stdint.h>
 
@@ -31,7 +24,7 @@ struct mem_state
    } cart;
 };
 
-struct snes_state
+struct ssnes_state
 {
    struct mem_state mem;
    struct cpu_state cpu;
@@ -40,6 +33,6 @@ struct snes_state
    struct ppu_state ppu;
 };
 
-extern struct snes_state state;
+extern struct ssnes_state ssnes_state;
 
 #endif

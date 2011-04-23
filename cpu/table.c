@@ -7,7 +7,7 @@
 #define STOREOP(op, reg) CPU_OP_STORE_##op##_DECL(reg)
 #define NOP cpu_op_nop
 
-const cpu_op_t op_table_EMUL[256] = {
+const cpu_op_t ssnes_cpu_op_table_EMUL[256] = {
    CPU_OP_INTERRUPT_N_DECL(brk),    // 00 
    ALUOP(IDPX_B, ora),              // 01
    NOP,                             // 02 ?!?!
@@ -266,7 +266,7 @@ const cpu_op_t op_table_EMUL[256] = {
    ALUOP(LONGX_B, sbc)              // ff
 };
 
-const cpu_op_t op_table_MX[256] = {
+const cpu_op_t ssnes_cpu_op_table_MX[256] = {
    CPU_OP_INTERRUPT_N_DECL(brk),    // 00 
    ALUOP(IDPX_B, ora),              // 01
    NOP,                             // 02 ?!?!
@@ -525,7 +525,7 @@ const cpu_op_t op_table_MX[256] = {
    ALUOP(LONGX_B, sbc)              // ff
 };
 
-const cpu_op_t op_table_mx[256] = {
+const cpu_op_t ssnes_cpu_op_table_mx[256] = {
    CPU_OP_INTERRUPT_N_DECL(brk),    // 00 
    ALUOP(IDPX_W, ora),              // 01
    NOP,                             // 02 ?!?!
@@ -784,7 +784,7 @@ const cpu_op_t op_table_mx[256] = {
    ALUOP(LONGX_W, sbc)              // ff
 };
 
-const cpu_op_t op_table_mX[256] = {
+const cpu_op_t ssnes_cpu_op_table_mX[256] = {
    CPU_OP_INTERRUPT_N_DECL(brk),    // 00 
    ALUOP(IDPX_W, ora),              // 01
    NOP,                             // 02 ?!?!
@@ -1044,7 +1044,7 @@ const cpu_op_t op_table_mX[256] = {
 
 };
 
-const cpu_op_t op_table_Mx[256] = {
+const cpu_op_t ssnes_cpu_op_table_Mx[256] = {
    CPU_OP_INTERRUPT_N_DECL(brk),    // 00 
    ALUOP(IDPX_B, ora),              // 01
    NOP,                             // 02 ?!?!
@@ -1303,32 +1303,32 @@ const cpu_op_t op_table_Mx[256] = {
    ALUOP(LONGX_B, sbc)              // ff
 };
 
-const cpu_op_t *op_table = op_table_EMUL;
-const uint8_t *cycle_table = cycle_table_EMUL;
+const cpu_op_t *ssnes_cpu_op_table = ssnes_cpu_op_table_EMUL;
+const uint8_t *ssnes_cpu_cycle_table = ssnes_cpu_cycle_table_EMUL;
 
-const cpu_op_t* op_table_index[] = {
-   op_table_mx,
-   op_table_mX,
-   op_table_Mx,
-   op_table_MX,
-   op_table_EMUL,
-   op_table_EMUL,
-   op_table_EMUL,
-   op_table_EMUL
+const cpu_op_t* ssnes_cpu_op_table_index[] = {
+   ssnes_cpu_op_table_mx,
+   ssnes_cpu_op_table_mX,
+   ssnes_cpu_op_table_Mx,
+   ssnes_cpu_op_table_MX,
+   ssnes_cpu_op_table_EMUL,
+   ssnes_cpu_op_table_EMUL,
+   ssnes_cpu_op_table_EMUL,
+   ssnes_cpu_op_table_EMUL
 };
 
-const uint8_t* cycle_table_index[] = {
-   cycle_table_mx,
-   cycle_table_mX,
-   cycle_table_Mx,
-   cycle_table_MX,
-   cycle_table_EMUL,
-   cycle_table_EMUL,
-   cycle_table_EMUL,
-   cycle_table_EMUL
+const uint8_t* ssnes_cpu_cycle_table_index[] = {
+   ssnes_cpu_cycle_table_mx,
+   ssnes_cpu_cycle_table_mX,
+   ssnes_cpu_cycle_table_Mx,
+   ssnes_cpu_cycle_table_MX,
+   ssnes_cpu_cycle_table_EMUL,
+   ssnes_cpu_cycle_table_EMUL,
+   ssnes_cpu_cycle_table_EMUL,
+   ssnes_cpu_cycle_table_EMUL
 };
 
-const char* opcode_names[] = {
+const char* ssnes_cpu_opcode_names[] = {
    "brk",         "ora (idpx)",     "cop",         "ora (sr)",             // 0x00
    "tsb (dp)",    "ora (dp)",       "asl (dp)",    "ora (ildp)",           // 0x04
    "php",         "ora (imm)",      "asl A",       "phd",                  // 0x08
@@ -1412,7 +1412,7 @@ const char* opcode_names[] = {
 
 // Not accurate yet, since it ignored conditional cycles, modes, etc, but hey ;)
 // Might of course be many errors ;)
-const uint8_t cycle_table_EMUL[256] = {
+const uint8_t ssnes_cpu_cycle_table_EMUL[256] = {
    42, 36, 42, 24, 30, 18, 30, 36,  // 0x00
    18, 12, 12, 24, 36, 24, 36, 30,  // 0x08
 
@@ -1462,58 +1462,7 @@ const uint8_t cycle_table_EMUL[256] = {
    12, 24, 24, 12, 48, 24, 42, 30,  // 0xf8
 };
 
-const uint8_t cycle_table_mx[256] = {
-   42, 36, 42, 24, 30, 18, 30, 36,  // 0x00
-   18, 12, 12, 24, 36, 24, 36, 30,  // 0x08
-
-   12, 30, 30, 42, 30, 16, 24, 36,  // 0x10
-   12, 24, 12, 12, 36, 24, 42, 30,  // 0x18
-   
-   36, 36, 48, 24, 18, 18, 30, 36,  // 0x20
-   24, 12, 12, 30, 24, 24, 36, 30,  // 0x28
-
-   12, 30, 30, 42, 24, 24, 36, 36,  // 0x30
-   12, 24, 12, 12, 24, 24, 42, 30,  // 0x38
-
-   36, 36, 12, 24, 42, 18, 30, 36,  // 0x40
-   18, 12, 12, 18, 18, 24, 36, 30,  // 0x48
-
-   12, 30, 30, 42, 42, 24, 36, 36,  // 0x50
-   12, 24, 18, 12, 24, 24, 42, 30,  // 0x58
-
-   36, 36, 36, 24, 18, 18, 30, 36,  // 0x60
-   24, 12, 12, 36, 30, 24, 36, 30,  // 0x68
-
-   12, 30, 30, 42, 24, 24, 36, 36,  // 0x70
-   12, 24, 24, 12, 36, 24, 42, 30,  // 0x78
-
-   18, 36, 24, 24, 18, 18, 18, 36,  // 0x80
-   12, 12, 12, 18, 24, 24, 24, 30,  // 0x88
-
-   12, 36, 30, 42, 24, 24, 24, 36,  // 0x90
-   12, 30, 12, 12, 24, 30, 30, 30,  // 0x98
-
-   12, 36, 12, 24, 18, 18, 18, 36,  // 0xa0
-   12, 12, 12, 24, 24, 24, 24, 30,  // 0xa8
-
-   12, 30, 30, 42, 24, 24, 24, 30,  // 0xb0
-   12, 24, 12, 12, 24, 24, 24, 30,  // 0xb8
-
-   12, 36, 18, 24, 18, 18, 30, 36,  // 0xc0
-   12, 12, 12, 18, 24, 24, 36, 30,  // 0xc8
-
-   12, 30, 30, 42, 36, 24, 36, 36,  // 0xd0
-   12, 24, 18, 18, 36, 24, 42, 30,  // 0xd8
-
-   12, 36, 18, 24, 18, 18, 30, 36,  // 0xe0
-   12, 12, 12, 18, 24, 24, 36, 30,  // 0xe8
-
-   12, 30, 30, 42, 30, 24, 36, 36,  // 0xf0
-   12, 24, 24, 12, 48, 24, 42, 30,  // 0xf8
-
-};
-
-const uint8_t cycle_table_mX[256] = {
+const uint8_t ssnes_cpu_cycle_table_mx[256] = {
    42, 36, 42, 24, 30, 18, 30, 36,  // 0x00
    18, 12, 12, 24, 36, 24, 36, 30,  // 0x08
 
@@ -1564,7 +1513,7 @@ const uint8_t cycle_table_mX[256] = {
 
 };
 
-const uint8_t cycle_table_Mx[256] = {
+const uint8_t ssnes_cpu_cycle_table_mX[256] = {
    42, 36, 42, 24, 30, 18, 30, 36,  // 0x00
    18, 12, 12, 24, 36, 24, 36, 30,  // 0x08
 
@@ -1615,7 +1564,58 @@ const uint8_t cycle_table_Mx[256] = {
 
 };
 
-const uint8_t cycle_table_MX[256] = {
+const uint8_t ssnes_cpu_cycle_table_Mx[256] = {
+   42, 36, 42, 24, 30, 18, 30, 36,  // 0x00
+   18, 12, 12, 24, 36, 24, 36, 30,  // 0x08
+
+   12, 30, 30, 42, 30, 16, 24, 36,  // 0x10
+   12, 24, 12, 12, 36, 24, 42, 30,  // 0x18
+   
+   36, 36, 48, 24, 18, 18, 30, 36,  // 0x20
+   24, 12, 12, 30, 24, 24, 36, 30,  // 0x28
+
+   12, 30, 30, 42, 24, 24, 36, 36,  // 0x30
+   12, 24, 12, 12, 24, 24, 42, 30,  // 0x38
+
+   36, 36, 12, 24, 42, 18, 30, 36,  // 0x40
+   18, 12, 12, 18, 18, 24, 36, 30,  // 0x48
+
+   12, 30, 30, 42, 42, 24, 36, 36,  // 0x50
+   12, 24, 18, 12, 24, 24, 42, 30,  // 0x58
+
+   36, 36, 36, 24, 18, 18, 30, 36,  // 0x60
+   24, 12, 12, 36, 30, 24, 36, 30,  // 0x68
+
+   12, 30, 30, 42, 24, 24, 36, 36,  // 0x70
+   12, 24, 24, 12, 36, 24, 42, 30,  // 0x78
+
+   18, 36, 24, 24, 18, 18, 18, 36,  // 0x80
+   12, 12, 12, 18, 24, 24, 24, 30,  // 0x88
+
+   12, 36, 30, 42, 24, 24, 24, 36,  // 0x90
+   12, 30, 12, 12, 24, 30, 30, 30,  // 0x98
+
+   12, 36, 12, 24, 18, 18, 18, 36,  // 0xa0
+   12, 12, 12, 24, 24, 24, 24, 30,  // 0xa8
+
+   12, 30, 30, 42, 24, 24, 24, 30,  // 0xb0
+   12, 24, 12, 12, 24, 24, 24, 30,  // 0xb8
+
+   12, 36, 18, 24, 18, 18, 30, 36,  // 0xc0
+   12, 12, 12, 18, 24, 24, 36, 30,  // 0xc8
+
+   12, 30, 30, 42, 36, 24, 36, 36,  // 0xd0
+   12, 24, 18, 18, 36, 24, 42, 30,  // 0xd8
+
+   12, 36, 18, 24, 18, 18, 30, 36,  // 0xe0
+   12, 12, 12, 18, 24, 24, 36, 30,  // 0xe8
+
+   12, 30, 30, 42, 30, 24, 36, 36,  // 0xf0
+   12, 24, 24, 12, 48, 24, 42, 30,  // 0xf8
+
+};
+
+const uint8_t ssnes_cpu_cycle_table_MX[256] = {
    42, 36, 42, 24, 30, 18, 30, 36,  // 0x00
    18, 12, 12, 24, 36, 24, 36, 30,  // 0x08
 

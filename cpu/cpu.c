@@ -1,11 +1,14 @@
+#include "state.h"
 #include "cpu.h"
-#include "cpu/op_pc.h"
+#include "cpu_state.h"
+#include "op.h"
+#include "table.h"
 #include <string.h>
 #include <stdio.h>
 
-void cpu_init(void)
+void ssnes_cpu_init(void)
 {
-   cpu_reset();
+   ssnes_cpu_reset();
 }
 
 static void cpu_init_registers(void)
@@ -13,31 +16,31 @@ static void cpu_init_registers(void)
    REGS.e = true;
    cpu_set_p(0x30);
    REGS.sp.b.h = 0x01;
-   CPU.status.pending_irq.reset = true;
+   STATUS.pending_irq.reset = true;
 }
 
-void cpu_reset(void)
+void ssnes_cpu_reset(void)
 {
-   memset(&state, 0, sizeof(state)); 
+   memset(&ssnes_state, 0, sizeof(ssnes_state)); 
    cpu_init_registers();
 }
 
 static void cpu_check_cycles(void)
 {
-   if (CPU.status.ppu.scanline_ready)
+   if (STATUS.ppu.scanline_ready)
    {
-      // ppu_run_scanline(CPU.status.ppu.vcount);
-      CPU.status.ppu.scanline_ready = false;
+      // ppu_run_scanline(STATUS.ppu.vcount);
+      STATUS.ppu.scanline_ready = false;
    }
 }
 
 static void cpu_check_irq(void)
 {
-   if (CPU.status.ppu.nmi_ready)
+   if (STATUS.ppu.nmi_ready)
    {
       //system_refresh_frame();
       // Set NMI active here.
-      CPU.status.ppu.nmi_ready = false;
+      STATUS.ppu.nmi_ready = false;
    }
 }
 
@@ -59,55 +62,55 @@ static void print_registers(void)
 
 static inline unsigned update_ppu_cycles(unsigned last_cycles)
 {
-   unsigned cycles = CPU.status.cycles - last_cycles;
-   CPU.status.ppu.hcount += cycles;
-   if (CPU.status.ppu.hcount >= 1364)
+   unsigned cycles = STATUS.cycles - last_cycles;
+   STATUS.ppu.hcount += cycles;
+   if (STATUS.ppu.hcount >= 1364)
    {
-      CPU.status.ppu.hcount -= 1364;
-      CPU.status.ppu.vcount++;
-      CPU.status.ppu.scanline_ready = true;
+      STATUS.ppu.hcount -= 1364;
+      STATUS.ppu.vcount++;
+      STATUS.ppu.scanline_ready = true;
 
-      if (CPU.status.ppu.vcount == 224)
+      if (STATUS.ppu.vcount == 224)
       {
-         CPU.status.ppu.nmi_ready = true;
+         STATUS.ppu.nmi_ready = true;
       }
-      else if (CPU.status.ppu.vcount >= 262)
-         CPU.status.ppu.vcount = 0;
+      else if (STATUS.ppu.vcount >= 262)
+         STATUS.ppu.vcount = 0;
    }
 
-   return CPU.status.cycles;
+   return STATUS.cycles;
 }
 
-void cpu_run_frame(void)
+void ssnes_cpu_run_frame(void)
 {
-   CPU.status.cycles = 0;
-   CPU.status.ppu.vcount = 0;
-   CPU.status.ppu.hcount = 0;
+   STATUS.cycles = 0;
+   STATUS.ppu.vcount = 0;
+   STATUS.ppu.hcount = 0;
    unsigned cycles_per_frame = 10000;
    unsigned last_cycles = 0;
 
-   while (CPU.status.cycles < cycles_per_frame)
+   while (STATUS.cycles < cycles_per_frame)
    {
-      if (CPU.status.pending_irq.reset)
+      if (STATUS.pending_irq.reset)
       {
          REGS.wai = false;
-         state.cpu.status.pending_irq.reset = false;
+         ssnes_state.cpu.status.pending_irq.reset = false;
          cpu_op_interrupt_reset_e();
       }
-      else if (CPU.status.pending_irq.nmi)
+      else if (STATUS.pending_irq.nmi)
       {
          REGS.wai = false;
-         CPU.status.pending_irq.nmi = false;
+         STATUS.pending_irq.nmi = false;
 
          if (REGS.e)
             cpu_op_interrupt_nmi_e();
          else
             cpu_op_interrupt_nmi_n();
       }
-      else if (CPU.status.pending_irq.irq)
+      else if (STATUS.pending_irq.irq)
       {
          REGS.wai = false;
-         state.cpu.status.pending_irq.irq = false;
+         STATUS.pending_irq.irq = false;
 
          if (REGS.e)
             cpu_op_interrupt_irq_e();
@@ -118,11 +121,11 @@ void cpu_run_frame(void)
       if (!REGS.wai && !REGS.stp)
       {
          fprintf(stderr, "======================================\n");
-         fprintf(stderr, "PC: %04x, V = %3u, H = %4u\n", (unsigned)REGS.pc.w.l, CPU.status.ppu.vcount, CPU.status.ppu.hcount);
+         fprintf(stderr, "PC: %04x, V = %3u, H = %4u\n", (unsigned)REGS.pc.w.l, STATUS.ppu.vcount, STATUS.ppu.hcount);
          uint8_t opcode = cpu_read_pc();
-         fprintf(stderr, "Opcode: 0x%02x || %s\n", (unsigned)opcode, opcode_names[opcode]);
-         op_table[opcode]();
-         CPU.status.cycles += cycle_table[opcode];
+         fprintf(stderr, "Opcode: 0x%02x || %s\n", (unsigned)opcode, ssnes_cpu_opcode_names[opcode]);
+         ssnes_cpu_op_table[opcode]();
+         STATUS.cycles += ssnes_cpu_cycle_table[opcode];
 
          print_registers();
          fprintf(stderr, "======================================\n");

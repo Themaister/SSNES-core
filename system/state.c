@@ -1,3 +1,3 @@
 #include "state.h"
 
-struct snes_state state;
+struct ssnes_state ssnes_state;

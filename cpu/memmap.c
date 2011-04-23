@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <assert.h>
 
-memmap_read_t memmap_read_table[256 * 8];
-memmap_write_t memmap_write_table[256 * 8];
+memmap_read_t ssnes_memmap_read_table[256 * 8];
+memmap_write_t ssnes_memmap_write_table[256 * 8];
 
 
 static uint8_t lorom_read(uint32_t addr)
@@ -118,27 +118,27 @@ static void init_memmap(
    for (unsigned i = 0; i <= 0x3f; i++)
    {
       // $0000 - $1fff - Scratch RAM
-      memmap_read_table[i << 3] = lowram_read;
-      memmap_read_table[(i + 0x80) << 3] = lowram_read;
-      memmap_write_table[i << 3] = lowram_write;
-      memmap_write_table[(i + 0x80) << 3] = lowram_write;
+      ssnes_memmap_read_table[i << 3] = lowram_read;
+      ssnes_memmap_read_table[(i + 0x80) << 3] = lowram_read;
+      ssnes_memmap_write_table[i << 3] = lowram_write;
+      ssnes_memmap_write_table[(i + 0x80) << 3] = lowram_write;
 
       // $2000 - $7fff - Registers and shit, but we don't care atm.
       for (unsigned j = 1; j < 4; j++)
       {
-         memmap_read_table[(i << 3) + j] = dummy_read;
-         memmap_read_table[((i + 0x80) << 3) + j] = dummy_read;
-         memmap_write_table[(i << 3) + j] = dummy_write;
-         memmap_write_table[((i + 0x80) << 3) + j] = dummy_write;
+         ssnes_memmap_read_table[(i << 3) + j] = dummy_read;
+         ssnes_memmap_read_table[((i + 0x80) << 3) + j] = dummy_read;
+         ssnes_memmap_write_table[(i << 3) + j] = dummy_write;
+         ssnes_memmap_write_table[((i + 0x80) << 3) + j] = dummy_write;
       }
 
       // $8000 - $ffff - ROM
       for (unsigned j = 4; j < 8; j++)
       {
-         memmap_read_table[(i << 3) + j] = rom_read;
-         memmap_read_table[((i + 0x80) << 3) + j] = rom_read_fast;
-         memmap_write_table[(i << 3) + j] = rom_write;
-         memmap_write_table[((i + 0x80) << 3) + j] = rom_write_fast;
+         ssnes_memmap_read_table[(i << 3) + j] = rom_read;
+         ssnes_memmap_read_table[((i + 0x80) << 3) + j] = rom_read_fast;
+         ssnes_memmap_write_table[(i << 3) + j] = rom_write;
+         ssnes_memmap_write_table[((i + 0x80) << 3) + j] = rom_write_fast;
       }
    }
 
@@ -146,10 +146,10 @@ static void init_memmap(
    {
       for (unsigned j = 0; j < 8; j++)
       {
-         memmap_read_table[(i << 3) + j] = rom_read;
-         memmap_read_table[((i + 0x80) << 3) + j] = rom_read_fast;
-         memmap_write_table[(i << 3) + j] = rom_write;
-         memmap_write_table[((i + 0x80) << 3) + j] = rom_write_fast;
+         ssnes_memmap_read_table[(i << 3) + j] = rom_read;
+         ssnes_memmap_read_table[((i + 0x80) << 3) + j] = rom_read_fast;
+         ssnes_memmap_write_table[(i << 3) + j] = rom_write;
+         ssnes_memmap_write_table[((i + 0x80) << 3) + j] = rom_write_fast;
       }
    }
 
@@ -157,8 +157,8 @@ static void init_memmap(
    {
       for (unsigned j = 0; j < 8; j++)
       {
-         memmap_read_table[(i << 3) + j] = wram_read;
-         memmap_write_table[(i << 3) + j] = wram_write;
+         ssnes_memmap_read_table[(i << 3) + j] = wram_read;
+         ssnes_memmap_write_table[(i << 3) + j] = wram_write;
       }
    }
 
@@ -166,13 +166,13 @@ static void init_memmap(
    {
       for (unsigned j = 0; j < 8; j++)
       {
-         memmap_read_table[(i << 3) + j] = rom_read_fast;
-         memmap_write_table[(i << 3) + j] = rom_write_fast;
+         ssnes_memmap_read_table[(i << 3) + j] = rom_read_fast;
+         ssnes_memmap_write_table[(i << 3) + j] = rom_write_fast;
       }
    }
 }
 
-void memmap_init(enum snes_mapper_type type)
+void ssnes_memmap_init(enum ssnes_mapper_type type)
 {
    memmap_read_t rom_read = NULL;
    memmap_write_t rom_write = NULL;
@@ -181,14 +181,14 @@ void memmap_init(enum snes_mapper_type type)
 
    switch (type)
    {
-      case SNES_MAPPER_LOROM:
+      case SSNES_MAPPER_LOROM:
          rom_read = lorom_read;
          rom_write = lorom_write;
          rom_read_fast = lorom_read_fastrom;
          rom_write_fast = lorom_write_fastrom;
          break;
 
-      case SNES_MAPPER_HIROM:
+      case SSNES_MAPPER_HIROM:
          rom_read = hirom_read;
          rom_write = hirom_write;
          rom_read_fast = hirom_read_fastrom;

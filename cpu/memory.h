@@ -3,18 +3,19 @@
 
 #include "cpu.h"
 #include "state.h"
+#include "macros.h"
 #include "util.h"
 #include "memmap.h"
 
 // Somewhat memory mapped ...
 static inline uint8_t cpu_readl(uint32_t addr)
 {
-   return memmap_read_table[addr >> 13](addr);
+   return ssnes_memmap_read_table[addr >> 13](addr);
 }
 
 static inline void cpu_writel(uint32_t addr, uint8_t data)
 {
-   memmap_write_table[addr >> 13](addr, data);
+   ssnes_memmap_write_table[addr >> 13](addr, data);
 }
 
 static inline uint8_t cpu_read(uint16_t addr)

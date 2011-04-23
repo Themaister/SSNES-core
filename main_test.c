@@ -20,13 +20,13 @@ int main(int argc, char **argv)
 
    fread(buf, 1, len, file);
 
-   cpu_init();
-   snes_cartridge_load(buf, len);
+   ssnes_cpu_init();
+   ssnes_cartridge_load(buf, len);
 
    fclose(file);
    free(buf);
 
-   cpu_run_frame();
+   ssnes_cpu_run_frame();
 
-   snes_cartridge_unload();
+   ssnes_cartridge_unload();
 }

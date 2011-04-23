@@ -2,43 +2,68 @@
 #define __SSNES_CPU_H
 
 #include <stdbool.h>
-#include <stdint.h>
 #include "util.h"
-#include "cpu_state.h"
-#include "state.h"
-#include "memory.h"
-#include "table.h"
 
-void cpu_init(void);
-void cpu_run_frame(void);
-void cpu_reset(void);
+void ssnes_cpu_init(void);
+void ssnes_cpu_run_frame(void);
+void ssnes_cpu_reset(void);
 
-static inline void cpu_set_p(uint8_t data)
+struct cpu_regs
 {
-   REGS.p.n = (data & (1 << 7)) >> 7;
-   REGS.p.v = (data & (1 << 6)) >> 6;
-   REGS.p.m = (data & (1 << 5)) >> 5;
-   REGS.p.x = (data & (1 << 4)) >> 4;
-   REGS.p.d = (data & (1 << 3)) >> 3;
-   REGS.p.i = (data & (1 << 2)) >> 2;
-   REGS.p.z = (data & (1 << 1)) >> 1;
-   REGS.p.c = (data & (1 << 0)) >> 0;
+   // GPP and index regs
+   word_reg_t a, x, y;
+   word_reg_t zero; // Just holds a zero value for STZ.
 
-   cpu_update_table();
-}
+   // Stack pointer and PC
+   word_reg_t sp;
+   long_reg_t pc; // Includes the PBK
 
-static inline uint8_t cpu_get_p(void)
+   // Processor flags
+   struct
+   {
+      bool n, v, m, x, d, i, z, c;
+   } p;
+   bool e;
+   bool wai;
+   bool stp;
+
+   uint32_t db; // Data bank
+   uint32_t dp; // Direct page
+
+};
+
+struct cpu_status
 {
-   return
-      ((uint8_t)REGS.p.n << 7) |
-      ((uint8_t)REGS.p.v << 6) |
-      ((uint8_t)REGS.p.m << 5) |
-      ((uint8_t)REGS.p.x << 4) |
-      ((uint8_t)REGS.p.d << 3) |
-      ((uint8_t)REGS.p.i << 2) |
-      ((uint8_t)REGS.p.z << 1) |
-      ((uint8_t)REGS.p.c << 0);
-}
+   struct
+   {
+      bool reset;
+      bool nmi;
+      bool irq;
+   } pending_irq;
 
+   unsigned cycles_per_frame;
+   unsigned cycles;
+
+   struct
+   {
+      unsigned vcount;
+      unsigned hcount;
+      bool scanline_ready;
+      bool nmi_ready;
+   } ppu;
+};
+
+struct cpu_alu_state
+{
+   unsigned mpyctr;
+   unsigned divctr;
+   unsigned shift;
+};
+
+struct cpu_state
+{
+   struct cpu_regs regs;
+   struct cpu_status status;
+};
 
 #endif
