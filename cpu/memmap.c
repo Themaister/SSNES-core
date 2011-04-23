@@ -1,6 +1,6 @@
 #include "memmap.h"
-#include "cpu_state.h"
 #include "state.h"
+#include "macros.h"
 #include <stdio.h>
 #include <assert.h>
 

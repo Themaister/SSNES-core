@@ -1,6 +1,5 @@
 #include "state.h"
 #include "cpu.h"
-#include "cpu_state.h"
 #include "op.h"
 #include "table.h"
 #include <string.h>
