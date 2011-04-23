@@ -14,13 +14,14 @@ all: $(TEST_TARGET)
 $(TEST_TARGET): $(TEST_OBJ) lib
 	$(CC) -o $@ $(TEST_OBJ) $(TARGET)
 
-lib: $(TARGET)
 
 %.o: %.c $(HEADERS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(INCDIRS)
 
 $(TARGET): $(OBJ)
 	$(AR) rcs $@ $(OBJ) $(LDFLAGS)
+
+lib: $(TARGET)
 
 clean:
 	rm -f $(OBJ) $(TARGET) $(TEST_OBJ) $(TEST_TARGET)
