@@ -24,13 +24,21 @@ void cpu_reset(void)
 
 static void cpu_check_cycles(void)
 {
-   // Check when to jump to SMP/PPU, etc.
+   if (CPU.status.ppu.scanline_ready)
+   {
+      // ppu_run_scanline(CPU.status.ppu.vcount);
+      CPU.status.ppu.scanline_ready = false;
+   }
 }
 
 static void cpu_check_irq(void)
 {
-   // Update IRQ status here.
-   //system_refresh_frame();
+   if (CPU.status.ppu.nmi_ready)
+   {
+      //system_refresh_frame();
+      // Set NMI active here.
+      CPU.status.ppu.nmi_ready = false;
+   }
 }
 
 static void print_registers(void)
@@ -49,10 +57,34 @@ static void print_registers(void)
    fputc('\n', stderr);
 }
 
+static inline unsigned update_ppu_cycles(unsigned last_cycles)
+{
+   unsigned cycles = CPU.status.cycles - last_cycles;
+   CPU.status.ppu.hcount += cycles;
+   if (CPU.status.ppu.hcount >= 1364)
+   {
+      CPU.status.ppu.hcount -= 1364;
+      CPU.status.ppu.vcount++;
+      CPU.status.ppu.scanline_ready = true;
+
+      if (CPU.status.ppu.vcount == 224)
+      {
+         CPU.status.ppu.nmi_ready = true;
+      }
+      else if (CPU.status.ppu.vcount >= 262)
+         CPU.status.ppu.vcount = 0;
+   }
+
+   return CPU.status.cycles;
+}
+
 void cpu_run_frame(void)
 {
    CPU.status.cycles = 0;
+   CPU.status.ppu.vcount = 0;
+   CPU.status.ppu.hcount = 0;
    unsigned cycles_per_frame = 10000;
+   unsigned last_cycles = 0;
 
    while (CPU.status.cycles < cycles_per_frame)
    {
@@ -86,18 +118,19 @@ void cpu_run_frame(void)
       if (!REGS.wai && !REGS.stp)
       {
          fprintf(stderr, "======================================\n");
-         fprintf(stderr, "PC: %04x\n", (unsigned)REGS.pc.w.l);
+         fprintf(stderr, "PC: %04x, V = %3u, H = %4u\n", (unsigned)REGS.pc.w.l, CPU.status.ppu.vcount, CPU.status.ppu.hcount);
          uint8_t opcode = cpu_read_pc();
          fprintf(stderr, "Opcode: 0x%02x || %s\n", (unsigned)opcode, opcode_names[opcode]);
          op_table[opcode]();
          CPU.status.cycles += cycle_table[opcode];
+
          print_registers();
          fprintf(stderr, "======================================\n");
       }
 
+      last_cycles = update_ppu_cycles(last_cycles);
+
       cpu_check_cycles();
       cpu_check_irq();
-
-      CPU.status.cycles++;
    }
 }

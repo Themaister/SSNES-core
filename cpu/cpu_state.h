@@ -39,6 +39,14 @@ struct cpu_status
 
    unsigned cycles_per_frame;
    unsigned cycles;
+
+   struct
+   {
+      unsigned vcount;
+      unsigned hcount;
+      bool scanline_ready;
+      bool nmi_ready;
+   } ppu;
 };
 
 struct cpu_alu_state

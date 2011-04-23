@@ -58,5 +58,12 @@ static inline unsigned isel_if(int32_t cond, unsigned a, unsigned b)
    return (a & mask) | (b & ~mask);
 }
 
+// Branchless greater or equal 0. (cond >= 0) ? a : b
+static inline unsigned isel_gez(int32_t cond, unsigned a, unsigned b)
+{
+   unsigned mask = cond >> 31;
+   return (b & mask) | (a & ~mask);
+}
+
 
 #endif
