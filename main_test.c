@@ -28,6 +28,10 @@ int main(int argc, char **argv)
    free(buf);
 
    ssnes_cpu_run_frame();
+   ssnes_cpu_run_frame();
+   ssnes_cpu_run_frame();
+   ssnes_cpu_run_frame();
+   ssnes_cpu_run_frame();
 
    ssnes_cartridge_unload();
    ssnes_deinit();

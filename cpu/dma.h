@@ -25,7 +25,7 @@ static inline void run_dma_channel(unsigned channel)
    uint16_t dest_addr = 0x2100 | (chan->dest + transfer_addr[chan->ctrl & 7][chan->trans_cnt++ & 3]);
    uint8_t data = cpu_readl(chan->src.l);
 
-   fprintf(stderr, "DMA: Write $%x -> $%x || Size: $%x\n", (unsigned)data, (unsigned)dest_addr, (unsigned)chan->size.w);
+   //fprintf(stderr, "DMA: Write $%x -> $%x || Size: $%x\n", (unsigned)data, (unsigned)dest_addr, (unsigned)chan->size.w);
 
    ssnes_bus_write_2000(dest_addr, data);
 
