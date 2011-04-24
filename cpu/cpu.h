@@ -56,7 +56,29 @@ struct cpu_status
    struct
    {
       bool active;
+      uint8_t regs[16];
+   } dma_channels[8];
+
+   struct
+   {
+      bool active;
    } dma;
+
+   struct
+   {
+      uint8_t nmitimen;
+
+      unsigned cgadd;
+      bool cg_odd;
+      uint8_t cgbuf;
+
+      uint8_t vmain;
+      word_reg_t vram_addr;
+
+      long_reg_t wram_addr;
+
+      uint8_t apuio[4];
+   } regs;
 };
 
 struct cpu_alu_state

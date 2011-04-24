@@ -1,6 +1,7 @@
 #include "memmap.h"
 #include "state.h"
 #include "macros.h"
+#include "bus.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -96,19 +97,6 @@ static void wram_write(uint32_t addr, uint8_t data)
    //fprintf(stderr, "Writing 0x%x to addr 0x%x.\n", (unsigned)data, (unsigned)addr);
 }
 
-static void dummy_write(uint32_t addr, uint8_t data)
-{
-   CPU.status.cycles += 6;
-   //fprintf(stderr, "Dummy write of 0x%x to addr 0x%x.\n", (unsigned)data, (unsigned)addr);
-}
-
-static uint8_t dummy_read(uint32_t addr)
-{
-   CPU.status.cycles += 6;
-   //fprintf(stderr, "Dummy read from addr 0x%x.\n", (unsigned)addr);
-   return 0;
-}
-
 // Sets up whole memory map.
 static void init_memmap(
       memmap_read_t rom_read, memmap_write_t rom_write, 
@@ -123,14 +111,20 @@ static void init_memmap(
       ssnes_memmap_write_table[i << 3] = lowram_write;
       ssnes_memmap_write_table[(i + 0x80) << 3] = lowram_write;
 
-      // $2000 - $7fff - Registers and shit, but we don't care atm.
-      for (unsigned j = 1; j < 4; j++)
-      {
-         ssnes_memmap_read_table[(i << 3) + j] = dummy_read;
-         ssnes_memmap_read_table[((i + 0x80) << 3) + j] = dummy_read;
-         ssnes_memmap_write_table[(i << 3) + j] = dummy_write;
-         ssnes_memmap_write_table[((i + 0x80) << 3) + j] = dummy_write;
-      }
+      // $2000 - $7fff - Registers and shit. :D
+      ssnes_memmap_read_table[(i << 3) + 1] = ssnes_bus_read_2000;
+      ssnes_memmap_read_table[((i + 0x80) << 3) + 1] = ssnes_bus_read_2000;
+      ssnes_memmap_read_table[(i << 3) + 2] = ssnes_bus_read_4000;
+      ssnes_memmap_read_table[((i + 0x80) << 3) + 2] = ssnes_bus_read_4000;
+      ssnes_memmap_read_table[(i << 3) + 3] = ssnes_bus_read_6000;
+      ssnes_memmap_read_table[((i + 0x80) << 3) + 3] = ssnes_bus_read_6000;
+
+      ssnes_memmap_write_table[(i << 3) + 1] = ssnes_bus_write_2000;
+      ssnes_memmap_write_table[((i + 0x80) << 3) + 1] = ssnes_bus_write_2000;
+      ssnes_memmap_write_table[(i << 3) + 2] = ssnes_bus_write_4000;
+      ssnes_memmap_write_table[((i + 0x80) << 3) + 2] = ssnes_bus_write_4000;
+      ssnes_memmap_write_table[(i << 3) + 3] = ssnes_bus_write_6000;
+      ssnes_memmap_write_table[((i + 0x80) << 3) + 3] = ssnes_bus_write_6000;
 
       // $8000 - $ffff - ROM
       for (unsigned j = 4; j < 8; j++)
