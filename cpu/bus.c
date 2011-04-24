@@ -113,16 +113,54 @@ void ssnes_bus_write_4000(uint32_t addr, uint8_t data)
          STATUS.regs.nmitimen = data;
          return;
 
+      case 0x420b: // MDMAEN
+         STATUS.dma_enable = data;
+         for (unsigned i = 0; i < 8; i++)
+            STATUS.dma_channels[i].trans_cnt = 0;
+         return;
+
       default:
          break;
    }
 
-   if (baddr >> 8 == 43) // DMA
+   if ((baddr >> 8) == 43) // DMA
    {
       unsigned channel = (baddr >> 4) & 7;
-      unsigned reg = baddr & 7;
+      unsigned reg = baddr & 0xf;
+      
+      switch (reg)
+      {
+         case 0: // CTRL
+            STATUS.dma_channels[channel].ctrl = data;
+            return;
 
-      STATUS.dma_channels[channel].regs[reg] = data;
+         case 1: // B-Bus addr
+            STATUS.dma_channels[channel].dest = data;
+            return;
+
+         case 2: // A1TxL
+            STATUS.dma_channels[channel].src.b.ll = data;
+            return;
+
+         case 3:
+            STATUS.dma_channels[channel].src.b.lh = data;
+            return;
+
+         case 4:
+            STATUS.dma_channels[channel].src.b.hl = data;
+            return;
+
+         case 5:
+            STATUS.dma_channels[channel].size.b.l = data;
+            return;
+
+         case 6:
+            STATUS.dma_channels[channel].size.b.h = data;
+            return;
+
+         default:
+            break;
+      }
    }
 }
 

@@ -4,6 +4,7 @@
 #include "table.h"
 #include <string.h>
 #include <stdio.h>
+#include "dma.h"
 
 void ssnes_cpu_init(void)
 {
@@ -11,9 +12,6 @@ void ssnes_cpu_init(void)
 }
 
 void ssnes_cpu_deinit(void)
-{}
-
-static void run_dma(void)
 {}
 
 static void cpu_init_registers(void)
@@ -122,9 +120,9 @@ void ssnes_cpu_run_frame(void)
             cpu_op_interrupt_irq_n();
       }
 
-      if (STATUS.dma.active)
+      if (STATUS.dma_enable)
       {
-         run_dma();
+         cpu_run_dma();
       }
       else
       {

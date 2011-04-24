@@ -33,6 +33,16 @@ struct cpu_regs
 
 };
 
+struct dma_channel
+{
+   unsigned trans_cnt;
+
+   uint8_t ctrl;
+   uint8_t dest;
+   long_reg_t src;
+   word_reg_t size;
+};
+
 struct cpu_status
 {
    struct
@@ -53,16 +63,8 @@ struct cpu_status
       bool nmi_ready;
    } ppu;
 
-   struct
-   {
-      bool active;
-      uint8_t regs[16];
-   } dma_channels[8];
-
-   struct
-   {
-      bool active;
-   } dma;
+   struct dma_channel dma_channels[8];
+   uint8_t dma_enable;
 
    struct
    {
