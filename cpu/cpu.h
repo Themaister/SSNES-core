@@ -52,6 +52,11 @@ struct cpu_status
       bool scanline_ready;
       bool nmi_ready;
    } ppu;
+
+   struct
+   {
+      bool active;
+   } dma;
 };
 
 struct cpu_alu_state
