@@ -93,51 +93,58 @@ void ssnes_cpu_run_frame(void)
 
    while (STATUS.cycles < CYCLES_PER_FRAME)
    {
-      if (STATUS.pending_irq.reset)
-      {
-         REGS.wai_quit = true;
-         STATUS.pending_irq.reset = false;
-         cpu_op_interrupt_reset_e();
-      }
-      else if (STATUS.pending_irq.nmi)
-      {
-         REGS.wai_quit = true;
-         STATUS.pending_irq.nmi = false;
-
-         if (REGS.e)
-            cpu_op_interrupt_nmi_e();
-         else
-            cpu_op_interrupt_nmi_n();
-      }
-      else if (STATUS.pending_irq.irq)
-      {
-         REGS.wai_quit = true;
-         STATUS.pending_irq.irq = false;
-
-         if (REGS.e)
-            cpu_op_interrupt_irq_e();
-         else
-            cpu_op_interrupt_irq_n();
-      }
-
       if (STATUS.dma_enable)
       {
          cpu_run_dma();
       }
       else
       {
-         fprintf(stderr, "======================================\n");
-         fprintf(stderr, "PC: %04x, V = %3u, H = %4u\n", (unsigned)REGS.pc.w.l, STATUS.ppu.vcount, STATUS.ppu.hcount);
-         uint8_t opcode = cpu_read_pc();
-         fprintf(stderr, "Opcode: 0x%02x || %s\n", (unsigned)opcode, ssnes_cpu_opcode_names[opcode]);
+         if (STATUS.pending_irq.reset)
+         {
+            REGS.wai_quit = true;
+            STATUS.pending_irq.reset = false;
+            cpu_op_interrupt_reset_e();
+         }
+         else if (STATUS.pending_irq.nmi)
+         {
+            REGS.wai_quit = true;
+            STATUS.pending_irq.nmi = false;
 
-         REGS.wai_quit = isel_if(opcode - 0xcb, REGS.wai_quit, 0); // WAI stalling :D
-         ssnes_cpu_op_table[opcode]();
+            if (REGS.e)
+               cpu_op_interrupt_nmi_e();
+            else
+               cpu_op_interrupt_nmi_n();
+         }
+         else if (STATUS.pending_irq.irq)
+         {
+            REGS.wai_quit = true;
+            STATUS.pending_irq.irq = false;
 
-         STATUS.cycles += ssnes_cpu_cycle_table[opcode];
+            if (REGS.e)
+               cpu_op_interrupt_irq_e();
+            else
+               cpu_op_interrupt_irq_n();
+         }
 
-         print_registers();
-         fprintf(stderr, "======================================\n");
+         if (STATUS.dma_enable)
+         {
+            cpu_run_dma();
+         }
+         else
+         {
+            fprintf(stderr, "======================================\n");
+            fprintf(stderr, "PC: %04x, V = %3u, H = %4u\n", (unsigned)REGS.pc.w.l, STATUS.ppu.vcount, STATUS.ppu.hcount);
+            uint8_t opcode = cpu_read_pc();
+            fprintf(stderr, "Opcode: 0x%02x || %s\n", (unsigned)opcode, ssnes_cpu_opcode_names[opcode]);
+
+            REGS.wai_quit = isel_if(opcode - 0xcb, REGS.wai_quit, 0); // WAI stalling :D
+            ssnes_cpu_op_table[opcode]();
+
+            STATUS.cycles += ssnes_cpu_cycle_table[opcode];
+
+            print_registers();
+            fprintf(stderr, "======================================\n");
+         }
       }
 
       last_cycles = update_ppu_cycles(last_cycles);

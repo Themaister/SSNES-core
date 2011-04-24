@@ -1,6 +1,7 @@
 #include "bus.h"
 #include "state.h"
 #include "macros.h"
+#include <stdio.h>
 
 uint8_t ssnes_bus_read_2000(uint32_t addr)
 {
@@ -107,6 +108,7 @@ void ssnes_bus_write_4000(uint32_t addr, uint8_t data)
 {
    CPU.status.cycles += 8;
    uint16_t baddr = addr & 0xffff;
+
    switch (baddr)
    {
       case 0x4200: // NMITIMEN
@@ -123,11 +125,11 @@ void ssnes_bus_write_4000(uint32_t addr, uint8_t data)
          break;
    }
 
-   if ((baddr >> 8) == 43) // DMA
+   if ((baddr >> 8) == 0x43) // DMA
    {
       unsigned channel = (baddr >> 4) & 7;
       unsigned reg = baddr & 0xf;
-      
+
       switch (reg)
       {
          case 0: // CTRL
