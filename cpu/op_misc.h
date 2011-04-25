@@ -461,7 +461,7 @@ static inline void cpu_op_per_e(void)
 
 static inline void cpu_op_wai(void)
 {
-   REGS.pc.w.l = isel_if(REGS.wai_quit, REGS.pc.w.l, REGS.pc.w.l - 1);
+   REGS.pc.w.l -= (int)isel_if(REGS.wai_quit, 0, 1);
    REGS.wai_quit = false;
 }
 
