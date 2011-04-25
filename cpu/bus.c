@@ -16,17 +16,20 @@ uint8_t ssnes_bus_read_4000(uint32_t addr)
    uint16_t daddr = addr & 0xffff;
    switch (daddr)
    {
-      case 0x4128: // JOY1L
+      case 0x4212: // HVBJOY
+         return PPU.hvbjoy;
+
+      case 0x4218: // JOY1L
          return STATUS.input[0].data1.b.l;
-      case 0x4129: // JOY1H
+      case 0x4219: // JOY1H
          return STATUS.input[0].data1.b.h;
       case 0x421a: // JOY2L
          return STATUS.input[1].data1.b.l;
       case 0x421b: // JOY2H
          return STATUS.input[1].data1.b.h;
-      case 0x412c: // JOY3L
+      case 0x421c: // JOY3L
          return STATUS.input[0].data2.b.l;
-      case 0x412d: // JOY3H
+      case 0x421d: // JOY3H
          return STATUS.input[0].data2.b.h;
       case 0x421e: // JOY4L
          return STATUS.input[1].data2.b.l;

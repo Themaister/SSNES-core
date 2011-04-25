@@ -50,19 +50,52 @@ typedef union
    } w;
 } long_reg_t;
 
+// Some branchless ops which should come in handy :)
+
 // Branchless ternary operation. cond ? a : b
 // Relies on arithmetic right shift semantics.
-static inline unsigned isel_if(int32_t cond, unsigned a, unsigned b)
+static inline uint32_t isel_if(int32_t cond, uint32_t a, uint32_t b)
 {
-   unsigned mask = (cond | (-cond)) >> 31;
+   uint32_t mask = (cond | (-cond)) >> 31;
    return (a & mask) | (b & ~mask);
 }
 
-// Branchless greater or equal 0. (cond >= 0) ? a : b
-static inline unsigned isel_gez(int32_t cond, unsigned a, unsigned b)
+#define iup_if(var, cond, a) { var = isel_if(cond, a, var); }
+#define iup_eq(var, check, eq, a) { var = isel_eq(check, eq, a, var); }
+#define iup_gez(var, check, val, a) { var = isel_gez(check, val, a, var); }
+#define iup_lez(var, check, val, a) { var = isel_lez(check, val, a, var); }
+#define iup_gte(var, check, val, a) { var = isel_gte(check, val, a, var); }
+#define iup_lt(var, check, val, a) { var = isel_lt(check, val, a, var); }
+
+// (var == eq) ? a : b
+static inline uint32_t isel_eq(uint32_t var, uint32_t eq, uint32_t a, uint32_t b)
 {
-   unsigned mask = cond >> 31;
+   return isel_if(var - eq, b, a);
+}
+
+// Branchless greater or equal 0. (cond >= 0) ? a : b
+static inline uint32_t isel_gez(int32_t cond, uint32_t a, uint32_t b)
+{
+   uint32_t mask = cond >> 31;
    return (b & mask) | (a & ~mask);
+}
+
+// (cond < 0) ? a : b
+static inline uint32_t isel_lez(int32_t cond, uint32_t a, uint32_t b)
+{
+   return isel_gez(cond, b, a);
+}
+
+static inline uint32_t isel_gte(int32_t var1, int32_t var2, uint32_t a, uint32_t b)
+{
+   int32_t mask = (var2 - var1) >> 31;
+   return (a & mask) | (b & ~mask);
+}
+
+static inline uint32_t isel_lt(int32_t var1, int32_t var2, uint32_t a, uint32_t b)
+{
+   int32_t mask = (var1 - var2) >> 31;
+   return (a & mask) | (b & ~mask);
 }
 
 

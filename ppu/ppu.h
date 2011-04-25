@@ -18,6 +18,8 @@ struct ppu_state
    word_reg_t bg3hofs, bg3vofs;
    word_reg_t bg4hofs, bg4vofs;
 
+   uint8_t hvbjoy; // $4212
+
    uint16_t *buffer;
 };
 

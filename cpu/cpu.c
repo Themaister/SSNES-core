@@ -48,9 +48,7 @@ static void cpu_check_irq(void)
       ssnes_video_cb(PPU.buffer, 256, 224);
       STATUS.ppu.frame_ready = false;
 
-      // NMI enable
-      if (STATUS.regs.nmitimen & 0x80)
-         STATUS.pending_irq.nmi = true;
+      iup_if(STATUS.pending_irq.nmi, STATUS.regs.nmitimen & 0x80, true);
 
       // Joypad autopoll
       if (STATUS.regs.nmitimen & 0x01)
@@ -83,11 +81,10 @@ static inline unsigned update_ppu_cycles(unsigned last_cycles)
       STATUS.ppu.hcount -= 1364;
       STATUS.ppu.vcount++;
 
-      // This depends.
-      if (STATUS.ppu.vcount <= 225)
-         STATUS.ppu.scanline_ready = true;
-      if (STATUS.ppu.vcount == 225)
-         STATUS.ppu.frame_ready = true;
+      iup_lt(STATUS.ppu.scanline_ready, STATUS.ppu.vcount, 226, true);
+      STATUS.ppu.frame_ready = isel_eq(STATUS.ppu.vcount, 225, true, false);
+      iup_eq(PPU.hvbjoy, STATUS.ppu.vcount, 225, 0x81);
+      iup_eq(PPU.hvbjoy, STATUS.ppu.vcount, 228, 0x80);
    }
 
    return STATUS.cycles;
