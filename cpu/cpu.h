@@ -60,7 +60,7 @@ struct cpu_status
       unsigned vcount;
       unsigned hcount;
       bool scanline_ready;
-      bool nmi_ready;
+      bool frame_ready;
    } ppu;
 
    struct dma_channel dma_channels[8];

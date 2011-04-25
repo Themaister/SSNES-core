@@ -5,6 +5,8 @@
 #include <string.h>
 #include <stdio.h>
 #include "dma.h"
+#include "libsnes/interface.h"
+#include "input.h"
 
 void ssnes_cpu_init(void)
 {
@@ -35,15 +37,24 @@ static void cpu_check_cycles(void)
       // ppu_run_scanline(STATUS.ppu.vcount);
       STATUS.ppu.scanline_ready = false;
    }
+
+   // Check if we have to jump to SMP/DSP or whatever.
 }
 
 static void cpu_check_irq(void)
 {
-   if (STATUS.ppu.nmi_ready)
+   if (STATUS.ppu.frame_ready)
    {
-      //system_refresh_frame();
-      // Set NMI active here.
-      STATUS.ppu.nmi_ready = false;
+      ssnes_video_cb(PPU.buffer, 256, 224);
+      STATUS.ppu.frame_ready = false;
+
+      // NMI enable
+      if (STATUS.regs.nmitimen & 0x80)
+         STATUS.pending_irq.nmi = true;
+
+      // Joypad autopoll
+      if (STATUS.regs.nmitimen & 0x01)
+         input_autopoll();
    }
 }
 
@@ -73,15 +84,15 @@ static inline unsigned update_ppu_cycles(unsigned last_cycles)
       STATUS.ppu.vcount++;
       STATUS.ppu.scanline_ready = true;
 
-      if (STATUS.ppu.vcount == 224)
-         STATUS.ppu.nmi_ready = true;
-      else if (STATUS.ppu.vcount >= 262)
-         STATUS.ppu.vcount = 0;
+      // This depends.
+      if (STATUS.ppu.vcount == 225)
+         STATUS.ppu.frame_ready = true;
    }
 
    return STATUS.cycles;
 }
 
+// Depends.
 #define CYCLES_PER_FRAME (262 * 1364)
 
 void ssnes_cpu_run_frame(void)

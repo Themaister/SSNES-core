@@ -5,3 +5,4 @@
 *.dylib
 /main_test
 *.sfc
+*.swp
