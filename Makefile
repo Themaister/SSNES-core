@@ -1,7 +1,7 @@
 TARGET = libsnes.a
 TEST_TARGET = main_test
 HEADERS = $(wildcard */*.h)
-INCDIRS = -Icpu -Ismp -Idsp -Ippu -Isystem -I.
+INCDIRS = -Ilibsnes -Icpu -Ismp -Idsp -Ippu -Isystem -I.
 PIC =
 CFLAGS += -O3 -g -Wall -std=gnu99 $(PIC)
 

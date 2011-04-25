@@ -81,6 +81,12 @@ struct cpu_status
 
       uint8_t apuio[4];
    } regs;
+
+   struct
+   {
+      word_reg_t data1;
+      word_reg_t data2;
+   } input[2];
 };
 
 struct cpu_alu_state

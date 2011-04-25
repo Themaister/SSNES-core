@@ -12,6 +12,28 @@ uint8_t ssnes_bus_read_2000(uint32_t addr)
 uint8_t ssnes_bus_read_4000(uint32_t addr)
 {
    CPU.status.cycles += 8;
+
+   uint16_t daddr = addr & 0xffff;
+   switch (daddr)
+   {
+      case 0x4128: // JOY1L
+         return STATUS.input[0].data1.b.l;
+      case 0x4129: // JOY1H
+         return STATUS.input[0].data1.b.h;
+      case 0x421a: // JOY2L
+         return STATUS.input[1].data1.b.l;
+      case 0x421b: // JOY2H
+         return STATUS.input[1].data1.b.h;
+      case 0x412c: // JOY3L
+         return STATUS.input[0].data2.b.l;
+      case 0x412d: // JOY3H
+         return STATUS.input[0].data2.b.h;
+      case 0x421e: // JOY4L
+         return STATUS.input[1].data2.b.l;
+      case 0x421f: // JOY4H
+         return STATUS.input[1].data2.b.h;
+   }
+
    return 0;
 }
 
@@ -26,7 +48,7 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
    static const unsigned vram_addr_inc[] = {1, 32, 128, 128};
    CPU.status.cycles += 8;
 
-   uint32_t daddr = addr & 0xffff;
+   uint16_t daddr = addr & 0xffff;
    switch (daddr)
    {
       /////////////// VRAM
