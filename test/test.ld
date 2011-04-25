@@ -1,0 +1,2 @@
+[objects]
+test.obj
