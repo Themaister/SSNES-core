@@ -51,6 +51,10 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
    uint16_t daddr = addr & 0xffff;
    switch (daddr)
    {
+      case 0x2100: // INIDISP
+         PPU.inidisp = data;
+         return;
+
       /////////////// VRAM
       case 0x2115: // VMAIN
          STATUS.regs.vmain = data;

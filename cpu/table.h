@@ -31,7 +31,6 @@ static inline void cpu_update_table(void)
    unsigned reg_val = (REGS.e << 2) | (REGS.p.m << 1) | REGS.p.x;
    ssnes_cpu_op_table = ssnes_cpu_op_table_index[reg_val];
    ssnes_cpu_cycle_table = ssnes_cpu_cycle_table_index[reg_val];
-   fprintf(stderr, "Opcode table updated! Value: %u\n", reg_val);
 }
 
 #endif

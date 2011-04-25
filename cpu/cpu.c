@@ -34,7 +34,7 @@ static void cpu_check_cycles(void)
 {
    if (STATUS.ppu.scanline_ready)
    {
-      // ppu_run_scanline(STATUS.ppu.vcount);
+      ssnes_ppu_scanline(STATUS.ppu.vcount - 1);
       STATUS.ppu.scanline_ready = false;
    }
 
@@ -82,9 +82,10 @@ static inline unsigned update_ppu_cycles(unsigned last_cycles)
    {
       STATUS.ppu.hcount -= 1364;
       STATUS.ppu.vcount++;
-      STATUS.ppu.scanline_ready = true;
 
       // This depends.
+      if (STATUS.ppu.vcount <= 225)
+         STATUS.ppu.scanline_ready = true;
       if (STATUS.ppu.vcount == 225)
          STATUS.ppu.frame_ready = true;
    }
@@ -143,18 +144,17 @@ void ssnes_cpu_run_frame(void)
          }
          else
          {
-            fprintf(stderr, "======================================\n");
-            fprintf(stderr, "PC: %04x, V = %3u, H = %4u\n", (unsigned)REGS.pc.w.l, STATUS.ppu.vcount, STATUS.ppu.hcount);
+            //fprintf(stderr, "======================================\n");
+            //fprintf(stderr, "PC: %04x, V = %3u, H = %4u\n", (unsigned)REGS.pc.w.l, STATUS.ppu.vcount, STATUS.ppu.hcount);
             uint8_t opcode = cpu_read_pc();
-            fprintf(stderr, "Opcode: 0x%02x || %s\n", (unsigned)opcode, ssnes_cpu_opcode_names[opcode]);
+            //fprintf(stderr, "Opcode: 0x%02x || %s\n", (unsigned)opcode, ssnes_cpu_opcode_names[opcode]);
 
-            REGS.wai_quit = isel_if(opcode - 0xcb, REGS.wai_quit, 0); // WAI stalling :D
             ssnes_cpu_op_table[opcode]();
 
             STATUS.cycles += ssnes_cpu_cycle_table[opcode];
 
-            print_registers();
-            fprintf(stderr, "======================================\n");
+            //print_registers();
+            //fprintf(stderr, "======================================\n");
          }
       }
 
