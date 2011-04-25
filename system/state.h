@@ -1,10 +1,10 @@
 #ifndef __STATE_H
 #define __STATE_H
 
-#include "cpu.h"
-#include "smp.h"
-#include "dsp.h"
-#include "ppu.h"
+#include "cpu/cpu.h"
+#include "smp/smp.h"
+#include "dsp/dsp.h"
+#include "ppu/ppu.h"
 
 #include <stdint.h>
 

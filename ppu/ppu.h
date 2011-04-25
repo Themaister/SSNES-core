@@ -2,7 +2,7 @@
 #define __PPU_H
 
 #include <stdint.h>
-#include "util.h"
+#include "system/util.h"
 
 struct ppu_state
 {
@@ -17,6 +17,8 @@ struct ppu_state
    word_reg_t bg2hofs, bg2vofs;
    word_reg_t bg3hofs, bg3vofs;
    word_reg_t bg4hofs, bg4vofs;
+
+   uint16_t *buffer;
 };
 
 void ssnes_ppu_init(void);

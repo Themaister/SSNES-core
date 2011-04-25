@@ -1,9 +1,9 @@
 #ifndef __CPU_OP_H
 #define __CPU_OP_H
 
-#include "state.h"
-#include "macros.h"
-#include "table.h"
+#include "system/state.h"
+#include "system/macros.h"
+#include "cpu/table.h"
 
 static inline void cpu_set_p(uint8_t data)
 {
@@ -32,7 +32,7 @@ static inline uint8_t cpu_get_p(void)
       ((uint8_t)REGS.p.c << 0);
 }
 
-#include "util.h"
+#include "system/util.h"
 #include "op_alu.h"
 #include "op_pc.h"
 #include "op_read.h"

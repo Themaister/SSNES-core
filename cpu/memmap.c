@@ -1,6 +1,6 @@
 #include "memmap.h"
-#include "state.h"
-#include "macros.h"
+#include "system/state.h"
+#include "system/macros.h"
 #include "bus.h"
 #include <stdio.h>
 #include <assert.h>

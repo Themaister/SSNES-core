@@ -2,7 +2,7 @@
 #define __SSNES_CPU_H
 
 #include <stdbool.h>
-#include "util.h"
+#include "system/util.h"
 
 void ssnes_cpu_init(void);
 void ssnes_cpu_deinit(void);

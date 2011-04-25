@@ -1,9 +1,9 @@
 #include <stdbool.h>
 #include "libsnes.hpp"
 
-#include "system.h"
-#include "cpu.h"
-#include "cart.h"
+#include "system/system.h"
+#include "system/cart.h"
+#include "cpu/cpu.h"
 
 snes_video_refresh_t ssnes_video_cb;
 snes_audio_sample_t ssnes_audio_cb;

@@ -1,10 +1,10 @@
 #include "system.h"
 #include "memory.h"
 
-#include "cpu.h"
-#include "ppu.h"
-#include "dsp.h"
-#include "smp.h"
+#include "cpu/cpu.h"
+#include "ppu/ppu.h"
+#include "dsp/dsp.h"
+#include "smp/smp.h"
 
 void ssnes_init(void)
 {

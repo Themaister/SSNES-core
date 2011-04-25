@@ -1,6 +1,6 @@
-#include "cpu.h"
-#include "system.h"
-#include "cart.h"
+#include "cpu/cpu.h"
+#include "system/system.h"
+#include "system/cart.h"
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>

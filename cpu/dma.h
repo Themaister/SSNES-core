@@ -2,8 +2,8 @@
 #define __CPU_DMA_H
 
 #include <stdint.h>
-#include "state.h"
-#include "macros.h"
+#include "system/state.h"
+#include "system/macros.h"
 #include "bus.h"
 #include "memory.h"
 

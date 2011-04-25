@@ -2,7 +2,7 @@
 #define __OP_PC_H
 
 #include <stdint.h>
-#include "util.h"
+#include "system/util.h"
 #include "memory.h"
 
 #define CPU_OP_BRANCH_REG_DECL(reg) cpu_op_branch_##reg

@@ -2,9 +2,9 @@
 #define __CPU_MEMORY_H
 
 #include "cpu.h"
-#include "state.h"
-#include "macros.h"
-#include "util.h"
+#include "system/state.h"
+#include "system/macros.h"
+#include "system/util.h"
 #include "memmap.h"
 
 // Somewhat memory mapped ...

@@ -1,6 +1,6 @@
 #include "bus.h"
-#include "state.h"
-#include "macros.h"
+#include "system/state.h"
+#include "system/macros.h"
 #include <stdio.h>
 
 uint8_t ssnes_bus_read_2000(uint32_t addr)
