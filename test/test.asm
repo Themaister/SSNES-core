@@ -1,12 +1,6 @@
 .include "header.inc"
 .include "registers.asm"
-
-.macro Stall
-   ldx #\1
--- dex
-   bne --
-.endm
-   
+.include "macros.asm"
 
 .bank 0
 .section "Main"
@@ -30,6 +24,23 @@ Start:
    lda #%00011111
    sta CGDATA
    stz CGDATA
+
+   LoadCGRAM Palette, 0, 8
+   LoadVRAM Tilemap, $0400, 2
+   LoadVRAM Tiles, $1008, 16
+
+   lda #$04
+   sta BG1SC
+   lda #$01
+   sta BG12NBA
+   stz BGMODE
+   sta TM
+
+   lda #$ff
+   sta BG1HOFS
+   stz BG1HOFS
+   sta BG1VOFS
+   stz BG1VOFS
 
    lda #%10000001
    sta NMITIMEN ; Joypad autopoll / NMI
@@ -66,6 +77,17 @@ VBlank: ; VBlank routine
 +
    pla
    rti
+
+
+Palette:
+   .dw $0000, $efff, $001f, $7c00
+
+Tilemap:
+   .dw $0001
+
+Tiles:
+   .db $ff, $ff, $00, $00, $ff, $ff, $00, $00
+   .db $ff, $ff, $00, $00, $ff, $ff, $00, $00
 
 .ends
    

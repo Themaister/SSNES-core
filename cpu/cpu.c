@@ -82,6 +82,7 @@ static inline unsigned update_ppu_cycles(unsigned last_cycles)
       STATUS.ppu.vcount++;
 
       iup_lt(STATUS.ppu.scanline_ready, STATUS.ppu.vcount, 226, true);
+      PPU.vsync = isel_gte(STATUS.ppu.vcount, 225, true, false);
       STATUS.ppu.frame_ready = isel_eq(STATUS.ppu.vcount, 225, true, false);
       iup_eq(PPU.hvbjoy, STATUS.ppu.vcount, 225, 0x81);
       iup_eq(PPU.hvbjoy, STATUS.ppu.vcount, 228, 0x80);
@@ -98,6 +99,7 @@ void ssnes_cpu_run_frame(void)
    STATUS.cycles = 0;
    STATUS.ppu.vcount = 0;
    STATUS.ppu.hcount = 0;
+   PPU.vsync = false;
    unsigned last_cycles = 0;
 
    while (STATUS.cycles < CYCLES_PER_FRAME)

@@ -23,6 +23,7 @@ static inline void run_dma_channel(unsigned channel)
    };
 
    uint16_t dest_addr = 0x2100 | (chan->dest + transfer_addr[chan->ctrl & 7][chan->trans_cnt++ & 3]);
+   //fprintf(stderr, "DMA read: $%x\n", (unsigned)chan->src.l);
    uint8_t data = cpu_readl(chan->src.l);
 
    //fprintf(stderr, "DMA: Write $%x -> $%x || Size: $%x\n", (unsigned)data, (unsigned)dest_addr, (unsigned)chan->size.w);
@@ -32,9 +33,9 @@ static inline void run_dma_channel(unsigned channel)
    if (!(chan->ctrl & 0x08))
    {
       if (chan->ctrl & 0x10)
-         chan->src.l++;
-      else
          chan->src.l--;
+      else
+         chan->src.l++;
    }
 
    chan->src.l &= 0xffffff;
