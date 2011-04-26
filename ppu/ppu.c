@@ -52,6 +52,8 @@ static inline void ppu_render_bg1_mode0(uint16_t *pixel, unsigned scanline, unsi
    uint16_t tile = READ_VRAMW(tilemap_addr + tile_no);
 
    unsigned x_mask = x & 7;
+   //unsigned tile_x = isel_if(tile & 0x4000, 7 - x_mask, x_mask);
+   //unsigned tile_y = isel_if(tile & 0x8000, 7 - scanline_mask, scanline_mask);
    unsigned tile_x = tile & 0x4000 ? 7 - x_mask : x_mask;
    unsigned tile_y = tile & 0x8000 ? 7 - scanline_mask : scanline_mask;
 
