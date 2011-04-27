@@ -9,7 +9,7 @@
 // This is definitely not good for cache, so we'll have to see what we can do to improve this ...
 static uint16_t *xbgr2rgb_lut = NULL;
 
-#define COLOR_LUT(color, bright) (xbgr2rgb_lut[(color) | ((unsigned)(bright) << 16)])
+#define COLOR_LUT(color, bright) (xbgr2rgb_lut[((color) & 0x7fff) | ((unsigned)(bright) << 15)])
 static inline uint16_t xbgr2rgb(unsigned color, unsigned bright)
 {
    bright++;
@@ -21,10 +21,10 @@ static inline uint16_t xbgr2rgb(unsigned color, unsigned bright)
 
 static void init_xbgr_lut(void)
 {
-   for (unsigned i = 0; i < (1 << 20); i++)
+   for (unsigned i = 0; i < (1 << 19); i++)
    {
-      unsigned bright = (i >> 16) & 0xf;
-      unsigned color = i & 0xffff;
+      unsigned bright = (i >> 15) & 0xf;
+      unsigned color = i & 0x7fff;
 
       xbgr2rgb_lut[i] = xbgr2rgb(color, bright);
    }
@@ -33,7 +33,7 @@ static void init_xbgr_lut(void)
 void ssnes_ppu_init(void)
 {
    ALLOCATE(PPU.buffer, 1024, 1024 * 256 * sizeof(uint16_t));
-   ALLOCATE(xbgr2rgb_lut, 1024, 1 << 21);
+   ALLOCATE(xbgr2rgb_lut, 1024, 1 << 20);
 
    init_xbgr_lut();
 }
@@ -87,7 +87,8 @@ static void ppu_render_mode0(unsigned scanline)
 
       for (unsigned i = 0; i < 256; i++)
       {
-         ppu_render_bg_mode0(line++, scanline, scanline_mask, (i + hofs) & 0xff, bright, tilemap_addr, character_data, 96);
+         ppu_render_bg_mode0(line++, scanline, scanline_mask, 
+               (i + hofs) & 0xff, bright, tilemap_addr, character_data, 96);
       }
    }
 
@@ -103,7 +104,8 @@ static void ppu_render_mode0(unsigned scanline)
 
       for (unsigned i = 0; i < 256; i++)
       {
-         ppu_render_bg_mode0(line++, scanline, scanline_mask, (i + hofs) & 0xff, bright, tilemap_addr, character_data, 64);
+         ppu_render_bg_mode0(line++, scanline, scanline_mask, 
+               (i + hofs) & 0xff, bright, tilemap_addr, character_data, 64);
       }
    }
 
@@ -119,7 +121,8 @@ static void ppu_render_mode0(unsigned scanline)
 
       for (unsigned i = 0; i < 256; i++)
       {
-         ppu_render_bg_mode0(line++, scanline, scanline_mask, (i + hofs) & 0xff, bright, tilemap_addr, character_data, 32);
+         ppu_render_bg_mode0(line++, scanline, scanline_mask, 
+               (i + hofs) & 0xff, bright, tilemap_addr, character_data, 32);
       }
    }
 
@@ -135,7 +138,8 @@ static void ppu_render_mode0(unsigned scanline)
 
       for (unsigned i = 0; i < 256; i++)
       {
-         ppu_render_bg_mode0(line++, scanline, scanline_mask, (i + hofs) & 0xff, bright, tilemap_addr, character_data, 0);
+         ppu_render_bg_mode0(line++, scanline, scanline_mask, 
+               (i + hofs) & 0xff, bright, tilemap_addr, character_data, 0);
       }
    }
 }
