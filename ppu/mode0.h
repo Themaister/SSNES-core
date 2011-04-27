@@ -9,10 +9,8 @@ static inline void ppu_render_bg_mode0(uint16_t *pixel, unsigned scanline, unsig
    uint16_t tile = READ_VRAMW(tilemap_addr + tile_no);
 
    unsigned x_mask = x & 7;
-   //unsigned tile_x = isel_if(tile & 0x4000, 7 - x_mask, x_mask);
-   //unsigned tile_y = isel_if(tile & 0x8000, 7 - scanline_mask, scanline_mask);
-   unsigned tile_x = tile & 0x4000 ? 7 - x_mask : x_mask;
-   unsigned tile_y = tile & 0x8000 ? 7 - scanline_mask : scanline_mask;
+   unsigned tile_x = isel_if(tile & 0x4000, 7 - x_mask, x_mask);
+   unsigned tile_y = isel_if(tile & 0x8000, 7 - scanline_mask, scanline_mask);
 
    unsigned pal = (tile & 0x1c) >> 8;
    pal += base_palette;
@@ -25,9 +23,7 @@ static inline void ppu_render_bg_mode0(uint16_t *pixel, unsigned scanline, unsig
    unsigned color = ((plane >> (7 - tile_x)) & 1) << 1;
    color |= (plane >> (15 - tile_x)) & 1;
 
-   //iup_if(*pixel, color, COLOR_LUT(READ_CGRAMW(color + pal), bright));
-   if (color)
-      *pixel = COLOR_LUT(READ_CGRAMW(color + pal), bright);
+   iup_if(*pixel, color, COLOR_LUT(READ_CGRAMW(color + pal), bright));
 }
 
 #endif
