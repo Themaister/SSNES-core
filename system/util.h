@@ -50,6 +50,16 @@ typedef union
    } w;
 } long_reg_t;
 
+// Not totally safe :)
+#ifdef ARCH_BIG_ENDIAN
+#error "meh ..."
+#else
+#define READ_16LE(addr) (*(uint16_t*)(addr))
+#define READ_32LE(addr) (*(uint32_t*)(addr))
+#define WRITE_16LE(addr, data) (*(uint16_t*)(addr) = data)
+#define WRITE_32LE(addr, data) (*(uint32_t*)(addr) = data)
+#endif
+
 // Some branchless ops which should come in handy :)
 
 // Branchless ternary operation. cond ? a : b

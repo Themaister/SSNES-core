@@ -11,9 +11,23 @@
 struct mem_state
 {
    uint8_t wram[128 * 1024];
-   uint8_t vram[64 * 1024];
-   uint8_t oam[512 + 32];
-   uint8_t cgram[512];
+   union
+   {
+      uint8_t b[64 * 1024];
+      uint16_t w[32 * 1024];
+   } vram;
+
+   union
+   {
+      uint8_t b[512 + 32];
+      uint32_t l[128 + 8];
+   } oam;
+
+   union
+   {
+      uint8_t b[512];
+      uint16_t w[256];
+   } cgram;
 
    uint8_t apuram[64 * 1024];
 

@@ -41,8 +41,6 @@ void ssnes_ppu_init(void)
 void ssnes_ppu_deinit(void)
 {}
 
-#define READ_CGRAMW(wordaddr) ((uint16_t)MEM.cgram[(wordaddr) << 1] | ((uint16_t)MEM.cgram[((wordaddr) << 1) + 1] << 8))
-#define READ_VRAMW(wordaddr) ((uint16_t)MEM.vram[(wordaddr) << 1] | ((uint16_t)MEM.vram[((wordaddr) << 1) + 1] << 8))
 
 // Render the basic color (color 0 which is rendered when everything else falls through).
 static void ppu_render_bg(unsigned scanline)
@@ -65,6 +63,7 @@ static void ppu_render_bg(unsigned scanline)
 }
 
 #include "mode0.h"
+#include "sprite.h"
 
 static void ppu_render_mode0(unsigned scanline)
 {
@@ -141,6 +140,13 @@ static void ppu_render_mode0(unsigned scanline)
          ppu_render_bg_mode0(line++, scanline, scanline_mask, 
                (i + hofs) & 0xff, bright, tilemap_addr, character_data, 0);
       }
+   }
+   
+   line = baseline;
+   if (PPU.tm & 0x10)
+   {
+      const uint8_t *oam_hi = &MEM.oam.b[512];
+      ppu_render_sprites(line, oam_hi, scanline);
    }
 }
 

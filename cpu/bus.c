@@ -132,13 +132,13 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
       // Block VRAM access unless we're in force blank or vblank.
       case 0x2118: // VMDATAL
          fprintf(stderr, "Write VRAM word $%x -> $%x (low)\n", (unsigned)data, (unsigned)STATUS.regs.vram_addr.w);
-         iup_if(MEM.vram[(STATUS.regs.vram_addr.w & 0x7fff) << 1], PPU.vsync | (PPU.inidisp & 0x80), data);
+         iup_if(MEM.vram.b[(STATUS.regs.vram_addr.w & 0x7fff) << 1], PPU.vsync | (PPU.inidisp & 0x80), data);
          STATUS.regs.vram_addr.w += isel_if(STATUS.regs.vmain & 0x80, 0, vram_addr_inc[STATUS.regs.vmain & 3]);
          return;
 
       case 0x2119: // VMDATAH
          fprintf(stderr, "Write VRAM word $%x -> $%x (hi)\n", (unsigned)data, (unsigned)STATUS.regs.vram_addr.w);
-         iup_if(MEM.vram[((STATUS.regs.vram_addr.w & 0x7fff) << 1) + 1], PPU.vsync | (PPU.inidisp & 0x80), data);
+         iup_if(MEM.vram.b[((STATUS.regs.vram_addr.w & 0x7fff) << 1) + 1], PPU.vsync | (PPU.inidisp & 0x80), data);
          STATUS.regs.vram_addr.w += isel_if(STATUS.regs.vmain & 0x80, vram_addr_inc[STATUS.regs.vmain & 3], 0);
          return;
       //////////////
@@ -153,8 +153,8 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
          STATUS.regs.cg_odd ^= true;
          if (!STATUS.regs.cg_odd)
          {
-            MEM.cgram[STATUS.regs.cgadd << 1] = STATUS.regs.cgbuf;
-            MEM.cgram[((STATUS.regs.cgadd++) << 1) + 1] = data;
+            MEM.cgram.b[STATUS.regs.cgadd << 1] = STATUS.regs.cgbuf;
+            MEM.cgram.b[((STATUS.regs.cgadd++) << 1) + 1] = data;
          }
          else
          {

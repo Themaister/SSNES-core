@@ -5,6 +5,13 @@
 #include "system/util.h"
 #include <stdbool.h>
 
+#define READ_CGRAMW(wordaddr) READ_16LE(MEM.cgram.w + (wordaddr))
+#define READ_VRAMW(wordaddr) READ_16LE(MEM.vram.w + (wordaddr))
+#define READ_OAML(wordaddr) READ_32LE(MEM.oam.l + (wordaddr))
+#define WRITE_CGRAMW(wordaddr) WRITE_16LE(MEM.cgram.w + (wordaddr))
+#define WRITE_VRAMW(wordaddr) WRITE_16LE(MEM.vram.w + (wordaddr))
+#define WRITE_OAML(wordaddr) WRITE_32LE(MEM.oam.l + (wordaddr))
+
 struct ppu_state
 {
    bool vsync;
