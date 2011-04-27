@@ -11,6 +11,8 @@ Start:
    xce
    cli
 
+   stz $01
+
    sep #$20
    rep #$10
 
@@ -26,14 +28,30 @@ Start:
    stz CGDATA
 
    LoadCGRAM Palette, 0, 8
-   LoadVRAM Tilemap, $0400, 2
+   LoadCGRAM Palette, $0040, 8
+   LoadVRAM Tilemap, $0400, $0020
+   LoadVRAM Tilemap, $0500, $0020
+   LoadVRAM Tilemap, $0600, $0020
+   LoadVRAM Tilemap, $0620, $0020
+   LoadVRAM Tilemap, $0640, $0020
+   LoadVRAM Tilemap, $0680, $0020
+   LoadVRAM Tilemap, $06a0, $0020
+   LoadVRAM Tilemap, $06c0, $0020
+   LoadVRAM Tilemap, $06e0, $0020
+   LoadVRAM Tilemap, $0720, $0020
+   LoadVRAM Tilemap, $0750, $0020
+   LoadVRAM Tilemap, $0040, $0020
+   LoadVRAM Tilemap, $0140, $0020
+   LoadVRAM Tilemap, $0240, $0020
    LoadVRAM Tiles, $1008, 16
 
    lda #$04
    sta BG1SC
    lda #$01
    sta BG12NBA
+   sta BG34NBA
    stz BGMODE
+   lda #$05
    sta TM
 
    lda #$ff
@@ -75,15 +93,26 @@ VBlank: ; VBlank routine
    stz CGDATA
    sta $00
 +
+   lda JOY1H
+   and #$01
+   beq +
+   inc $01
+   lda $01
+   sta BG1HOFS
+   stz BG1HOFS
+   sta BG1VOFS
+   stz BG1VOFS
++
    pla
    rti
 
 
 Palette:
-   .dw $0000, $efff, $001f, $7c00
+   .dw $001f, $7fff, $001f, $7c00
 
 Tilemap:
-   .dw $0001
+   .dw $0001, $0001, $0001, $0001, $0001, $0001, $0001, $0001
+   .dw $0001, $0001, $0001, $0001, $0001, $0001, $0001, $0001
 
 Tiles:
    .db $ff, $ff, $00, $00, $ff, $ff, $00, $00
