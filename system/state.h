@@ -20,6 +20,7 @@ struct mem_state
    union
    {
       uint8_t b[512 + 32];
+      uint16_t w[256 + 16];
       uint32_t l[128 + 8];
    } oam;
 

@@ -1,7 +1,7 @@
 #ifndef __PPU_MODE0_H
 #define __PPU_MODE0_H
 
-static inline void ppu_render_bg_mode0(uint16_t *pixel, unsigned scanline, unsigned scanline_mask, unsigned x, uint16_t bright,
+static inline void ppu_render_bg_mode0(uint16_t *pixel, unsigned scanline, unsigned scanline_mask, unsigned x,
       unsigned tilemap_addr, unsigned character_data,
       unsigned base_palette)
 {
@@ -23,7 +23,7 @@ static inline void ppu_render_bg_mode0(uint16_t *pixel, unsigned scanline, unsig
    unsigned color = ((plane >> (7 - tile_x)) & 1) << 1;
    color |= (plane >> (15 - tile_x)) & 1;
 
-   iup_if(*pixel, color, COLOR_LUT(READ_CGRAMW(color + pal), bright));
+   iup_if(*pixel, color, READ_CGRAMW(color + pal));
 }
 
 #endif

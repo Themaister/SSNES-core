@@ -60,6 +60,25 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
          PPU.inidisp = data;
          return;
 
+      case 0x2101: // OBSEL
+         PPU.obsel = data;
+         return;
+
+      case 0x2102: // OAMADDL
+         STATUS.regs.oam_addr.b.l = data;
+         return;
+      case 0x2103: // OAMADDH
+         STATUS.regs.oam_addr.b.h = data;
+         return;
+
+      case 0x2104: // OAMDATA
+         STATUS.regs.oam_odd ^= true;
+         if (!STATUS.regs.oam_odd)
+            WRITE_OAMW(STATUS.regs.oam_addr.w++ & 0x1ff, STATUS.regs.oam_buf | ((uint16_t)data << 8));
+         else
+            STATUS.regs.oam_buf = data;
+         return;
+
       case 0x2105: // BGMODE
          PPU.bgmode = data;
          return;

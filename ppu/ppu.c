@@ -10,6 +10,7 @@
 static uint16_t *xbgr2rgb_lut = NULL;
 
 #define COLOR_LUT(color, bright) (xbgr2rgb_lut[((color) & 0x7fff) | ((unsigned)(bright) << 15)])
+#define COLOR_LUT_S(color, bright) (xbgr2rgb_lut[((color) & 0x7fff) | (unsigned)(bright)])
 static inline uint16_t xbgr2rgb(unsigned color, unsigned bright)
 {
    bright++;
@@ -43,38 +44,32 @@ void ssnes_ppu_deinit(void)
 
 
 // Render the basic color (color 0 which is rendered when everything else falls through).
-static void ppu_render_bg(unsigned scanline)
+static void ppu_render_bg(uint16_t *out_buf, unsigned scanline)
 {
-   uint16_t *line = PPU.buffer + 1024 * scanline;
-
-   uint8_t bright = (PPU.inidisp & 0xf);
    uint16_t incol = READ_CGRAMW(0);
-   uint16_t bg = COLOR_LUT(incol, bright);
-
    if (PPU.inidisp & 0x80)
    {
-      memset(line, 0, 256 * sizeof(uint16_t));
+      memset(out_buf, 0, 256 * sizeof(uint16_t));
    }
    else
    {
       for (unsigned i = 0; i < 256; i++)
-         line[i] = bg;
+         out_buf[i] = incol;
    }
 }
 
 #include "mode0.h"
 #include "sprite.h"
 
-static void ppu_render_mode0(unsigned scanline)
+static void ppu_render_mode0(uint16_t *out_buf, unsigned scanline)
 {
    if (PPU.inidisp & 0x80)
       return;
 
-   uint8_t bright = (PPU.inidisp & 0xf);
-   uint16_t *baseline = PPU.buffer + 1024 * scanline;
+   //uint8_t prio_buf[256];
 
    // Priority bits aren't handled :(
-   uint16_t *line = baseline;
+   uint16_t *line = out_buf;
    if (PPU.tm & 0x08) // BG4
    {
       unsigned vofs = PPU.bg4vofs;
@@ -87,11 +82,11 @@ static void ppu_render_mode0(unsigned scanline)
       for (unsigned i = 0; i < 256; i++)
       {
          ppu_render_bg_mode0(line++, scanline, scanline_mask, 
-               (i + hofs) & 0xff, bright, tilemap_addr, character_data, 96);
+               (i + hofs) & 0xff, tilemap_addr, character_data, 96);
       }
    }
 
-   line = baseline;
+   line = out_buf;
    if (PPU.tm & 0x04) // BG3
    {
       unsigned vofs = PPU.bg3vofs;
@@ -104,11 +99,11 @@ static void ppu_render_mode0(unsigned scanline)
       for (unsigned i = 0; i < 256; i++)
       {
          ppu_render_bg_mode0(line++, scanline, scanline_mask, 
-               (i + hofs) & 0xff, bright, tilemap_addr, character_data, 64);
+               (i + hofs) & 0xff, tilemap_addr, character_data, 64);
       }
    }
 
-   line = baseline;
+   line = out_buf;
    if (PPU.tm & 0x02) // BG2
    {
       unsigned vofs = PPU.bg2vofs;
@@ -121,11 +116,11 @@ static void ppu_render_mode0(unsigned scanline)
       for (unsigned i = 0; i < 256; i++)
       {
          ppu_render_bg_mode0(line++, scanline, scanline_mask, 
-               (i + hofs) & 0xff, bright, tilemap_addr, character_data, 32);
+               (i + hofs) & 0xff, tilemap_addr, character_data, 32);
       }
    }
 
-   line = baseline;
+   line = out_buf;
    if (PPU.tm & 0x01) // BG1
    {
       unsigned vofs = PPU.bg1vofs;
@@ -138,11 +133,11 @@ static void ppu_render_mode0(unsigned scanline)
       for (unsigned i = 0; i < 256; i++)
       {
          ppu_render_bg_mode0(line++, scanline, scanline_mask, 
-               (i + hofs) & 0xff, bright, tilemap_addr, character_data, 0);
+               (i + hofs) & 0xff, tilemap_addr, character_data, 0);
       }
    }
    
-   line = baseline;
+   line = out_buf;
    if (PPU.tm & 0x10)
    {
       const uint8_t *oam_hi = &MEM.oam.b[512];
@@ -150,9 +145,18 @@ static void ppu_render_mode0(unsigned scanline)
    }
 }
 
+static void blit_scanline_lo(uint16_t * restrict output, const uint16_t * restrict input)
+{
+   unsigned bright = ((unsigned)PPU.inidisp & 0xf) << 15;
+   for (unsigned i = 0; i < 256; i++)
+      *output++ = COLOR_LUT_S(*input++, bright);
+}
+
 // Just a background color for now :D
 void ssnes_ppu_scanline(unsigned scanline)
 {
-   ppu_render_bg(scanline);
-   ppu_render_mode0(scanline);
+   uint16_t out_buf[256];
+   ppu_render_bg(out_buf, scanline);
+   ppu_render_mode0(out_buf, scanline);
+   blit_scanline_lo(PPU.buffer + 1024 * scanline, out_buf);
 }

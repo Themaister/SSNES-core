@@ -45,13 +45,15 @@ Start:
    LoadVRAM Tilemap, $0240, $0020
    LoadVRAM Tiles, $1008, 16
 
+   jsr InitOAM
+
    lda #$04
    sta BG1SC
    lda #$01
    sta BG12NBA
    sta BG34NBA
    stz BGMODE
-   lda #$05
+   lda #$15
    sta TM
 
    lda #$ff
@@ -117,6 +119,38 @@ Tilemap:
 Tiles:
    .db $ff, $ff, $00, $00, $ff, $ff, $00, $00
    .db $ff, $ff, $00, $00, $ff, $ff, $00, $00
+
+
+InitOAM:
+   pha
+   phx
+
+; Sets OAM to an initial state. Remove all sprites off-screen.
+   ldx #0
+   lda #$01
+
+-  sta $1000, x
+   inx
+   inx
+   inx
+   inx
+   cpx #$0200
+   bne -
+
+   LoadOAM $1000, 0, $200
+
+; Set signed bit in all of high part of OAM.
+   lda #$55
+-  sta $1000, x
+   inx
+   cpx #$0220
+   bne -
+
+   LoadOAM $1000 + $0200, $0100, $0020
+
+   plx
+   pla
+   rts
 
 .ends
    

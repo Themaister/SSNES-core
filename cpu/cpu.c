@@ -56,7 +56,7 @@ static void cpu_check_irq(void)
    }
 }
 
-static void print_registers(void)
+static inline void print_registers(void)
 {
    fprintf(stderr, "\tA: %04x  X: %04x  Y: %04x  ", (unsigned)REGS.a.w, (unsigned)REGS.x.w, (unsigned)REGS.y.w);
    fprintf(stderr, "DP: %04x  SP: %04x  ", (unsigned)(REGS.dp >> 8), (unsigned)REGS.sp.w);

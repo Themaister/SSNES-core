@@ -77,6 +77,10 @@ struct cpu_status
       uint8_t vmain;
       word_reg_t vram_addr;
 
+      word_reg_t oam_addr;
+      bool oam_odd;
+      uint8_t oam_buf;
+
       long_reg_t wram_addr;
 
       uint8_t apuio[4];
