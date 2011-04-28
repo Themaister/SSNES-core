@@ -1,7 +1,29 @@
 #include "smp.h"
+#include <string.h>
+#include "system/state.h"
+#include "system/macros.h"
+#include "iplrom.h"
+
+static void init_smp_registers(void)
+{
+   SMP.pc = 0xffc0; // Reset vector
+   SMP.x = 0;
+   SMP.sp = 0xef;
+   SMP.ya.w = 0;
+   memset(&SMP.p, 0, sizeof(SMP.p));
+   SMP.p.z = 1;
+}
+
+static void init_ipl_rom(void)
+{
+   memcpy(&MEM.apuram[0xffc0], smp_iplrom, sizeof(smp_iplrom));
+}
 
 void ssnes_smp_init(void)
-{}
+{
+   init_smp_registers();
+   init_ipl_rom();
+}
 
 void ssnes_smp_deinit(void)
 {}
