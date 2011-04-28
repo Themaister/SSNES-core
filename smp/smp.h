@@ -17,6 +17,8 @@ struct smp_state
    } p;
 };
 
+void ssnes_smp_run(unsigned cycles);
+
 void ssnes_smp_init(void);
 void ssnes_smp_deinit(void);
 
