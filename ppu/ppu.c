@@ -66,82 +66,63 @@ static void ppu_render_mode0(uint16_t *out_buf, unsigned scanline)
    if (PPU.inidisp & 0x80)
       return;
 
-   //uint8_t prio_buf[256];
-
-   // Priority bits aren't handled :(
-   uint16_t *line = out_buf;
+   // Priority bits aren't handled yet :(
    if (PPU.tm & 0x08) // BG4
    {
       unsigned vofs = PPU.bg4vofs;
-      scanline = (scanline + vofs) & 0xff;
-      unsigned hofs = PPU.bg4hofs;
+      unsigned line = (scanline + vofs) & 0xff;
+      unsigned hofs = 256 - PPU.bg4hofs;
       unsigned tilemap_addr = (PPU.bg4sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg34nba & 0xf0) << 8;
       unsigned scanline_mask = scanline & 7;
 
-      for (unsigned i = 0; i < 256; i++)
-      {
-         ppu_render_bg_mode0(line++, scanline, scanline_mask, 
-               (i + hofs) & 0xff, tilemap_addr, character_data, 96);
-      }
+      ppu_render_bg_mode0(out_buf, line, scanline_mask, 
+            hofs, tilemap_addr, character_data, 96);
    }
 
-   line = out_buf;
    if (PPU.tm & 0x04) // BG3
    {
       unsigned vofs = PPU.bg3vofs;
-      scanline = (scanline + vofs) & 0xff;
-      unsigned hofs = PPU.bg3hofs;
+      unsigned line = (scanline + vofs) & 0xff;
+      unsigned hofs = 256 - PPU.bg3hofs;
       unsigned tilemap_addr = (PPU.bg3sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg12nba & 0x0f) << 12;
       unsigned scanline_mask = scanline & 7;
 
-      for (unsigned i = 0; i < 256; i++)
-      {
-         ppu_render_bg_mode0(line++, scanline, scanline_mask, 
-               (i + hofs) & 0xff, tilemap_addr, character_data, 64);
-      }
+      ppu_render_bg_mode0(out_buf, line, scanline_mask, 
+            hofs, tilemap_addr, character_data, 64);
    }
 
-   line = out_buf;
    if (PPU.tm & 0x02) // BG2
    {
       unsigned vofs = PPU.bg2vofs;
-      scanline = (scanline + vofs) & 0xff;
-      unsigned hofs = PPU.bg2hofs;
+      unsigned line = (scanline + vofs) & 0xff;
+      unsigned hofs = 256 - PPU.bg2hofs;
       unsigned tilemap_addr = (PPU.bg2sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg12nba & 0xf0) << 8;
       unsigned scanline_mask = scanline & 7;
 
-      for (unsigned i = 0; i < 256; i++)
-      {
-         ppu_render_bg_mode0(line++, scanline, scanline_mask, 
-               (i + hofs) & 0xff, tilemap_addr, character_data, 32);
-      }
+      ppu_render_bg_mode0(out_buf, line, scanline_mask, 
+            hofs, tilemap_addr, character_data, 32);
    }
 
-   line = out_buf;
    if (PPU.tm & 0x01) // BG1
    {
       unsigned vofs = PPU.bg1vofs;
-      scanline = (scanline + vofs) & 0xff;
-      unsigned hofs = PPU.bg1hofs;
+      unsigned line = (scanline + vofs) & 0xff;
+      unsigned hofs = 256 - PPU.bg1hofs;
       unsigned tilemap_addr = (PPU.bg1sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg12nba & 0xf) << 12;
       unsigned scanline_mask = scanline & 7;
 
-      for (unsigned i = 0; i < 256; i++)
-      {
-         ppu_render_bg_mode0(line++, scanline, scanline_mask, 
-               (i + hofs) & 0xff, tilemap_addr, character_data, 0);
-      }
+      ppu_render_bg_mode0(out_buf, line, scanline_mask, 
+            hofs, tilemap_addr, character_data, 0);
    }
    
-   line = out_buf;
    if (PPU.tm & 0x10)
    {
       const uint8_t *oam_hi = &MEM.oam.b[512];
-      ppu_render_sprites(line, oam_hi, scanline);
+      ppu_render_sprites(out_buf, oam_hi, scanline);
    }
 }
 

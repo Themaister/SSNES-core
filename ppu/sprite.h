@@ -18,17 +18,36 @@ static inline void ppu_render_sprite(uint16_t *pixels, uint32_t oam, unsigned sc
    unsigned attr = oam >> 24;
    unsigned pal = 128 + ((attr & 0xe) << 3);
 
-   uint16_t plane0 = READ_VRAMW(addr + line);
-   uint16_t plane1 = READ_VRAMW(addr + line + 8);
-   for (unsigned i = 0; i < 8; i++)
-   {
-      unsigned color = (plane0 >> (7 - i)) & 1;
-      color |= ((plane0 >> (15 - i)) & 1) << 1;
-      color |= ((plane1 >> (7 - i)) & 1) << 2;
-      color |= ((plane1 >> (15 - i)) & 1) << 3;
+   unsigned real_line = isel_if(attr & 0x8000, 7 - line, line);
 
-      iup_if(pixels[x & 0xff], color, READ_CGRAMW(pal + color));
-      x++;
+   uint16_t plane0 = READ_VRAMW(addr + real_line);
+   uint16_t plane1 = READ_VRAMW(addr + real_line + 8);
+
+   if (attr & 0x4000)
+   {
+      for (unsigned i = 0; i < 8; i++)
+      {
+         unsigned color = (plane0 >> i) & 1;
+         color |= ((plane0 >> (i + 8)) & 1) << 1;
+         color |= ((plane1 >> i) & 1) << 2;
+         color |= ((plane1 >> (i + 8)) & 1) << 3;
+
+         iup_if(pixels[x & 0xff], color, READ_CGRAMW(pal + color));
+         x++;
+      }
+   }
+   else
+   {
+      for (unsigned i = 0; i < 8; i++)
+      {
+         unsigned color = (plane0 >> (7 - i)) & 1;
+         color |= ((plane0 >> (15 - i)) & 1) << 1;
+         color |= ((plane1 >> (7 - i)) & 1) << 2;
+         color |= ((plane1 >> (15 - i)) & 1) << 3;
+
+         iup_if(pixels[x & 0xff], color, READ_CGRAMW(pal + color));
+         x++;
+      }
    }
 }
 
