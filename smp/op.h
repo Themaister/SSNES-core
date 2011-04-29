@@ -1,6 +1,7 @@
 #ifndef __SSNES_SMP_OP_H
 #define __SSNES_SMP_OP_H
 
+#include "memory.h"
 #include "system/state.h"
 #include "system/macros.h"
 #include "op_alu.h"

@@ -3,25 +3,12 @@
 
 // Shamelessly pilfered from bSNES, huzzah! :D
 
-static inline void smp_op_mov_a(uint8_t rd)
+static inline uint8_t smp_op_mov(uint8_t rd)
 {
    SMP.ya.b.l = rd;
    SMP.p.z = (rd == 0);
    SMP.p.n = rd & 0x80;
-}
-
-static inline void smp_op_mov_x(uint8_t rd)
-{
-   SMP.x = rd;
-   SMP.p.z = (rd == 0);
-   SMP.p.n = rd & 0x80;
-}
-
-static inline void smp_op_mov_y(uint8_t rd)
-{
-   SMP.ya.b.h = rd;
-   SMP.p.z = (rd == 0);
-   SMP.p.n = rd & 0x80;
+   return rd;
 }
 
 static inline uint8_t smp_op_adc(uint8_t a, uint8_t b)
