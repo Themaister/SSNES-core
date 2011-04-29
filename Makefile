@@ -3,7 +3,7 @@ TEST_TARGET = main_test
 HEADERS = $(wildcard */*.h)
 INCDIRS = -I.
 PIC =
-CFLAGS += -O3 -g -Wall -std=gnu99 $(PIC)
+CFLAGS += -O3 -g -Wall -std=c99 $(PIC)
 
 SOURCES = $(wildcard */*.c)
 OBJ = $(SOURCES:.c=.o)

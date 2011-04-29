@@ -111,6 +111,22 @@ static inline uint8_t smp_op_dec(uint8_t a)
    return a;
 }
 
+static inline uint16_t smp_op_incw(uint16_t a)
+{
+   a++;
+   SMP.p.n = a & 0x8000;
+   SMP.p.z = (a == 0);
+   return a;
+}
+
+static inline uint16_t smp_op_decw(uint16_t a)
+{
+   a--;
+   SMP.p.n = a & 0x8000;
+   SMP.p.z = (a == 0);
+   return a;
+}
+
 static inline uint8_t smp_op_asl(uint8_t a)
 {
    SMP.p.c = a & 0x80;
@@ -147,6 +163,23 @@ static inline uint8_t smp_op_ror(uint8_t a)
    SMP.p.n = a & 0x80;
    SMP.p.z = (a == 0);
    return a;
+}
+
+static inline void smp_op_mul(void)
+{
+   uint16_t res = (uint16_t)SMP.ya.b.l * (uint16_t)SMP.ya.b.h;
+   SMP.ya.w = res;
+   SMP.p.z = (res == 0);
+   SMP.p.n = res & 0x8000;
+}
+
+static inline void smp_op_div(void)
+{
+   uint8_t div = SMP.ya.w / SMP.x;
+   uint8_t rem = SMP.ya.w % SMP.x;
+   SMP.ya.b.l = div;
+   SMP.ya.b.h = rem;
+   // TODO: Fix flags :D
 }
 
 #endif
