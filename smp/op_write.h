@@ -36,6 +36,11 @@ static inline void smp_op_write_dpx(uint8_t rd)
    smp_write_dp(SMP.x, rd);
 }
 
+static inline void smp_op_write_dpx_inc(uint8_t rd)
+{
+   smp_write_dp(SMP.x++, rd);
+}
+
 static inline void smp_op_write_dpy(uint8_t rd)
 {
    smp_write_dp(SMP.ya.b.h, rd);
