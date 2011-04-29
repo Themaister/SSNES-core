@@ -46,6 +46,11 @@ static inline uint8_t smp_op_read_dpy(void)
    return smp_read_dp(SMP.ya.b.h);
 }
 
+static inline uint8_t smp_op_read_dpix(void)
+{
+   return smp_read_dp(smp_read_pc() + SMP.x);
+}
+
 static inline uint8_t smp_op_read_stack(void)
 {
    return smp_pop_stack();
@@ -61,6 +66,12 @@ static inline uint8_t smp_op_read_addrx(void)
 {
    uint16_t addr = smp_readw_pc();
    return smp_read_addr(addr + SMP.x);
+}
+
+static inline uint8_t smp_op_read_addry(void)
+{
+   uint16_t addr = smp_readw_pc();
+   return smp_read_addr(addr + SMP.ya.b.h);
 }
 
 static inline uint8_t smp_op_read_idpx(void)

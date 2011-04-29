@@ -31,14 +31,14 @@ static inline void smp_op_write_dp(uint8_t addr, uint8_t rd)
    smp_write_dp(addr, rd);
 }
 
-static inline void smp_op_write_dpx(uint8_t addr, uint8_t rd)
+static inline void smp_op_write_dpx(uint8_t rd)
 {
-   smp_write_dp(addr + SMP.x, rd);
+   smp_write_dp(SMP.x, rd);
 }
 
-static inline void smp_op_write_dpy(uint8_t addr, uint8_t rd)
+static inline void smp_op_write_dpy(uint8_t rd)
 {
-   smp_write_dp(addr + SMP.ya.b.h, rd);
+   smp_write_dp(SMP.ya.b.h, rd);
 }
 
 static inline void smp_op_write_addr(uint16_t addr, uint8_t rd)

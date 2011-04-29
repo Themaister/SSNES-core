@@ -1,7 +1,7 @@
 #ifndef __SSNES_IPLROM_H
 #define __SSNES_IPLROM_H
 // This is the IPLROM for the S-SMP coprocessor.
-// It is so small it cannot be considered copyrightable work.
+// It is so small it cannot be considered copyrightable work. :)
 static const uint8_t smp_iplrom[64] = {
    /*ffc0*/  0xcd, 0xef,        // mov x, #$ef
    /*ffc2*/  0xbd,              // mov sp, x
