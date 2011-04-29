@@ -30,6 +30,13 @@ static inline uint8_t smp_read_addr(uint16_t addr)
    return smp_read(addr);
 }
 
+static inline uint16_t smp_readw_addr(uint16_t addr)
+{
+   uint16_t res = smp_read(addr);
+   res |= (uint16_t)smp_read(addr + 1) << 8;
+   return res;
+}
+
 static inline uint8_t smp_read_dp(uint8_t dp)
 {
    return smp_read(((uint16_t)SMP.p.p << 8) | dp);
