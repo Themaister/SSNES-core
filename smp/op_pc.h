@@ -11,6 +11,11 @@ static inline void smp_op_jmpix(void)
    SMP.pc = smp_readw_addr(smp_readw_pc() + SMP.x);
 }
 
+static inline void smp_op_bra(void)
+{
+   SMP.pc += (int8_t)smp_read_pc();
+}
+
 #define SMP_OP_BBC_DECL(bit) smp_op_bbc_##bit
 #define SMP_OP_BBC(bit) \
    static inline void SMP_OP_BBC_DECL(bit) (void) \
@@ -130,6 +135,37 @@ static inline void smp_op_ret1(void)
    target |= (uint16_t)smp_pop_stack() << 8;
    SMP.pc = target;
    smp_set_p(smp_pop_stack());
+}
+
+static inline void smp_op_cbne_dp(void)
+{
+   uint8_t target = smp_read_pc();
+   uint8_t data = smp_op_read_dp();
+   SMP.pc += (int8_t)isel_eq(data, SMP.ya.b.l, 0, target);
+}
+
+static inline void smp_op_cbne_dpix(void)
+{
+   uint8_t target = smp_read_pc();
+   uint8_t data = smp_op_read_dpix();
+   SMP.pc += (int8_t)isel_eq(data, SMP.ya.b.l, 0, target);
+}
+
+// Probably wrong :D
+static inline void smp_op_dbnz_dp(void)
+{
+   uint8_t target = smp_read_pc();
+   uint8_t dp = smp_read_pc();
+   uint8_t data = smp_read_dp(dp) - 1;
+   SMP.pc += (int8_t)isel_if(data, target, 0);
+   smp_write_dp(dp, data);
+}
+
+static inline void smp_op_dbnz_y(void)
+{
+   uint8_t target = smp_read_pc();
+   SMP.ya.b.h--;
+   SMP.pc += (int8_t)isel_if(SMP.ya.b.h, target, 0);
 }
 
 

@@ -26,14 +26,24 @@ static inline void smp_op_write_sp(uint8_t rd)
    SMP.sp = rd;
 }
 
-static inline void smp_op_write_dp(uint8_t addr, uint8_t rd)
+static inline void smp_op_write_dp(uint8_t rd)
 {
-   smp_write_dp(addr, rd);
+   smp_write_dp(smp_read_pc(), rd);
 }
 
 static inline void smp_op_write_dpx(uint8_t rd)
 {
    smp_write_dp(SMP.x, rd);
+}
+
+static inline void smp_op_write_dpix(uint8_t rd)
+{
+   smp_write_dp(smp_read_pc() + SMP.x, rd);
+}
+
+static inline void smp_op_write_dpiy(uint8_t rd)
+{
+   smp_write_dp(smp_read_pc() + SMP.ya.b.h, rd);
 }
 
 static inline void smp_op_write_dpx_inc(uint8_t rd)
@@ -46,32 +56,34 @@ static inline void smp_op_write_dpy(uint8_t rd)
    smp_write_dp(SMP.ya.b.h, rd);
 }
 
-static inline void smp_op_write_addr(uint16_t addr, uint8_t rd)
+static inline void smp_op_write_addr(uint8_t rd)
 {
-   smp_write_addr(addr, rd);
+   smp_write_addr(smp_readw_pc(), rd);
 }
 
-static inline void smp_op_write_addrx(uint16_t addr, uint8_t rd)
+static inline void smp_op_write_addrx(uint8_t rd)
 {
-   smp_write_addr(addr + SMP.x, rd);
+   smp_write_addr(smp_readw_pc() + SMP.x, rd);
 }
 
-static inline void smp_op_write_addry(uint16_t addr, uint8_t rd)
+static inline void smp_op_write_addry(uint8_t rd)
 {
-   smp_write_addr(addr + SMP.ya.b.h, rd);
+   smp_write_addr(smp_readw_pc() + SMP.ya.b.h, rd);
 }
 
-static inline void smp_op_write_idpx(uint8_t addr, uint8_t rd)
+static inline void smp_op_write_idpx(uint8_t rd)
 {
-   uint16_t a = smp_readw_dp(addr + SMP.x);
+   uint16_t a = smp_readw_dp(smp_read_pc() + SMP.x);
    smp_write_addr(a, rd);
 }
 
-static inline void smp_op_write_idpy(uint8_t addr, uint8_t rd)
+static inline void smp_op_write_idpy(uint8_t rd)
 {
-   uint16_t a = smp_readw_dp(addr);
+   uint16_t a = smp_readw_dp(smp_read_pc());
    smp_write_addr(a + SMP.ya.b.h, rd);
 }
+
+
 
 #define SMP_OP_CLEAR_DECL(bit) smp_op_clear_##bit
 #define SMP_OP_CLEAR(bit) \

@@ -152,20 +152,24 @@ SMP_OP_ALU_BIT(eor1)
 #define SMP_OP_ALU_DPX_DPY(op) \
    static inline void SMP_OP_ALU_DPX_DPY_DECL(op) (void) \
    { \
-      uint8_t src2 = smp_op_read_dpy(); \
-      uint8_t src1 = smp_op_read_dpx(); \
+      uint8_t dpy = smp_read_pc(); \
+      uint8_t dpx = smp_read_pc(); \
+      uint8_t src2 = smp_read_dp(dpy); \
+      uint8_t src1 = smp_read_dp(dpx); \
       uint8_t res = smp_op_##op (src1, src2); \
-      smp_op_write_dpx(res); \
+      smp_write_dp(dpx, res); \
    }
 
 #define SMP_OP_ALU_DP_DP_DECL(op) smp_op_alu_dp_dp_##op
 #define SMP_OP_ALU_DP_DP(op) \
    static inline void SMP_OP_ALU_DP_DP_DECL(op) (void) \
    { \
-      uint8_t src2 = smp_op_read_dp(); \
-      uint8_t src1 = smp_op_read_dp(); \
+      uint8_t dp_src = smp_read_pc(); \
+      uint8_t dp_dst = smp_read_pc(); \
+      uint8_t src2 = smp_read_dp(dp_src); \
+      uint8_t src1 = smp_read_dp(dp_dst); \
       uint8_t res = smp_op_##op (src1, src2); \
-      smp_op_write_dp(MEM.apuram[SMP.pc - 2], res); \
+      smp_write_dp(dp_dst, res); \
    }
 
 #define SMP_OP_ALU_DP_IMM_DECL(op) smp_op_alu_dp_imm_##op
@@ -173,9 +177,10 @@ SMP_OP_ALU_BIT(eor1)
    static inline void SMP_OP_ALU_DP_IMM_DECL(op) (void) \
    { \
       uint8_t src2 = smp_op_read_const(); \
-      uint8_t src1 = smp_op_read_dp(); \
+      uint8_t dp = smp_read_pc(); \
+      uint8_t src1 = smp_read_dp(dp); \
       uint8_t res = smp_op_##op (src1, src2); \
-      smp_op_write_dp(MEM.apuram[SMP.pc - 2], res); \
+      smp_write_dp(dp, res); \
    }
 
 #define SMP_OP_ALU_IMM_DECL(op) smp_op_alu_imm_##op
@@ -287,6 +292,17 @@ SMP_OP_ALUXY_CMP(y, const)
 SMP_OP_ALUXY_CMP(y, dp)
 SMP_OP_ALUXY_CMP(y, addr)
 
+#define SMP_OP_ALUW_DECL(op) smp_op_aluw##op
+#define SMP_OP_ALUW(op) \
+   static inline void SMP_OP_ALUW_DECL(op) (void) \
+   { \
+      SMP.ya.w = smp_op_##op (SMP.ya.w, smp_op_readw_dp()); \
+   }
+
+SMP_OP_ALUW(cmpw)
+SMP_OP_ALUW(addw)
+SMP_OP_ALUW(subw)
+
 
 static inline void smp_op_move_sp_x(void)
 {
@@ -330,6 +346,7 @@ SMP_OP_MOVE_X(const)
 SMP_OP_MOVE_X(a)
 SMP_OP_MOVE_X(sp)
 SMP_OP_MOVE_X(dp)
+SMP_OP_MOVE_X(dpy)
 SMP_OP_MOVE_X(dpiy)
 SMP_OP_MOVE_X(addr)
 
@@ -345,38 +362,68 @@ SMP_OP_MOVE_X(addr)
 
 SMP_OP_MOVE_Y(const)
 SMP_OP_MOVE_Y(a)
-SMP_OP_MOVE_Y(dp)
+SMP_OP_MOVE_Y(dpx)
 SMP_OP_MOVE_Y(dpix)
 SMP_OP_MOVE_Y(addr)
 
-static inline void smp_op_move_dpx_inc_a(void)
+#define SMP_OP_MOVE_DECL(dst, src) smp_op_move_##dst##_##src
+#define SMP_OP_MOVE(dst, src) \
+   static inline void SMP_OP_MOVE_DECL(dst, src) (void) \
+   { \
+      smp_op_write_##dst (smp_op_read_##src ()); \
+   }
+
+SMP_OP_MOVE(addrx, a)
+SMP_OP_MOVE(addry, a)
+SMP_OP_MOVE(addrx, y)
+SMP_OP_MOVE(addry, x)
+
+SMP_OP_MOVE(dp, a)
+SMP_OP_MOVE(dp, y)
+SMP_OP_MOVE(dp, x)
+
+SMP_OP_MOVE(dpix, a)
+SMP_OP_MOVE(dpix, y)
+SMP_OP_MOVE(dpiy, x)
+
+SMP_OP_MOVE(addr, a)
+SMP_OP_MOVE(addr, y)
+SMP_OP_MOVE(addr, x)
+
+SMP_OP_MOVE(dp, const)
+
+SMP_OP_MOVE(dpx_inc, a)
+SMP_OP_MOVE(dpx, a)
+SMP_OP_MOVE(idpy, a)
+SMP_OP_MOVE(idpx, a)
+
+SMP_OP_MOVE(dp, dp)
+
+static inline void smp_op_movw_ya_d(void)
 {
-   smp_op_write_dpx_inc(SMP.ya.b.l);
+   uint16_t wd = smp_op_readw_dp();
+   SMP.p.z = (wd == 0);
+   SMP.p.n = wd & 0x8000;
+   SMP.ya.w = wd;
 }
 
-static inline void smp_op_move_dpx_a(void)
-{
-   smp_op_write_dpx(SMP.ya.b.l);
-}
-
-static inline void smp_op_move_idpx_a(void)
+static inline void smp_op_movw_d_ya(void)
 {
    uint8_t dp = smp_read_pc();
-   smp_op_write_idpx(dp, SMP.ya.b.l);
+   smp_writew_dp(dp, SMP.ya.w);
 }
 
-static inline void smp_op_move_idpy_a(void)
+static inline void smp_op_mov1_c_bit(void)
 {
-   uint8_t dp = smp_read_pc();
-   smp_op_write_idpy(dp, SMP.ya.b.l);
+   SMP.p.c = smp_op_read_bit();
 }
 
-static inline void smp_op_move_dp_dp(void)
+static inline void smp_op_mov1_bit_c(void)
 {
-   uint8_t dp_in = smp_read_pc();
-   uint8_t dp_out = smp_read_pc();
-   smp_write_dp(dp_out, smp_read_dp(dp_in));
+   uint16_t addr = smp_readw_pc();
+   uint8_t bit = addr >> 13;
+   uint8_t mask = 1 << bit;
+   smp_write_addr_bit(addr & 0x1fff, (uint8_t)SMP.p.c << bit, mask); 
 }
-
 
 #endif
