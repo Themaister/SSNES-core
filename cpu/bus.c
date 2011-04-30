@@ -10,6 +10,7 @@ uint8_t ssnes_bus_read_2000(uint32_t addr)
    uint16_t daddr = addr & 0xffff;
    if (daddr >= 0x2140 && daddr < 0x2180)
    {
+      STATUS.smp_state = true;
       uint8_t ret = SMP.apuio[daddr & 3];
       fprintf(stderr, "CPU: APUIO%d = $%x\n", (int)daddr & 3, (unsigned)ret);
       return SMP.apuio[daddr & 3];
@@ -217,7 +218,10 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
 
    // APUIO
    if (daddr >= 0x2140 && daddr < 0x2180)
+   {
+      STATUS.smp_state = true;
       STATUS.regs.apuio[daddr & 3] = data;
+   }
 }
 
 void ssnes_bus_write_4000(uint32_t addr, uint8_t data)

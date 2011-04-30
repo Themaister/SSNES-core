@@ -31,6 +31,9 @@ void ssnes_cpu_reset(void)
    cpu_init_registers();
 }
 
+// Depends.
+#define CYCLES_PER_FRAME (262 * 1364)
+
 static void cpu_check_cycles(void)
 {
    if (STATUS.ppu.scanline_ready)
@@ -38,10 +41,22 @@ static void cpu_check_cycles(void)
       ssnes_ppu_scanline(STATUS.ppu.vcount - 1);
       STATUS.ppu.scanline_ready = false;
 
-      ssnes_smp_run(1364);
    }
 
    // Check if we have to jump to SMP/DSP or whatever.
+   if (STATUS.smp_state && STATUS.cycles > STATUS.smp_cycles)
+   {
+      STATUS.smp_cycles += ssnes_smp_run(STATUS.cycles - STATUS.smp_cycles);
+      STATUS.smp_state = false;
+   }
+   else if ((int)STATUS.cycles - (int)STATUS.smp_cycles > 500)
+      STATUS.smp_cycles += ssnes_smp_run(STATUS.cycles - STATUS.smp_cycles);
+}
+
+static void cpu_finish_cycles(void)
+{
+   if (STATUS.smp_cycles < CYCLES_PER_FRAME)
+      ssnes_smp_run(STATUS.cycles - STATUS.smp_cycles);
 }
 
 static void cpu_check_irq(void)
@@ -95,8 +110,6 @@ static inline unsigned update_ppu_cycles(unsigned last_cycles)
    return STATUS.cycles;
 }
 
-// Depends.
-#define CYCLES_PER_FRAME (262 * 1364)
 
 void ssnes_cpu_run_frame(void)
 {
@@ -167,4 +180,6 @@ void ssnes_cpu_run_frame(void)
       cpu_check_cycles();
       cpu_check_irq();
    }
+
+   cpu_finish_cycles();
 }
