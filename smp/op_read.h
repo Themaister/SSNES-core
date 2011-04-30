@@ -103,6 +103,14 @@ static inline uint8_t smp_op_read_idpy(void)
    return smp_read_addr(addr);
 }
 
+static inline uint8_t smp_op_read_bit(void)
+{
+   uint16_t addr = smp_readw_pc();
+   uint16_t bit = addr >> 13;
+   addr &= 0x1fff;
+   return (smp_read_addr(addr) >> bit) & 1;
+}
+
 #define DECL_ALU_MOVE_OP(op) \
    SMP_OP_ALU_DPX_DPY(op) \
    SMP_OP_ALU_DP_DP(op) \
@@ -327,5 +335,6 @@ static inline void smp_op_move_dp_dp(void)
    uint8_t dp_out = smp_read_pc();
    smp_write_dp(dp_out, smp_read_dp(dp_in));
 }
+
 
 #endif

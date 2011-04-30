@@ -182,4 +182,35 @@ static inline void smp_op_div(void)
    // TODO: Fix flags :D
 }
 
+
+static inline void smp_op_and1(uint8_t rd)
+{
+   SMP.p.c &= rd;
+}
+
+static inline void smp_op_andn1(uint8_t rd)
+{
+   SMP.p.c &= ~rd;
+}
+
+static inline void smp_op_or1(uint8_t rd)
+{
+   SMP.p.c |= rd;
+}
+
+static inline void smp_op_orn1(uint8_t rd)
+{
+   SMP.p.c |= ~rd;
+}
+
+static inline void smp_op_eor1(uint8_t rd)
+{
+   SMP.p.c ^= rd;
+}
+
+static inline void smp_op_mov1(uint8_t rd)
+{
+   SMP.p.c = rd;
+}
+
 #endif

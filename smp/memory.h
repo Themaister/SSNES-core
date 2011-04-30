@@ -55,6 +55,11 @@ static inline void smp_write_addr(uint16_t addr, uint8_t data)
    smp_write(addr, data, 0xff);
 }
 
+static inline void smp_write_addr_bit(uint16_t addr, uint8_t data, uint8_t mask)
+{
+   smp_write(addr, data, mask);
+}
+
 static inline void smp_write_dp(uint8_t dp, uint8_t data)
 {
    smp_write(((uint16_t)SMP.p.p << 8) | dp, data, 0xff);
@@ -64,6 +69,11 @@ static inline void smp_writew_dp(uint8_t dp, uint16_t data)
 {
    smp_write_dp(dp, data & 0xff);
    smp_write_dp(dp + 1, data >> 8);
+}
+
+static inline void smp_write_dp_bit(uint8_t dp, uint8_t data, uint8_t mask)
+{
+   smp_write(((uint16_t)SMP.p.p << 8) | dp, data, mask);
 }
 
 static inline void smp_push_stack(uint8_t data)
