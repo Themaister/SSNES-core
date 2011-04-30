@@ -16,6 +16,8 @@ Start:
    sep #$20
    rep #$10
 
+   jsr InitSPC
+
    ldx #$1fff
    txs
 
@@ -147,6 +149,24 @@ InitOAM:
    bne -
 
    LoadOAM $1000 + $0200, $0100, $0020
+
+   plx
+   pla
+   rts
+
+
+InitSPC:
+   pha
+   phx
+
+   lda #$aa
+-
+   cmp APUIO0
+   bne -
+   lda #$bb
+-
+   cmp APUIO1
+   bne -
 
    plx
    pla

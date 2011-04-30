@@ -2,8 +2,10 @@
 #include "system/state.h"
 #include "system/macros.h"
 
-smp_write_t ssnes_smp_memmap_write[1 << 13];
-smp_read_t ssnes_smp_memmap_read[1 << 13];
+#include <stdio.h>
+
+smp_write_t ssnes_smp_memmap_write[1 << 12];
+smp_read_t ssnes_smp_memmap_read[1 << 12];
 
 static void smp_write_ram(uint16_t addr, uint8_t data, uint8_t mask)
 {
@@ -39,15 +41,19 @@ static void smp_write_regs(uint16_t addr, uint8_t data, uint8_t mask)
 
       case 0xf4:
          SMP.apuio[0] ^= (SMP.apuio[0] ^ data) & mask;
+         fprintf(stderr, "SMP: APUIO0 = $%x\n", (unsigned)SMP.apuio[0]);
          break;
       case 0xf5:
          SMP.apuio[1] ^= (SMP.apuio[1] ^ data) & mask;
+         fprintf(stderr, "SMP: APUIO1 = $%x\n", (unsigned)SMP.apuio[1]);
          break;
       case 0xf6:
          SMP.apuio[2] ^= (SMP.apuio[2] ^ data) & mask;
+         fprintf(stderr, "SMP: APUIO2 = $%x\n", (unsigned)SMP.apuio[2]);
          break;
       case 0xf7:
          SMP.apuio[3] ^= (SMP.apuio[3] ^ data) & mask;
+         fprintf(stderr, "SMP: APUIO3 = $%x\n", (unsigned)SMP.apuio[3]);
          break;
 
       case 0xf8:
@@ -86,12 +92,12 @@ static uint8_t smp_read_regs(uint16_t addr)
 
 void ssnes_smp_init_memmap(void)
 {
-   for (unsigned i = 0; i < 1 << 13; i++)
+   for (unsigned i = 0; i < 1 << 12; i++)
    {
       ssnes_smp_memmap_write[i] = smp_write_ram;
       ssnes_smp_memmap_read[i] = smp_read_ram;
    }
 
-   ssnes_smp_memmap_write[7] = smp_write_regs;
-   ssnes_smp_memmap_read[7] = smp_read_regs;
+   ssnes_smp_memmap_write[0xf0 >> 4] = smp_write_regs;
+   ssnes_smp_memmap_read[0xf0 >> 4] = smp_read_regs;
 }

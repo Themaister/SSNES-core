@@ -142,11 +142,31 @@ SMP_OP_ALU_BIT(eor1)
 #define DECL_MAIN_ALU \
    DECL_ALU_MOVE_OP(adc) \
    DECL_ALU_MOVE_OP(and) \
-   DECL_ALU_MOVE_OP(cmp) \
    DECL_ALU_MOVE_OP(eor) \
    DECL_ALU_MOVE_OP(or) \
    DECL_ALU_MOVE_OP(sbc)
 
+#define SMP_OP_ALU_CMP_DECL(read1, read2) smp_op_alu_cmp_##read1##_##read2
+#define SMP_OP_ALU_CMP(read1, read2) \
+   static inline void SMP_OP_ALU_CMP_DECL(read1, read2) (void) \
+   { \
+      uint8_t src1 = smp_op_read_##read1 (); \
+      uint8_t src2 = smp_op_read_##read2 (); \
+      smp_op_cmp(src1, src2); \
+   }
+
+SMP_OP_ALU_CMP(dpx, dpy)
+SMP_OP_ALU_CMP(dp, dp)
+SMP_OP_ALU_CMP(dp, const)
+SMP_OP_ALU_CMP(a, const)
+SMP_OP_ALU_CMP(a, dp)
+SMP_OP_ALU_CMP(a, dpx)
+SMP_OP_ALU_CMP(a, dpix)
+SMP_OP_ALU_CMP(a, idpx)
+SMP_OP_ALU_CMP(a, idpy)
+SMP_OP_ALU_CMP(a, addr)
+SMP_OP_ALU_CMP(a, addrx)
+SMP_OP_ALU_CMP(a, addry)
 
 #define SMP_OP_ALU_DPX_DPY_DECL(op) smp_op_alu_dpx_dpy_##op
 #define SMP_OP_ALU_DPX_DPY(op) \

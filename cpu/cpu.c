@@ -53,6 +53,7 @@ static void cpu_check_irq(void)
 
       iup_if(STATUS.pending_irq.nmi, STATUS.regs.nmitimen & 0x80, true);
 
+      ssnes_poll_cb();
       // Joypad autopoll
       if (STATUS.regs.nmitimen & 0x01)
          input_autopoll();

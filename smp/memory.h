@@ -1,18 +1,20 @@
 #ifndef __SMP_MEMORY_H
 #define __SMP_MEMORY_H
 
+#include <stdio.h>
 #include "memmap.h"
 
 // Need MMAPing for registers and stuff.
 static inline uint8_t smp_read(uint16_t addr)
 {
-   return ssnes_smp_memmap_read[addr >> 3](addr);
+   return ssnes_smp_memmap_read[addr >> 4](addr);
 }
 
 // SMP can modify indiviual bits. Some registers have sideeffects on writes, mask defines which bits to write.
 static inline void smp_write(uint16_t addr, uint8_t data, uint8_t mask)
 {
-   ssnes_smp_memmap_write[addr >> 3](addr, data, mask);
+   fprintf(stderr, "SMP: Writing to addr $%x => $%x\n", (unsigned)addr, (unsigned)data);
+   ssnes_smp_memmap_write[addr >> 4](addr, data, mask);
 }
 
 

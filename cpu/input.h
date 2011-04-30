@@ -3,8 +3,6 @@
 
 static inline void input_autopoll(void)
 {
-   ssnes_poll_cb();
-
    memset(STATUS.input, 0, sizeof(STATUS.input));
 
    for (unsigned p = 0; p < 2; p++)

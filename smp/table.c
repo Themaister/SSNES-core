@@ -12,6 +12,9 @@
 #define ALU(read, op) SMP_OP_ALU_##read##_DECL(op)
 #define ALUXY(reg, read) SMP_OP_ALUXY_CMP_DECL(reg, read)
 #define ALUW(op) SMP_OP_ALUW_DECL(op)
+
+#define CMP(read1, read2) SMP_OP_ALU_CMP_DECL(read1, read2)
+
 #define RMW(type, op) SMP_OP_RMW_##type##_DECL(op)
 #define RMWW(op) SMP_OP_RMWW_DP_DECL(op)
 
@@ -128,12 +131,12 @@ smp_op_t ssnes_smp_optable[256] = {
    TCALL(6),               // 0x61
    SET1(3),                // 0x62
    BBS(3),                 // 0x63
-   ALU(DP, cmp),           // 0x64
-   ALU(ADDR, cmp),         // 0x65
-   ALU(DPX, cmp),          // 0x66
-   ALU(IDPX, cmp),         // 0x67
-   ALU(IMM, cmp),          // 0x68
-   ALU(DP_DP, cmp),        // 0x69
+   CMP(a, dp),             // 0x64
+   CMP(a, addr),           // 0x65
+   CMP(a, dpx),            // 0x66
+   CMP(a, idpx),           // 0x67
+   CMP(a, const),          // 0x68
+   CMP(dp, dp),            // 0x69
    ALU(BIT, andn1),        // 0x6a
    RMW(DP, ror),           // 0x6b
    RMW(ADDR, ror),         // 0x6c
@@ -145,12 +148,12 @@ smp_op_t ssnes_smp_optable[256] = {
    TCALL(7),               // 0x71
    CLR1(3),                // 0x72
    BBC(3),                 // 0x73
-   ALU(DPX, cmp),          // 0x74
-   ALU(ADDRX, cmp),        // 0x75
-   ALU(ADDRY, cmp),        // 0x76
-   ALU(IDPY, cmp),         // 0x77
-   ALU(DP_IMM, cmp),       // 0x78
-   ALU(DPX_DPY, cmp),      // 0x79
+   CMP(a, dpx),            // 0x74
+   CMP(a, addrx),          // 0x75
+   CMP(a, addry),          // 0x76
+   CMP(a, idpy),           // 0x77
+   CMP(dp, const),         // 0x78
+   CMP(dpx, dpy),          // 0x79
    ALUW(addw),             // 0x7a
    RMW(DPX, ror),          // 0x7b
    RMW(A, ror),            // 0x7c
