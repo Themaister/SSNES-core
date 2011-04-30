@@ -111,12 +111,27 @@ static inline uint8_t smp_op_read_bit(void)
    return (smp_read_addr(addr) >> bit) & 1;
 }
 
+#define SMP_OP_ALU_BIT_DECL(op) smp_op_alu_bit_##op
+#define SMP_OP_ALU_BIT(op) \
+   static inline void SMP_OP_ALU_BIT_DECL(op) (void) \
+   { \
+      smp_op_##op (smp_op_read_bit()); \
+   }
+
+SMP_OP_ALU_BIT(and1)
+SMP_OP_ALU_BIT(andn1)
+SMP_OP_ALU_BIT(or1)
+SMP_OP_ALU_BIT(orn1)
+SMP_OP_ALU_BIT(eor1)
+
+
 #define DECL_ALU_MOVE_OP(op) \
    SMP_OP_ALU_DPX_DPY(op) \
    SMP_OP_ALU_DP_DP(op) \
    SMP_OP_ALU_DP_IMM(op) \
    SMP_OP_ALU_IMM(op) \
    SMP_OP_ALU_DP(op) \
+   SMP_OP_ALU_DPX(op) \
    SMP_OP_ALU_DPIX(op) \
    SMP_OP_ALU_IDPX(op) \
    SMP_OP_ALU_IDPY(op) \
@@ -176,6 +191,16 @@ static inline uint8_t smp_op_read_bit(void)
 #define SMP_OP_ALU_DP_DECL(op) smp_op_alu_dp_##op
 #define SMP_OP_ALU_DP(op) \
    static inline void SMP_OP_ALU_DP_DECL(op) (void) \
+   { \
+      uint8_t src1 = smp_op_read_a(); \
+      uint8_t src2 = smp_op_read_dp(); \
+      uint8_t res = smp_op_##op (src1, src2); \
+      smp_op_write_a(res); \
+   }
+
+#define SMP_OP_ALU_DPX_DECL(op) smp_op_alu_dpx_##op
+#define SMP_OP_ALU_DPX(op) \
+   static inline void SMP_OP_ALU_DPX_DECL(op) (void) \
    { \
       uint8_t src1 = smp_op_read_a(); \
       uint8_t src2 = smp_op_read_dpx(); \
@@ -245,6 +270,23 @@ static inline uint8_t smp_op_read_bit(void)
 
 
 DECL_MAIN_ALU
+
+#define SMP_OP_ALUXY_CMP_DECL(reg, mode) smp_op_alu##reg##_##mode##_cmp
+#define SMP_OP_ALUXY_CMP(reg, mode) \
+   static inline void SMP_OP_ALUXY_CMP_DECL(reg, mode) (void) \
+   { \
+      uint8_t src1 = smp_op_read_##reg (); \
+      uint8_t src2 = smp_op_read_##mode (); \
+      smp_op_cmp(src1, src2); \
+   }
+
+SMP_OP_ALUXY_CMP(x, const)
+SMP_OP_ALUXY_CMP(x, dp)
+SMP_OP_ALUXY_CMP(x, addr)
+SMP_OP_ALUXY_CMP(y, const)
+SMP_OP_ALUXY_CMP(y, dp)
+SMP_OP_ALUXY_CMP(y, addr)
+
 
 static inline void smp_op_move_sp_x(void)
 {

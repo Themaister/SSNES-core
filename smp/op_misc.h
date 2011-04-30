@@ -37,6 +37,9 @@ static inline void smp_op_daa(void)
 static inline void smp_op_das(void)
 {}
 
+static inline void smp_op_brk(void)
+{} // Meh
+
 static inline void smp_op_di(void)
 {
    SMP.p.i = false;
