@@ -49,6 +49,10 @@ smp_op_t ssnes_smp_optable[256] = {
    RMW(A, asl),            // 0x1c
    RMW(X, dec),            // 0x1d
    ALUXY(x, addr),         // 0x1e
+   smp_op_jmpix,           // 0x1f
+   smp_op_clrp,            // 0x20
+   TCALL(2),               // 0x21
+   SET1(1),                // 0x22
 
 
 
