@@ -15,6 +15,10 @@ struct smp_state
    {
       bool n, v, p, b, h, i, z, c;
    } p;
+
+   uint8_t apuio[4];
+   uint8_t dsp_addr;
+   uint8_t dsp_data;
 };
 
 unsigned ssnes_smp_run(unsigned cycles);

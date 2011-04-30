@@ -7,6 +7,7 @@
 
 #include "table.h"
 #include "memory.h"
+#include "memmap.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -15,7 +16,7 @@ static void init_smp_registers(void)
 {
    SMP.pc = 0xffc0; // Reset vector
    SMP.x = 0;
-   SMP.sp = 0xef;
+   SMP.sp = 0x00;
    SMP.ya.w = 0;
    memset(&SMP.p, 0, sizeof(SMP.p));
    SMP.p.z = 1;
@@ -31,8 +32,11 @@ void ssnes_smp_init(void)
    init_smp_registers();
    init_ipl_rom();
 
+   ssnes_smp_init_memmap();
+
    assert(ssnes_smp_optable[255]);
    assert(ssnes_smp_cycle_table[255]);
+   assert(ssnes_smp_opname[255]);
 }
 
 void ssnes_smp_deinit(void)

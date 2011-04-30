@@ -393,5 +393,5 @@ const char* ssnes_smp_opname[256] = {
    "mov a, #i", "mov x, !a", "not1 m.b", "mov y, d", "mov y, !a", "notc", "pop y", "sleep", // 0xe8
 
    "beq r", "tcall 15", "clr1 d.7", "bbc d.7, r", "mov a, d+x", "mov a, !a+x", "mov a, !a+y", "mov a, [d]+y", // 0xf0
-   "mov x, d", "mov x, d+y", "mov dd, ds", "mov y, d+x", "inc y", "mov y, a", "dbnz y, r" // 0xf8
+   "mov x, d", "mov x, d+y", "mov dd, ds", "mov y, d+x", "inc y", "mov y, a", "dbnz y, r", "stop" // 0xf8
 };
