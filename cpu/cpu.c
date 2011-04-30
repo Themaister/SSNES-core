@@ -7,6 +7,7 @@
 #include "dma.h"
 #include "libsnes/interface.h"
 #include "input.h"
+#include "smp/smp.h"
 
 void ssnes_cpu_init(void)
 {
@@ -36,6 +37,8 @@ static void cpu_check_cycles(void)
    {
       ssnes_ppu_scanline(STATUS.ppu.vcount - 1);
       STATUS.ppu.scanline_ready = false;
+
+      ssnes_smp_run(1364);
    }
 
    // Check if we have to jump to SMP/DSP or whatever.
@@ -97,6 +100,7 @@ static inline unsigned update_ppu_cycles(unsigned last_cycles)
 void ssnes_cpu_run_frame(void)
 {
    STATUS.cycles = 0;
+   STATUS.smp_cycles = 0;
    STATUS.ppu.vcount = 0;
    STATUS.ppu.hcount = 0;
    PPU.vsync = false;

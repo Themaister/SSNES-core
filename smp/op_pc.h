@@ -22,7 +22,7 @@ static inline void smp_op_bra(void)
    { \
       uint8_t data = smp_op_read_dp(); \
       uint8_t target = smp_read_pc(); \
-      SMP.pc += (int16_t)isel_if(data & (1 << bit), 0, target); \
+      SMP.pc += (int8_t)isel_if(data & (1 << bit), 0, target); \
    }
 
 SMP_OP_BBC(0)
@@ -40,7 +40,7 @@ SMP_OP_BBC(7)
    { \
       uint8_t data = smp_op_read_dp(); \
       uint8_t target = smp_read_pc(); \
-      SMP.pc += (int16_t)isel_if(data & (1 << bit), target, 0); \
+      SMP.pc += (int8_t)isel_if(data & (1 << bit), target, 0); \
    }
 
 SMP_OP_BBS(0)
@@ -57,7 +57,7 @@ SMP_OP_BBS(7)
    static inline void SMP_OP_BRANCH_FLAG_DECL(flag) (void) \
    { \
       uint8_t target = smp_read_pc(); \
-      SMP.pc += (int16_t)isel_if(SMP.p.flag, target, 0); \
+      SMP.pc += (int8_t)isel_if(SMP.p.flag, target, 0); \
    }
 
 #define SMP_OP_BRANCH_N_FLAG_DECL(flag) smp_op_branch_n_flag_##flag
@@ -65,7 +65,7 @@ SMP_OP_BBS(7)
    static inline void SMP_OP_BRANCH_N_FLAG_DECL(flag) (void) \
    { \
       uint8_t target = smp_read_pc(); \
-      SMP.pc += (int16_t)isel_if(SMP.p.flag, 0, target); \
+      SMP.pc += (int8_t)isel_if(SMP.p.flag, 0, target); \
    }
 
 SMP_OP_BRANCH_FLAG(v)

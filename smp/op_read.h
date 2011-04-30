@@ -362,6 +362,7 @@ SMP_OP_MOVE_X(addr)
 
 SMP_OP_MOVE_Y(const)
 SMP_OP_MOVE_Y(a)
+SMP_OP_MOVE_Y(dp)
 SMP_OP_MOVE_Y(dpx)
 SMP_OP_MOVE_Y(dpix)
 SMP_OP_MOVE_Y(addr)

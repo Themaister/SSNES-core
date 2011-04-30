@@ -54,6 +54,7 @@ struct cpu_status
 
    unsigned cycles_per_frame;
    unsigned cycles;
+   unsigned smp_cycles;
 
    struct
    {
