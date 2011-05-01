@@ -58,73 +58,10 @@ static void ppu_render_bg(uint16_t *out_buf, unsigned scanline)
    }
 }
 
-#include "mode0.h"
 #include "sprite.h"
+#include "mode0.h"
+#include "mode1.h"
 
-static void ppu_render_mode0(uint16_t *out_buf, unsigned scanline)
-{
-   if (PPU.inidisp & 0x80)
-      return;
-
-   // Priority bits aren't handled yet :(
-   if (PPU.tm & 0x08) // BG4
-   {
-      unsigned vofs = PPU.bg4vofs;
-      unsigned line = (scanline + vofs) & 0xff;
-      unsigned hofs = 256 - PPU.bg4hofs;
-      unsigned tilemap_addr = (PPU.bg4sc & 0xfc) << 8;
-      unsigned character_data = (PPU.bg34nba & 0xf0) << 8;
-      unsigned scanline_mask = scanline & 7;
-
-      ppu_render_bg_mode0(out_buf, line, scanline_mask, 
-            hofs, tilemap_addr, character_data, 96);
-   }
-
-   if (PPU.tm & 0x04) // BG3
-   {
-      unsigned vofs = PPU.bg3vofs;
-      unsigned line = (scanline + vofs) & 0xff;
-      unsigned hofs = 256 - PPU.bg3hofs;
-      unsigned tilemap_addr = (PPU.bg3sc & 0xfc) << 8;
-      unsigned character_data = (PPU.bg12nba & 0x0f) << 12;
-      unsigned scanline_mask = scanline & 7;
-
-      ppu_render_bg_mode0(out_buf, line, scanline_mask, 
-            hofs, tilemap_addr, character_data, 64);
-   }
-
-   if (PPU.tm & 0x02) // BG2
-   {
-      unsigned vofs = PPU.bg2vofs;
-      unsigned line = (scanline + vofs) & 0xff;
-      unsigned hofs = 256 - PPU.bg2hofs;
-      unsigned tilemap_addr = (PPU.bg2sc & 0xfc) << 8;
-      unsigned character_data = (PPU.bg12nba & 0xf0) << 8;
-      unsigned scanline_mask = scanline & 7;
-
-      ppu_render_bg_mode0(out_buf, line, scanline_mask, 
-            hofs, tilemap_addr, character_data, 32);
-   }
-
-   if (PPU.tm & 0x01) // BG1
-   {
-      unsigned vofs = PPU.bg1vofs;
-      unsigned line = (scanline + vofs) & 0xff;
-      unsigned hofs = 256 - PPU.bg1hofs;
-      unsigned tilemap_addr = (PPU.bg1sc & 0xfc) << 8;
-      unsigned character_data = (PPU.bg12nba & 0xf) << 12;
-      unsigned scanline_mask = scanline & 7;
-
-      ppu_render_bg_mode0(out_buf, line, scanline_mask, 
-            hofs, tilemap_addr, character_data, 0);
-   }
-   
-   if (PPU.tm & 0x10)
-   {
-      const uint8_t *oam_hi = &MEM.oam.b[512];
-      ppu_render_sprites(out_buf, oam_hi, scanline);
-   }
-}
 
 static void blit_scanline_lo(uint16_t * restrict output, const uint16_t * restrict input)
 {
@@ -138,6 +75,41 @@ void ssnes_ppu_scanline(unsigned scanline)
 {
    uint16_t out_buf[256];
    ppu_render_bg(out_buf, scanline);
-   ppu_render_mode0(out_buf, scanline);
+
+   switch (PPU.bgmode & 7)
+   {
+      case 0:
+         ppu_render_mode0(out_buf, scanline);
+         break;
+
+      case 1:
+         ppu_render_mode1(out_buf, scanline);
+         break;
+
+      case 2:
+         //ppu_render_mode2(out_buf, scanline);
+         break;
+
+      case 3:
+         //ppu_render_mode3(out_buf, scanline);
+         break;
+
+      case 4:
+         //ppu_render_mode4(out_buf, scanline);
+         break;
+
+      case 5:
+         //ppu_render_mode5(out_buf, scanline);
+         break;
+
+      case 6: // ...
+         //ppu_render_mode6(out_buf, scanline);
+         break;
+
+      case 7: // O.O
+         //ppu_render_mode7(out_buf, scanline);
+         break;
+   }
+
    blit_scanline_lo(PPU.buffer + 1024 * scanline, out_buf);
 }

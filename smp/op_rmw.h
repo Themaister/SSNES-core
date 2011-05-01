@@ -1,8 +1,6 @@
 #ifndef __SMP_OP_RMW_H
 #define __SMP_OP_RMW_H
 
-#include <stdio.h>
-
 #define SMP_OP_RMW_A_DECL(op) smp_op_rmw_a_##op
 #define SMP_OP_RMW_A(op) \
    static inline void SMP_OP_RMW_A_DECL(op) (void) \
@@ -21,7 +19,6 @@
 #define SMP_OP_RMW_Y(op) \
    static inline void SMP_OP_RMW_Y_DECL(op) (void) \
    { \
-      fprintf(stderr, "inc y\n"); \
       SMP.ya.b.h = smp_op_##op (SMP.ya.b.h); \
    }
 

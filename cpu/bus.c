@@ -118,7 +118,9 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
       case 0x2104: // OAMDATA
          STATUS.regs.oam_odd ^= true;
          if (!STATUS.regs.oam_odd)
+         {
             WRITE_OAMW(STATUS.regs.oam_addr.w++ & 0x1ff, STATUS.regs.oam_buf | ((uint16_t)data << 8));
+         }
          else
             STATUS.regs.oam_buf = data;
          return;

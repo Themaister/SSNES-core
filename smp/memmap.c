@@ -41,19 +41,19 @@ static void smp_write_regs(uint16_t addr, uint8_t data, uint8_t mask)
 
       case 0xf4:
          SMP.apuio[0] ^= (SMP.apuio[0] ^ data) & mask;
-         fprintf(stderr, "SMP: APUIO0 = $%x\n", (unsigned)SMP.apuio[0]);
+         //fprintf(stderr, "SMP: APUIO0 = $%x\n", (unsigned)SMP.apuio[0]);
          break;
       case 0xf5:
          SMP.apuio[1] ^= (SMP.apuio[1] ^ data) & mask;
-         fprintf(stderr, "SMP: APUIO1 = $%x\n", (unsigned)SMP.apuio[1]);
+         //fprintf(stderr, "SMP: APUIO1 = $%x\n", (unsigned)SMP.apuio[1]);
          break;
       case 0xf6:
          SMP.apuio[2] ^= (SMP.apuio[2] ^ data) & mask;
-         fprintf(stderr, "SMP: APUIO2 = $%x\n", (unsigned)SMP.apuio[2]);
+         //fprintf(stderr, "SMP: APUIO2 = $%x\n", (unsigned)SMP.apuio[2]);
          break;
       case 0xf7:
          SMP.apuio[3] ^= (SMP.apuio[3] ^ data) & mask;
-         fprintf(stderr, "SMP: APUIO3 = $%x\n", (unsigned)SMP.apuio[3]);
+         //fprintf(stderr, "SMP: APUIO3 = $%x\n", (unsigned)SMP.apuio[3]);
          break;
 
       case 0xf8:
