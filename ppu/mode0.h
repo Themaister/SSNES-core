@@ -55,6 +55,7 @@ static void ppu_render_mode0(uint16_t *out_buf, unsigned scanline)
       unsigned vofs = PPU.bg4vofs;
       unsigned line = (scanline + vofs + 1) & 0xff;
       unsigned hofs = 256 - PPU.bg4hofs;
+      hofs &= 0xff;
       unsigned tilemap_addr = (PPU.bg4sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg34nba & 0xf0) << 8;
       unsigned scanline_mask = scanline & 7;
@@ -68,6 +69,7 @@ static void ppu_render_mode0(uint16_t *out_buf, unsigned scanline)
       unsigned vofs = PPU.bg3vofs;
       unsigned line = (scanline + vofs + 1) & 0xff;
       unsigned hofs = 256 - PPU.bg3hofs;
+      hofs &= 0xff;
       unsigned tilemap_addr = (PPU.bg3sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg12nba & 0x0f) << 12;
       unsigned scanline_mask = scanline & 7;
@@ -81,6 +83,7 @@ static void ppu_render_mode0(uint16_t *out_buf, unsigned scanline)
       unsigned vofs = PPU.bg2vofs;
       unsigned line = (scanline + vofs + 1) & 0xff;
       unsigned hofs = 256 - PPU.bg2hofs;
+      hofs &= 0xff;
       unsigned tilemap_addr = (PPU.bg2sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg12nba & 0xf0) << 8;
       unsigned scanline_mask = scanline & 7;
@@ -94,6 +97,7 @@ static void ppu_render_mode0(uint16_t *out_buf, unsigned scanline)
       unsigned vofs = PPU.bg1vofs;
       unsigned line = (scanline + vofs + 1) & 0xff;
       unsigned hofs = 256 - PPU.bg1hofs;
+      hofs &= 0xff;
       unsigned tilemap_addr = (PPU.bg1sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg12nba & 0xf) << 12;
       unsigned scanline_mask = scanline & 7;

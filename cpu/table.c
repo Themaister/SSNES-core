@@ -1339,7 +1339,7 @@ const char* ssnes_cpu_opcode_names[] = {
    "clc",         "ora (addry)",    "inc A",       "tcs",                  // 0x18
    "trb (addr)",  "ora (addrx)",    "asl (addrx)", "ora (longx)",          // 0x1c
 
-   "jsr (addr)",  "and (idpx)",     "jsl",          "and (sr)",             // 0x20
+   "jsr (addr)",  "and (idpx)",     "jsl",         "and (sr)",             // 0x20
    "bit (dp)",    "and (dp)",       "rol (dp)",    "and (ildp)",           // 0x24
    "plp",         "and (imm)",      "rol A",       "pld",                  // 0x28
    "bit (addr)",  "and (addr)",     "rol (addr)",  "and (long)",           // 0x2c
@@ -1380,7 +1380,7 @@ const char* ssnes_cpu_opcode_names[] = {
    "stz (addr)",  "sta (addrx)",    "stz (addrx)", "sta (longx)",          // 0x9c
 
    "ldy (imm)",   "lda (idpx)",     "ldx (imm)",   "lda (sr)",             // 0xa0
-   "ldy (dp)",    "lda (dp)",       "lda (dp)",    "lda (ildp)",           // 0xa4
+   "ldy (dp)",    "lda (dp)",       "ldx (dp)",    "lda (ildp)",           // 0xa4
    "tay",         "lda (imm)",      "tax",         "plb",                  // 0xa8
    "ldy (addr)",  "lda (addr)",     "ldx (addr)",  "lda (long)",           // 0xac
 

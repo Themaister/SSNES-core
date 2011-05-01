@@ -15,6 +15,10 @@ static inline void cpu_op_sep(void)
    uint8_t mask = cpu_read_pc();
    uint8_t old_mask = cpu_get_p();
    cpu_set_p(old_mask | mask);
+
+   iup_if(REGS.a.w, REGS.p.m, REGS.a.w & 0xff);
+   iup_if(REGS.x.w, REGS.p.x, REGS.x.w & 0xff);
+   iup_if(REGS.y.w, REGS.p.x, REGS.y.w & 0xff);
 }
 
 static inline void cpu_op_nop(void)

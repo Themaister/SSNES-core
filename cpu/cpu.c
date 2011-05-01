@@ -60,7 +60,7 @@ static void cpu_finish_cycles(void)
 
 static inline void cpu_check_vhirq(void)
 {
-   if (REGS.p.i || STATUS.pending_irq.irq_fired) // IRQ disable or already fired ...
+   if (STATUS.pending_irq.irq_fired)
       return;
 
    switch (STATUS.regs.nmitimen & 0x30)
@@ -76,6 +76,12 @@ static inline void cpu_check_vhirq(void)
       case 0x30: // V/H IRQ
          iup_gte(STATUS.pending_irq.irq, STATUS.cycles, STATUS.irq.vhtrig, true);
          break;
+   }
+
+   if (REGS.p.i && STATUS.pending_irq.irq) // Mask away the IRQ.
+   {
+      STATUS.pending_irq.irq = false;
+      STATUS.pending_irq.irq_fired = true;
    }
 }
 
@@ -189,17 +195,17 @@ void ssnes_cpu_run_frame(void)
          }
          else
          {
-            //fprintf(stderr, "======================================\n");
-            //fprintf(stderr, "PC: %04x, V = %3u, H = %4u\n", (unsigned)REGS.pc.w.l, STATUS.ppu.vcount, STATUS.ppu.hcount);
+            fprintf(stderr, "======================================\n");
+            fprintf(stderr, "PC: %04x, V = %3u, H = %4u\n", (unsigned)REGS.pc.w.l, STATUS.ppu.vcount, STATUS.ppu.hcount);
             uint8_t opcode = cpu_read_pc();
-            //fprintf(stderr, "Opcode: 0x%02x || %s\n", (unsigned)opcode, ssnes_cpu_opcode_names[opcode]);
+            fprintf(stderr, "Opcode: 0x%02x || %s\n", (unsigned)opcode, ssnes_cpu_opcode_names[opcode]);
 
             ssnes_cpu_op_table[opcode]();
 
             STATUS.cycles += ssnes_cpu_cycle_table[opcode];
 
-            //print_registers();
-            //fprintf(stderr, "======================================\n");
+            print_registers();
+            fprintf(stderr, "======================================\n");
          }
       }
 

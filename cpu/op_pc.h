@@ -79,8 +79,10 @@ static inline void cpu_op_jmp_iladdr(void)
 static inline void cpu_op_jsr_addr(void) 
 {
    uint16_t addr = cpu_readw_pc();
-   cpu_stack_push(REGS.pc.b.lh);
-   cpu_stack_push(REGS.pc.b.ll);
+   long_reg_t pc = REGS.pc;
+   pc.w.l--;
+   cpu_stack_push(pc.b.lh);
+   cpu_stack_push(pc.b.ll);
 
    REGS.pc.w.l = addr;
 }
@@ -88,9 +90,11 @@ static inline void cpu_op_jsr_addr(void)
 static inline void cpu_op_jsr_long_n(void) 
 {
    uint32_t addr = cpu_readl_pc();
-   cpu_stack_push(REGS.pc.b.hl);
-   cpu_stack_push(REGS.pc.b.lh);
-   cpu_stack_push(REGS.pc.b.ll);
+   long_reg_t pc = REGS.pc;
+   pc.w.l--;
+   cpu_stack_push(pc.b.hl);
+   cpu_stack_push(pc.b.lh);
+   cpu_stack_push(pc.b.ll);
    REGS.pc.l = addr;
 }
 
@@ -103,8 +107,10 @@ static inline void cpu_op_jsr_long_e(void)
 static inline void cpu_op_jsr_iaddrx_n(void) 
 {
    uint16_t addr = cpu_readw_pc();
-   cpu_stack_push(REGS.pc.b.lh);
-   cpu_stack_push(REGS.pc.b.ll);
+   long_reg_t pc = REGS.pc;
+   pc.w.l--;
+   cpu_stack_push(pc.b.lh);
+   cpu_stack_push(pc.b.ll);
    uint16_t jmp_addr = cpu_readl((((uint32_t)REGS.pc.b.hl) << 16) | addr);
    REGS.pc.w.l = jmp_addr;
 }
@@ -138,6 +144,7 @@ static inline void cpu_op_rts(void)
 {
    REGS.pc.b.ll = cpu_stack_pull();
    REGS.pc.b.lh = cpu_stack_pull();
+   REGS.pc.w.l++;
 }
 
 static inline void cpu_op_rtl_n(void) 
@@ -145,6 +152,7 @@ static inline void cpu_op_rtl_n(void)
    REGS.pc.b.ll = cpu_stack_pull();
    REGS.pc.b.lh = cpu_stack_pull();
    REGS.pc.b.hl = cpu_stack_pull();
+   REGS.pc.w.l++;
 }
 
 static inline void cpu_op_rtl_e(void) 
