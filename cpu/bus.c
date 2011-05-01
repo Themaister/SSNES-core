@@ -12,8 +12,8 @@ uint8_t ssnes_bus_read_2000(uint32_t addr)
    {
       STATUS.smp_state = true;
       uint8_t ret = SMP.apuio[daddr & 3];
-      fprintf(stderr, "CPU: APUIO%d = $%x\n", (int)daddr & 3, (unsigned)ret);
-      return SMP.apuio[daddr & 3];
+      //fprintf(stderr, "CPU: APUIO%d = $%x\n", (int)daddr & 3, (unsigned)ret);
+      return ret;
    }
 
    return 0;
@@ -45,6 +45,40 @@ uint8_t ssnes_bus_read_4000(uint32_t addr)
          return STATUS.input[1].data2.b.l;
       case 0x421f: // JOY4H
          return STATUS.input[1].data2.b.h;
+   }
+
+   // Read DMA registers.
+   if ((daddr >> 8) == 0x43) // DMA
+   {
+      unsigned channel = (daddr >> 4) & 7;
+      unsigned reg = daddr & 0xf;
+
+      switch (reg)
+      {
+         case 0: // CTRL
+            return STATUS.dma_channels[channel].ctrl;
+
+         case 1: // B-Bus addr
+            return STATUS.dma_channels[channel].dest;
+
+         case 2: // A1TxL
+            return STATUS.dma_channels[channel].src.b.ll;
+
+         case 3:
+            return STATUS.dma_channels[channel].src.b.lh;
+
+         case 4:
+            return STATUS.dma_channels[channel].src.b.hl;
+
+         case 5:
+            return STATUS.dma_channels[channel].size.b.l;
+
+         case 6:
+            return STATUS.dma_channels[channel].size.b.h;
+
+         default:
+            break;
+      }
    }
 
    return 0;
@@ -160,13 +194,13 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
       // Missing address remapping.
       // Block VRAM access unless we're in force blank or vblank.
       case 0x2118: // VMDATAL
-         fprintf(stderr, "Write VRAM word $%x -> $%x (low)\n", (unsigned)data, (unsigned)STATUS.regs.vram_addr.w);
+         //fprintf(stderr, "Write VRAM word $%x -> $%x (low)\n", (unsigned)data, (unsigned)STATUS.regs.vram_addr.w);
          iup_if(MEM.vram.b[(STATUS.regs.vram_addr.w & 0x7fff) << 1], PPU.vsync | (PPU.inidisp & 0x80), data);
          STATUS.regs.vram_addr.w += isel_if(STATUS.regs.vmain & 0x80, 0, vram_addr_inc[STATUS.regs.vmain & 3]);
          return;
 
       case 0x2119: // VMDATAH
-         fprintf(stderr, "Write VRAM word $%x -> $%x (hi)\n", (unsigned)data, (unsigned)STATUS.regs.vram_addr.w);
+         //fprintf(stderr, "Write VRAM word $%x -> $%x (hi)\n", (unsigned)data, (unsigned)STATUS.regs.vram_addr.w);
          iup_if(MEM.vram.b[((STATUS.regs.vram_addr.w & 0x7fff) << 1) + 1], PPU.vsync | (PPU.inidisp & 0x80), data);
          STATUS.regs.vram_addr.w += isel_if(STATUS.regs.vmain & 0x80, vram_addr_inc[STATUS.regs.vmain & 3], 0);
          return;

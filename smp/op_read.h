@@ -150,8 +150,8 @@ SMP_OP_ALU_BIT(eor1)
 #define SMP_OP_ALU_CMP(read1, read2) \
    static inline void SMP_OP_ALU_CMP_DECL(read1, read2) (void) \
    { \
-      uint8_t src1 = smp_op_read_##read1 (); \
       uint8_t src2 = smp_op_read_##read2 (); \
+      uint8_t src1 = smp_op_read_##read1 (); \
       smp_op_cmp(src1, src2); \
    }
 
