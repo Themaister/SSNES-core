@@ -9,6 +9,7 @@ smp_read_t ssnes_smp_memmap_read[1 << 12];
 
 static void smp_write_ram(uint16_t addr, uint8_t data, uint8_t mask)
 {
+   //fprintf(stderr, "Write RAM: $%x => $%x\n", (unsigned)addr, (unsigned)data);
    uint8_t orig = MEM.apuram[addr];
    uint8_t delta = orig ^ data;
    delta &= mask;

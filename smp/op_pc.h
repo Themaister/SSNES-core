@@ -13,7 +13,8 @@ static inline void smp_op_jmpix(void)
 
 static inline void smp_op_bra(void)
 {
-   SMP.pc += (int8_t)smp_read_pc();
+   int8_t target = (int8_t)smp_read_pc();
+   SMP.pc += target;
 }
 
 #define SMP_OP_BBC_DECL(bit) smp_op_bbc_##bit

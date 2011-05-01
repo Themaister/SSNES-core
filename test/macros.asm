@@ -2,7 +2,7 @@
 ; Just stalls the CPU for a bit :)
 .macro Stall
    phx
-   ldx #\1
+   ldx.w #\1
 -  dex
    bne -
    plx
@@ -18,7 +18,7 @@
    sta A1B0
 
    ; Set offset
-   ldx #\1
+   ldx.w #\1
    stx A1T0L
 
    ; Set CGRAM address to write to.
@@ -26,7 +26,7 @@
    sta CGADD
 
    ; Bytes to write
-   ldx #\3
+   ldx.w #\3
    stx DAS0L
 
    stz DMAP0 ; Write one byte at a time.
@@ -53,14 +53,14 @@
    sta A1B0
 
    ; Set offset
-   ldx #\1
+   ldx.w #\1
    stx A1T0L
 
-   ldx #\2
+   ldx.w #\2
    stx VMADDL ; Set addr to write to (word).
 
    ; Bytes to write
-   ldx #\3
+   ldx.w #\3
    stx DAS0L
 
    lda #$01
@@ -84,13 +84,13 @@
    lda #$7E
    sta A1B0
 
-   ldx #\1
+   ldx.w #\1
    stx A1T0L
 
-   ldx #\2
+   ldx.w #\2
    stx OAMADDL
 
-   ldx #\3
+   ldx.w #\3
    stx DAS0L
 
    stz DMAP0

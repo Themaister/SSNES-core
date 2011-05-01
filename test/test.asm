@@ -5,6 +5,25 @@
 .bank 0
 .section "Main"
 
+InitSprite:
+   pha
+
+   lda #%00000000
+   sta $1002
+   stz $1003
+   LoadOAM $1002, $100, 2
+   lda #$10
+   sta $1000
+   lda #$01
+   sta $1001
+   LoadOAM $1000, 0, 2
+
+   LoadVRAM Sprite, $2000, $0020
+   LoadVRAM Sprite, $2020, $0020
+
+   pla
+   rts
+
 ; Entry point
 Start:
    clc
@@ -31,6 +50,7 @@ Start:
 
    LoadCGRAM Palette, 0, 8
    LoadCGRAM Palette, $0040, 8
+   LoadCGRAM Palette, $0080, 8
    LoadVRAM Tilemap, $0400, $0020
    LoadVRAM Tilemap, $0500, $0020
    LoadVRAM Tilemap, $0600, $0020
@@ -48,7 +68,10 @@ Start:
    LoadVRAM Tiles, $1008, 16
 
    jsr InitOAM
+   jsr InitSprite
 
+   lda #$01
+   sta OBSEL
    lda #$04
    sta BG1SC
    lda #$01
@@ -122,6 +145,13 @@ Tiles:
    .db $ff, $ff, $00, $00, $ff, $ff, $00, $00
    .db $ff, $ff, $00, $00, $ff, $ff, $00, $00
 
+Sprite:
+   .db $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+   .db $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+   .dw $0000, $0000, $0000, $0000
+   .dw $0000, $0000, $0000, $0000
+
+
 
 InitOAM:
    pha
@@ -155,21 +185,35 @@ InitOAM:
    rts
 
 
-InitSPC:
+StallSPC:
+   pha
+   lda #$aa
+-  cmp APUIO0
+   bne -
+   lda #$bb
+-  cmp APUIO1
+   bne -
+   pla
+   rts
+
+UploadSPC:
    pha
    phx
 
-   lda #$aa
--
-   cmp APUIO0
-   bne -
-   lda #$bb
--
-   cmp APUIO1
-   bne -
+   ldx #$1000
+   stx APUIO2
+   stz APUIO1
+   lda #$cc
+   sta APUIO0
 
    plx
    pla
+   rts
+   
+
+InitSPC:
+   jsr StallSPC
+   jsr UploadSPC
    rts
 
 .ends
