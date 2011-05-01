@@ -87,8 +87,13 @@ Start:
    sta BG1VOFS
    stz BG1VOFS
 
-   lda #%10000001
-   sta NMITIMEN ; Joypad autopoll / NMI
+   ldx.w #100
+   stx VTIMEL ; Trigger VIRQ on scanline 100
+   ldx.w #100
+   stx HTIMEL ; Trigger HIRQ on pixel 100
+
+   lda #%10010001
+   sta NMITIMEN ; Joypad autopoll / NMI / HVIRQ
    lda #$0f
    sta INIDISP
 
@@ -96,10 +101,28 @@ MainLoop:
    wai ; Wait for NMI
    jmp MainLoop
 
+VIRQ:
+   pha
+
+   lda TIMEUP ; Have to read this ...
+
+   ; Set brightness lower.
+   lda $80
+   inc A
+   and #$0f
+   sta $80
+   sta INIDISP
+
+   pla
+   rti
 
 VBlank: ; VBlank routine
    pha
    lda RDNMI
+
+   ; Set brightness back again.
+   ;lda #$0f
+   ;sta INIDISP
 
 -  lda HVBJOY
    and #$01

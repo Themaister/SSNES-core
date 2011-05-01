@@ -40,7 +40,6 @@ static void cpu_check_cycles(void)
    {
       ssnes_ppu_scanline(STATUS.ppu.vcount - 1);
       STATUS.ppu.scanline_ready = false;
-
    }
 
    // Check if we have to jump to SMP/DSP or whatever.
@@ -59,6 +58,27 @@ static void cpu_finish_cycles(void)
       ssnes_smp_run(STATUS.cycles - STATUS.smp_cycles);
 }
 
+static inline void cpu_check_vhirq(void)
+{
+   if (REGS.p.i || STATUS.pending_irq.irq_fired) // IRQ disable or already fired ...
+      return;
+
+   switch (STATUS.regs.nmitimen & 0x30)
+   {
+      case 0x20: // VIRQ
+         iup_gte(STATUS.pending_irq.irq, STATUS.cycles, STATUS.irq.vtrig, true);
+         break;
+
+      case 0x10: // HIRQ
+         iup_gte(STATUS.pending_irq.irq, STATUS.ppu.hcount, STATUS.irq.htrig, true);
+         break;
+
+      case 0x30: // V/H IRQ
+         iup_gte(STATUS.pending_irq.irq, STATUS.cycles, STATUS.irq.vhtrig, true);
+         break;
+   }
+}
+
 static void cpu_check_irq(void)
 {
    if (STATUS.ppu.frame_ready)
@@ -73,6 +93,8 @@ static void cpu_check_irq(void)
       if (STATUS.regs.nmitimen & 0x01)
          input_autopoll();
    }
+
+   cpu_check_vhirq();
 }
 
 static inline void print_registers(void)
@@ -105,6 +127,9 @@ static inline unsigned update_ppu_cycles(unsigned last_cycles)
       STATUS.ppu.frame_ready = isel_eq(STATUS.ppu.vcount, 225, true, false);
       iup_eq(PPU.hvbjoy, STATUS.ppu.vcount, 225, 0x81);
       iup_eq(PPU.hvbjoy, STATUS.ppu.vcount, 228, 0x80);
+
+      // HIRQ
+      iup_eq(STATUS.pending_irq.irq_fired, STATUS.regs.nmitimen & 0x30, 0x10, false);
    }
 
    return STATUS.cycles;
@@ -117,6 +142,8 @@ void ssnes_cpu_run_frame(void)
    STATUS.smp_cycles = 0;
    STATUS.ppu.vcount = 0;
    STATUS.ppu.hcount = 0;
+   PPU.hvbjoy = 0;
+   STATUS.pending_irq.irq_fired = false;
    PPU.vsync = false;
    unsigned last_cycles = 0;
 
@@ -148,6 +175,7 @@ void ssnes_cpu_run_frame(void)
          {
             REGS.wai_quit = true;
             STATUS.pending_irq.irq = false;
+            STATUS.pending_irq.irq_fired = true;
 
             if (REGS.e)
                cpu_op_interrupt_irq_e();

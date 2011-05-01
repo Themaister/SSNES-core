@@ -271,6 +271,32 @@ void ssnes_bus_write_4000(uint32_t addr, uint8_t data)
          STATUS.regs.nmitimen = data;
          return;
 
+      // H/V IRQ
+      case 0x4207: // HTIMEL
+         STATUS.irq.htime.b.l = data;
+         STATUS.irq.vhtrig = STATUS.irq.vtrig + (STATUS.irq.htime.w << 2);
+         STATUS.irq.htrig = STATUS.irq.htime.w << 2;
+         STATUS.pending_irq.irq_fired = false;
+         return;
+      case 0x4208: // HTIMEH
+         STATUS.irq.htime.b.h = data;
+         STATUS.irq.vhtrig = STATUS.irq.vtrig + (STATUS.irq.htime.w << 2);
+         STATUS.irq.htrig = STATUS.irq.htime.w << 2;
+         STATUS.pending_irq.irq_fired = false;
+         return;
+      case 0x4209: // VTIMEL
+         STATUS.irq.vtime.b.l = data;
+         STATUS.irq.vtrig = STATUS.irq.vtime.w * 1364;
+         STATUS.irq.vhtrig = STATUS.irq.vtrig + (STATUS.irq.htime.w << 2);
+         STATUS.pending_irq.irq_fired = false;
+         return;
+      case 0x420a: // VTIMEH
+         STATUS.irq.vtime.b.h = data;
+         STATUS.irq.vtrig = STATUS.irq.vtime.w * 1364;
+         STATUS.irq.vhtrig = STATUS.irq.vtrig + (STATUS.irq.htime.w << 2);
+         STATUS.pending_irq.irq_fired = false;
+         return;
+
       case 0x420b: // MDMAEN
          STATUS.dma_enable = data;
          for (unsigned i = 0; i < 8; i++)

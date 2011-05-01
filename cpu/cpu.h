@@ -50,6 +50,7 @@ struct cpu_status
       bool reset;
       bool nmi;
       bool irq;
+      bool irq_fired;
    } pending_irq;
 
    unsigned cycles_per_frame;
@@ -67,6 +68,15 @@ struct cpu_status
 
    struct dma_channel dma_channels[8];
    uint8_t dma_enable;
+
+   struct
+   {
+      word_reg_t htime;
+      word_reg_t vtime;
+      unsigned vtrig;
+      unsigned htrig;
+      unsigned vhtrig;
+   } irq;
 
    struct
    {
