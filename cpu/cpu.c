@@ -48,7 +48,7 @@ static void cpu_check_cycles(void)
       STATUS.smp_cycles += ssnes_smp_run(STATUS.cycles - STATUS.smp_cycles);
       STATUS.smp_state = false;
    }
-   else if ((int)STATUS.cycles - (int)STATUS.smp_cycles > 500)
+   else if ((int)STATUS.cycles - (int)STATUS.smp_cycles > 100)
       STATUS.smp_cycles += ssnes_smp_run(STATUS.cycles - STATUS.smp_cycles);
 }
 
@@ -105,9 +105,9 @@ static void cpu_check_irq(void)
 
 static inline void print_registers(void)
 {
-   fprintf(stderr, "\tA: %04x  X: %04x  Y: %04x  ", (unsigned)REGS.a.w, (unsigned)REGS.x.w, (unsigned)REGS.y.w);
-   fprintf(stderr, "DP: %04x  SP: %04x  ", (unsigned)(REGS.dp >> 8), (unsigned)REGS.sp.w);
-   fprintf(stderr, "DB: %02x  PB: %02x  ", (unsigned)(REGS.db >> 16), (unsigned)REGS.pc.w.h);
+   fprintf(stderr, "A: %04x X: %04x Y: %04x ", (unsigned)REGS.a.w, (unsigned)REGS.x.w, (unsigned)REGS.y.w);
+   fprintf(stderr, "S: %04x D: %04x ", (unsigned)REGS.sp.w, (unsigned)(REGS.dp >> 8));
+   fprintf(stderr, "DB: %02x ", (unsigned)(REGS.db >> 16));
    fputc(REGS.p.n ? 'N' : 'n', stderr);
    fputc(REGS.p.v ? 'V' : 'v', stderr);
    fputc(REGS.p.m ? 'M' : 'm', stderr);
@@ -116,7 +116,7 @@ static inline void print_registers(void)
    fputc(REGS.p.i ? 'I' : 'i', stderr);
    fputc(REGS.p.z ? 'Z' : 'z', stderr);
    fputc(REGS.p.c ? 'C' : 'c', stderr);
-   fputc('\n', stderr);
+   fprintf(stderr, " V: %03u H: %04u\n", STATUS.ppu.vcount, STATUS.ppu.hcount);
 }
 
 static inline unsigned update_ppu_cycles(unsigned last_cycles)
@@ -163,13 +163,13 @@ void ssnes_cpu_run_frame(void)
       {
          if (STATUS.pending_irq.reset)
          {
-            REGS.wai_quit = true;
+            iup_if(REGS.wai_quit, REGS.wai, true);
             STATUS.pending_irq.reset = false;
             cpu_op_interrupt_reset_e();
          }
          else if (STATUS.pending_irq.nmi)
          {
-            REGS.wai_quit = true;
+            iup_if(REGS.wai_quit, REGS.wai, true);
             STATUS.pending_irq.nmi = false;
 
             if (REGS.e)
@@ -179,7 +179,7 @@ void ssnes_cpu_run_frame(void)
          }
          else if (STATUS.pending_irq.irq)
          {
-            REGS.wai_quit = true;
+            iup_if(REGS.wai_quit, REGS.wai, true);
             STATUS.pending_irq.irq = false;
             STATUS.pending_irq.irq_fired = true;
 
@@ -195,17 +195,16 @@ void ssnes_cpu_run_frame(void)
          }
          else
          {
-            fprintf(stderr, "======================================\n");
-            fprintf(stderr, "PC: %04x, V = %3u, H = %4u\n", (unsigned)REGS.pc.w.l, STATUS.ppu.vcount, STATUS.ppu.hcount);
+            fprintf(stderr, "%06x ", (unsigned)REGS.pc.l);
             uint8_t opcode = cpu_read_pc();
-            fprintf(stderr, "Opcode: 0x%02x || %s\n", (unsigned)opcode, ssnes_cpu_opcode_names[opcode]);
+            fprintf(stderr, "%-14s", ssnes_cpu_opcode_names[opcode]); 
+            print_registers();
 
             ssnes_cpu_op_table[opcode]();
 
-            STATUS.cycles += ssnes_cpu_cycle_table[opcode];
+            //STATUS.cycles += ssnes_cpu_cycle_table[opcode];
+            STATUS.cycles += 6;
 
-            print_registers();
-            fprintf(stderr, "======================================\n");
          }
       }
 

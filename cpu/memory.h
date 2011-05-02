@@ -10,11 +10,11 @@
 // Somewhat memory mapped ...
 static inline uint8_t cpu_readl(uint32_t addr)
 {
-   uint8_t result = ssnes_memmap_read_table[addr >> 13](addr);
-   fprintf(stderr, "Read $%02x from %06x\n", (unsigned)result, (unsigned)addr);
-   return result;
+   //uint8_t result = ssnes_memmap_read_table[addr >> 13](addr);
+   //fprintf(stderr, "Read $%02x from %06x", (unsigned)result, (unsigned)addr);
+   //return result;
 
-   //return ssnes_memmap_read_table[addr >> 13](addr);
+   return ssnes_memmap_read_table[addr >> 13](addr);
 }
 
 static inline void cpu_writel(uint32_t addr, uint8_t data)

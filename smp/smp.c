@@ -57,9 +57,9 @@ static inline void print_flags(void)
 
 static inline void print_registers(void)
 {
-   fprintf(stderr, "  A:  %02x   Y: %02x   X: %02x   YA: %04x\n", 
-         (unsigned)SMP.ya.b.l, (unsigned)SMP.ya.b.h, (unsigned)SMP.x, (unsigned)SMP.ya.w);
-   fprintf(stderr, "  SP: %02x   ", (unsigned)SMP.sp);
+   fprintf(stderr, "A: %02x X: %02x Y: %02x YA: %04x ", 
+         (unsigned)SMP.ya.b.l, (unsigned)SMP.x, (unsigned)SMP.ya.b.h, (unsigned)SMP.ya.w);
+   fprintf(stderr, "S: %02x ", (unsigned)SMP.sp);
    print_flags();
 }
 
@@ -68,13 +68,12 @@ unsigned ssnes_smp_run(unsigned cycles)
    unsigned ran_cycles = 0;
    while (ran_cycles < cycles)
    {
+      fprintf(stderr, "  %04x ", (unsigned)SMP.pc);
       uint8_t opcode = smp_read_pc();
-      fprintf(stderr, "==== SMP ===========================\n");
-      fprintf(stderr, "PC = $%04x, opcode = $%x (%s)\n", (unsigned)SMP.pc - 1, (unsigned)opcode, ssnes_smp_opname[opcode]);
+      fprintf(stderr, "%-14s", ssnes_smp_opname[opcode]);
+      print_registers();
       ssnes_smp_optable[opcode]();
 
-      print_registers();
-      fprintf(stderr, "====================================\n");
       ran_cycles += ssnes_smp_cycle_table[opcode];
    }
    return ran_cycles;

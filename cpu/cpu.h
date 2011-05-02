@@ -27,6 +27,7 @@ struct cpu_regs
    } p;
    bool e;
    bool wai_quit;
+   bool wai;
 
    uint32_t db; // Data bank
    uint32_t dp; // Direct page
