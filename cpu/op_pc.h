@@ -65,15 +65,17 @@ static inline void cpu_op_jmp_iaddr(void)
 static inline void cpu_op_jmp_iaddrx(void) 
 {
    uint16_t addr = cpu_readw_pc();
-   uint16_t jmp_addr = cpu_readl(((uint32_t)REGS.pc.b.hl << 16) | addr) + REGS.x.w;
+   uint16_t jmp_addr = cpu_readlw((((uint32_t)REGS.pc.b.hl << 16) | addr) + REGS.x.w);
    REGS.pc.w.l = jmp_addr;
 }
 
 static inline void cpu_op_jmp_iladdr(void) 
 {
    uint16_t addr = cpu_readw_pc();
-   uint32_t jmp_addr = cpu_readl(((uint32_t)REGS.pc.b.hl << 16) | addr) + REGS.x.w;
-   REGS.pc.l = jmp_addr;
+   long_reg_t jmp_addr;
+   jmp_addr.w.l = cpu_readlw(((uint32_t)REGS.pc.b.hl << 16) | addr);
+   jmp_addr.w.h = cpu_readl(((((uint32_t)REGS.pc.b.hl << 16)) | addr) + 2);
+   REGS.pc = jmp_addr;
 }
 
 static inline void cpu_op_jsr_addr(void) 
@@ -111,7 +113,7 @@ static inline void cpu_op_jsr_iaddrx_n(void)
    pc.w.l--;
    cpu_stack_push(pc.b.lh);
    cpu_stack_push(pc.b.ll);
-   uint16_t jmp_addr = cpu_readl((((uint32_t)REGS.pc.b.hl) << 16) | addr);
+   uint16_t jmp_addr = cpu_readlw(((((uint32_t)REGS.pc.b.hl) << 16) | addr) + REGS.x.w);
    REGS.pc.w.l = jmp_addr;
 }
 

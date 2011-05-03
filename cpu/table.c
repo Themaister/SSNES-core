@@ -826,7 +826,7 @@ const cpu_op_t ssnes_cpu_op_table_mX[256] = {
    RMWOP(DP_W, rol),                // 26
    ALUOP(ILDP_W, and),              // 27
    cpu_op_plp_n,                    // 28
-   ALUOP(CONST_B, and),             // 29
+   ALUOP(CONST_W, and),             // 29
    CPU_OP_RMW_REG_W_DECL(a, rol),   // 2a
    cpu_op_pld,                      // 2b
    ALUOP(ADDR_W, bit),              // 2c
@@ -852,7 +852,7 @@ const cpu_op_t ssnes_cpu_op_table_mX[256] = {
    cpu_op_rti_n,                    // 40
    ALUOP(IDPX_W, eor),              // 41
    cpu_op_wdm,                      // 42
-   ALUOP(SR_B, eor),                // 43
+   ALUOP(SR_W, eor),                // 43
    cpu_op_mvp,                      // 44
    ALUOP(DP_W, eor),                // 45
    RMWOP(DP_W, lsr),                // 46
