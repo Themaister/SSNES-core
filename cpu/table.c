@@ -536,7 +536,7 @@ const cpu_op_t ssnes_cpu_op_table_mx[256] = {
    ALUOP(ILDP_W, ora),              // 07
    cpu_op_php,                      // 08
    ALUOP(CONST_W, ora),             // 09
-   CPU_OP_RMW_REG_B_DECL(a, asl),   // 0a
+   CPU_OP_RMW_REG_W_DECL(a, asl),   // 0a
    cpu_op_phd,                      // 0b
    RMWOP(ADDR_W, tsb),              // 0c
    ALUOP(ADDR_W, ora),              // 0d
@@ -546,7 +546,7 @@ const cpu_op_t ssnes_cpu_op_table_mx[256] = {
    ALUOP(IDPY_W, ora),              // 11
    ALUOP(IDP_W, ora),               // 12
    ALUOP(ISRY_W, ora),              // 13
-   RMWOP(DP_B, trb),                // 14
+   RMWOP(DP_W, trb),                // 14
    CPU_OP_READ_DPR_W_DECL(ora, x),  // 15
    RMWOP(DPX_W, asl),               // 16
    ALUOP(IDPY_W, ora),              // 17
@@ -568,7 +568,7 @@ const cpu_op_t ssnes_cpu_op_table_mx[256] = {
    ALUOP(ILDP_W, and),              // 27
    cpu_op_plp_n,                    // 28
    ALUOP(CONST_W, and),             // 29
-   CPU_OP_RMW_REG_B_DECL(a, rol),   // 2a
+   CPU_OP_RMW_REG_W_DECL(a, rol),   // 2a
    cpu_op_pld,                      // 2b
    ALUOP(ADDR_W, bit),              // 2c
    ALUOP(ADDR_W, and),              // 2d
@@ -870,7 +870,7 @@ const cpu_op_t ssnes_cpu_op_table_mX[256] = {
    ALUOP(IDP_W, eor),               // 52
    ALUOP(ISRY_W, eor),              // 53
    cpu_op_mvn,                      // 54
-   CPU_OP_READ_DPR_B_DECL(eor, x),  // 55
+   CPU_OP_READ_DPR_W_DECL(eor, x),  // 55
    RMWOP(DPX_W, lsr),               // 56
    ALUOP(ILDPY_W, eor),             // 57
    CPU_OP_RESET_FLAG_DECL(i),       // 58
@@ -971,7 +971,7 @@ const cpu_op_t ssnes_cpu_op_table_mX[256] = {
    ALUOP(ILDPY_W, lda),             // b7
    CPU_OP_RESET_FLAG_DECL(v),       // b8
    ALUOP(ADDRY_W, lda),             // b9
-   cpu_op_tsx_w,                    // ba
+   cpu_op_tsx_b,                    // ba
    cpu_op_tyx_b,                    // bb
    ALUOP(ADDRX_B, ldy),             // bc
    ALUOP(ADDRX_W, lda),             // bd
@@ -1030,7 +1030,7 @@ const cpu_op_t ssnes_cpu_op_table_mX[256] = {
    ALUOP(IDP_W, sbc),               // f2
    ALUOP(ISRY_W, sbc),              // f3
    cpu_op_pea,                      // f4
-   CPU_OP_READ_DPR_B_DECL(sbc, x),  // f5
+   CPU_OP_READ_DPR_W_DECL(sbc, x),  // f5
    RMWOP(DPX_W, inc),               // f6
    ALUOP(ILDPY_W, sbc),             // f7
    CPU_OP_SET_FLAG_DECL(d),         // f8
@@ -1202,7 +1202,7 @@ const cpu_op_t ssnes_cpu_op_table_Mx[256] = {
    cpu_op_txy_w,                    // 9b
    STOREOP(ADDR_B, zero),           // 9c
    CPU_OP_STORE_ADDR_REGI_B_DECL(a, x),  // 9d
-   CPU_OP_STORE_ADDR_REGI_W_DECL(zero, x),  // 9e
+   CPU_OP_STORE_ADDR_REGI_B_DECL(zero, x),  // 9e
    cpu_op_sta_longx_b,              // 9f
    ALUOP(CONST_W, ldy),             // a0
    ALUOP(IDPX_B, lda),              // a1
@@ -1230,7 +1230,7 @@ const cpu_op_t ssnes_cpu_op_table_Mx[256] = {
    ALUOP(ILDPY_B, lda),             // b7
    CPU_OP_RESET_FLAG_DECL(v),       // b8
    ALUOP(ADDRY_B, lda),             // b9
-   cpu_op_tsx_b,                    // ba
+   cpu_op_tsx_w,                    // ba
    cpu_op_tyx_w,                    // bb
    ALUOP(ADDRX_W, ldy),             // bc
    ALUOP(ADDRX_B, lda),             // bd

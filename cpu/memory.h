@@ -10,14 +10,26 @@
 // Somewhat memory mapped ...
 static inline uint8_t cpu_readl(uint32_t addr)
 {
-   //uint8_t result = ssnes_memmap_read_table[addr >> 13](addr);
-   //fprintf(stderr, "Read $%02x from %06x", (unsigned)result, (unsigned)addr);
-   //return result;
+   uint8_t result = ssnes_memmap_read_table[addr >> 13](addr);
+   //fprintf(stderr, "\tRead: $%02x <= $%06x\n", (unsigned)result, (unsigned)addr);
+   return result;
 
-   return ssnes_memmap_read_table[addr >> 13](addr);
+   //return ssnes_memmap_read_table[addr >> 13](addr);
 }
 
 static inline void cpu_writel(uint32_t addr, uint8_t data)
+{
+   //fprintf(stderr, "\tWrite: $%02x => $%06x\n", (unsigned)data, (unsigned)addr);
+   ssnes_memmap_write_table[addr >> 13](addr, data);
+}
+
+// Mostly just to avoid debugging noise ... ;)
+static inline uint8_t cpu_readl_ndbg(uint32_t addr)
+{
+   return ssnes_memmap_read_table[addr >> 13](addr);
+}
+
+static inline void cpu_writel_ndbg(uint32_t addr, uint8_t data)
 {
    ssnes_memmap_write_table[addr >> 13](addr, data);
 }
@@ -62,23 +74,23 @@ static inline void cpu_writelw(uint32_t addr, uint16_t data)
 
 static inline uint8_t cpu_read_pc(void)
 {
-   return cpu_readl(REGS.pc.l++);
+   return cpu_readl_ndbg(REGS.pc.l++);
 }
 
 static inline uint16_t cpu_readw_pc(void)
 {
    uint16_t res = 0;
-   res |= cpu_readl(REGS.pc.l++);
-   res |= ((uint16_t)cpu_readl(REGS.pc.l++)) << 8;
+   res |= cpu_readl_ndbg(REGS.pc.l++);
+   res |= ((uint16_t)cpu_readl_ndbg(REGS.pc.l++)) << 8;
    return res;
 }
 
 static inline uint32_t cpu_readl_pc(void)
 {
    uint32_t res = 0;
-   res |= cpu_readl(REGS.pc.l++);
-   res |= ((uint16_t)cpu_readl(REGS.pc.l++)) << 8;
-   res |= ((uint32_t)cpu_readl(REGS.pc.l++)) << 16;
+   res |= cpu_readl_ndbg(REGS.pc.l++);
+   res |= ((uint16_t)cpu_readl_ndbg(REGS.pc.l++)) << 8;
+   res |= ((uint32_t)cpu_readl_ndbg(REGS.pc.l++)) << 16;
    return res;
 }
 

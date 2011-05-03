@@ -108,21 +108,31 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
          PPU.obsel = data;
          return;
 
+      // "OAM reset" isn't in yet. But the buffering stuff should work.
       case 0x2102: // OAMADDL
-         STATUS.regs.oam_addr.b.l = data;
+         STATUS.regs.oam_addr_buf.b.l = data;
+         STATUS.regs.oam_addr = STATUS.regs.oam_addr_buf;
+         STATUS.regs.oam_odd = false;
          return;
       case 0x2103: // OAMADDH
-         STATUS.regs.oam_addr.b.h = data;
+         STATUS.regs.oam_addr_buf.b.h = data;
+         STATUS.regs.oam_addr = STATUS.regs.oam_addr_buf;
+         STATUS.regs.oam_odd = false;
          return;
 
       case 0x2104: // OAMDATA
          STATUS.regs.oam_odd ^= true;
          if (!STATUS.regs.oam_odd)
          {
-            WRITE_OAMW(STATUS.regs.oam_addr.w++ & 0x1ff, STATUS.regs.oam_buf | ((uint16_t)data << 8));
+            uint16_t oam_data = STATUS.regs.oam_buf | ((uint16_t)data << 8);
+            //fprintf(stderr, "\tWriting OAM $%04x => $%x (word)\n", (unsigned)oam_data, (unsigned)STATUS.regs.oam_addr.w);
+            WRITE_OAMW(STATUS.regs.oam_addr.w++ & 0x1ff, oam_data);
          }
          else
+         {
+            //fprintf(stderr, "\tWriting OAM buf <= $%02x\n", (unsigned)data);
             STATUS.regs.oam_buf = data;
+         }
          return;
 
       case 0x2105: // BGMODE

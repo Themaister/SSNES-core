@@ -29,6 +29,7 @@ static inline void run_dma_channel(unsigned channel)
    //fprintf(stderr, "DMA: Write $%x -> $%x || Size: $%x\n", (unsigned)data, (unsigned)dest_addr, (unsigned)chan->size.w);
 
    ssnes_bus_write_2000(dest_addr, data);
+   //cpu_writel(dest_addr, data);
 
    if (!(chan->ctrl & 0x08))
    {

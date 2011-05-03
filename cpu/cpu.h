@@ -91,6 +91,7 @@ struct cpu_status
       word_reg_t vram_addr;
 
       word_reg_t oam_addr;
+      word_reg_t oam_addr_buf;
       bool oam_odd;
       uint8_t oam_buf;
 

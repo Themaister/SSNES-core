@@ -4,26 +4,26 @@
 // Hardcode shit for 8x8 :D
 static inline void ppu_render_sprite(uint16_t *pixels, uint32_t oam, unsigned scanline, unsigned offset)
 {
-   //fprintf(stderr, "OAM data: 0x%08x\n", (unsigned)oam);
    unsigned y = (oam >> 8) & 0xff;
 
    int line = (int)scanline - (int)y;
    if (line >= 8 || line < 0)
       return;
 
-   unsigned index = (oam >> 16) & 0xff;
-   unsigned addr = offset + (index << 4);
-
    unsigned x = oam & 0xff;
+   unsigned index = (oam >> 16) & 0xff;
    unsigned attr = oam >> 24;
-   unsigned pal = 128 + ((attr & 0xe) << 3);
 
-   unsigned real_line = isel_if(attr & 0x8000, 7 - line, line);
+   //fprintf(stderr, "OAM data: x = %u, y = %u, sprite = %u, attr = $%02x\n", x, y, index, attr);
+
+   unsigned addr = offset + (index << 4);
+   unsigned pal = 128 + ((attr & 0xe) << 3);
+   unsigned real_line = isel_if(attr & 0x80, 7 - line, line);
 
    uint16_t plane0 = READ_VRAMW(addr + real_line);
    uint16_t plane1 = READ_VRAMW(addr + real_line + 8);
 
-   if (attr & 0x4000)
+   if (attr & 0x40)
    {
       for (unsigned i = 0; i < 8; i++)
       {

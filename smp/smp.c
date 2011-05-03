@@ -66,10 +66,10 @@ unsigned ssnes_smp_run(unsigned cycles)
    unsigned ran_cycles = 0;
    while (ran_cycles < cycles)
    {
-      fprintf(stderr, "  %04x ", (unsigned)SMP.pc);
+      //fprintf(stderr, "  %04x ", (unsigned)SMP.pc);
       uint8_t opcode = smp_read_pc();
-      fprintf(stderr, "%-14s", ssnes_smp_opname[opcode]);
-      print_registers();
+      //fprintf(stderr, "%-14s", ssnes_smp_opname[opcode]);
+      //print_registers();
       ssnes_smp_optable[opcode]();
 
       ran_cycles += ssnes_smp_cycle_table[opcode];
