@@ -20,7 +20,7 @@ static inline void smp_write(uint16_t addr, uint8_t data, uint8_t mask)
 
 static inline uint8_t smp_read_pc(void)
 {
-   return MEM.apuram[SMP.pc++];
+   return smp_read(SMP.pc++);
 }
 
 static inline uint16_t smp_readw_pc(void)

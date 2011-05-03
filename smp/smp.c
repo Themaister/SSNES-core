@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include "system/state.h"
 #include "system/macros.h"
-#include "iplrom.h"
 
 #include "table.h"
 #include "memory.h"
@@ -20,17 +19,16 @@ static void init_smp_registers(void)
    SMP.ya.w = 0;
    memset(&SMP.p, 0, sizeof(SMP.p));
    SMP.p.z = 1;
-}
 
-static void init_ipl_rom(void)
-{
-   memcpy(&MEM.apuram[0xffc0], smp_iplrom, sizeof(smp_iplrom));
+   SMP.control = 0xb0;
+   SMP.t0_out = 0xf;
+   SMP.t1_out = 0xf;
+   SMP.t2_out = 0xf;
 }
 
 void ssnes_smp_init(void)
 {
    init_smp_registers();
-   init_ipl_rom();
 
    ssnes_smp_init_memmap();
 

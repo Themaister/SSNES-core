@@ -8,6 +8,9 @@ static inline void cpu_op_rep(void)
    uint8_t mask = cpu_read_pc();
    uint8_t old_mask = cpu_get_p();
    cpu_set_p(old_mask & (~mask));
+
+   iup_if(REGS.x.w, REGS.p.x, REGS.x.w & 0xff);
+   iup_if(REGS.y.w, REGS.p.x, REGS.y.w & 0xff);
 }
 
 static inline void cpu_op_sep(void)
@@ -16,7 +19,6 @@ static inline void cpu_op_sep(void)
    uint8_t old_mask = cpu_get_p();
    cpu_set_p(old_mask | mask);
 
-   iup_if(REGS.a.w, REGS.p.m, REGS.a.w & 0xff);
    iup_if(REGS.x.w, REGS.p.x, REGS.x.w & 0xff);
    iup_if(REGS.y.w, REGS.p.x, REGS.y.w & 0xff);
 }
@@ -30,13 +32,12 @@ static inline void cpu_op_wdm(void)
 static inline void cpu_op_xba(void)
 {
    word_reg_t a = REGS.a;
+   REGS.a.b.h = a.b.l;
+   uint8_t lo = a.b.h;
 
-   a.b.l ^= a.b.h;
-   a.b.h ^= REGS.a.b.l;
-   a.b.l ^= REGS.a.b.h;
-   REGS.p.n = (a.b.l & 0x80);
-   REGS.p.z = (a.b.l == 0);
-   REGS.a = a;
+   REGS.p.n = (lo & 0x80);
+   REGS.p.z = (lo == 0);
+   REGS.a.b.l = lo;
 }
 
 static inline void cpu_op_xce(void)
