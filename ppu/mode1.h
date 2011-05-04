@@ -1,10 +1,11 @@
 #ifndef __PPU_MODE1_H
 #define __PPU_MODE1_H
 
-static inline void ppu_render_bg_mode1(uint16_t *pixels, unsigned scanline, unsigned scanline_mask, unsigned hofs,
+static inline void ppu_render_bg_mode1(uint16_t *pixels, unsigned scanline, unsigned hofs,
       unsigned tilemap_addr, unsigned character_data)
 {
-   tilemap_addr += ((scanline >> 3) << 5);
+   hofs &= 0xff;
+   tilemap_addr += (((scanline & 0xff) >> 3) << 5);
    unsigned y = scanline & 7;
 
    for (unsigned i = 0; i < 32; i++)
@@ -59,9 +60,8 @@ static void ppu_render_mode1(uint16_t *out_buf, unsigned scanline)
       unsigned hofs = 256 - PPU.bg3hofs;
       unsigned tilemap_addr = (PPU.bg3sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg12nba & 0x0f) << 12;
-      unsigned scanline_mask = scanline & 7;
 
-      ppu_render_bg_mode0(out_buf, line, scanline_mask, 
+      ppu_render_bg_mode0(out_buf, line,
             hofs, tilemap_addr, character_data, 0);
    }
 
@@ -72,9 +72,8 @@ static void ppu_render_mode1(uint16_t *out_buf, unsigned scanline)
       unsigned hofs = 256 - PPU.bg2hofs;
       unsigned tilemap_addr = (PPU.bg2sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg12nba & 0xf0) << 8;
-      unsigned scanline_mask = scanline & 7;
 
-      ppu_render_bg_mode1(out_buf, line, scanline_mask, 
+      ppu_render_bg_mode1(out_buf, line,
             hofs, tilemap_addr, character_data);
 
    }
@@ -86,9 +85,8 @@ static void ppu_render_mode1(uint16_t *out_buf, unsigned scanline)
       unsigned hofs = 256 - PPU.bg1hofs;
       unsigned tilemap_addr = (PPU.bg1sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg12nba & 0xf) << 12;
-      unsigned scanline_mask = scanline & 7;
 
-      ppu_render_bg_mode1(out_buf, line, scanline_mask, 
+      ppu_render_bg_mode1(out_buf, line,
             hofs, tilemap_addr, character_data);
 
    }
