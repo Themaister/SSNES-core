@@ -193,14 +193,14 @@ DECL_GROUP_TWO(READ_DP)
 #define CPU_OP_READ_DPR_B(op, reg) \
    static inline void CPU_OP_READ_DPR_B_DECL(op, reg) (void) \
    { \
-      cpu_op_##op##_b (cpu_read_dp(cpu_read_pc() + REGS.reg.w)); \
+      cpu_op_##op##_b (cpu_read_dp((uint16_t)cpu_read_pc() + REGS.reg.w)); \
    }
 
 #define CPU_OP_READ_DPR_W_DECL(op, reg) cpu_op_read_dpr_w_##op##_##reg
 #define CPU_OP_READ_DPR_W(op, reg) \
    static inline void CPU_OP_READ_DPR_W_DECL(op, reg) (void) \
    { \
-      cpu_op_##op##_w (cpu_readw_dp(cpu_read_pc() + REGS.reg.w)); \
+      cpu_op_##op##_w (cpu_readw_dp((uint16_t)cpu_read_pc() + REGS.reg.w)); \
    }
 
 DECL_GROUP_ONE_REG(READ_DPR, x)

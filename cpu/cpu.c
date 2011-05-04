@@ -196,9 +196,9 @@ void ssnes_cpu_run_frame(void)
          else
          {
             uint8_t opcode = cpu_read_pc();
-            //fprintf(stderr, "%06x ", (unsigned)REGS.pc.l - 1);
-            //fprintf(stderr, "%-14s", ssnes_cpu_opcode_names[opcode]); 
-            //print_registers();
+            fprintf(stderr, "%06x ", (unsigned)REGS.pc.l - 1);
+            fprintf(stderr, "%-14s", ssnes_cpu_opcode_names[opcode]); 
+            print_registers();
 
             ssnes_cpu_op_table[opcode]();
 
