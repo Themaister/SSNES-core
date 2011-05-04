@@ -61,8 +61,49 @@ static inline void print_registers(void)
    print_flags();
 }
 
+#define SMP_TICK_TIMER(timer) \
+   static inline void smp_tick_timer_t##timer (void) \
+   { \
+      if (++SMP.t##timer##_tick == SMP.t##timer##_target) \
+      { \
+         SMP.t##timer##_tick = 0; \
+         SMP.t##timer##_out = (SMP.t##timer##_out + 1) & 0xf; \
+      } \
+   }
+
+SMP_TICK_TIMER(0)
+SMP_TICK_TIMER(1)
+SMP_TICK_TIMER(2)
+
+static inline void smp_update_timers(unsigned cycles)
+{
+   unsigned old_8 = SMP.base_timer_8;
+   unsigned old_64 = SMP.base_timer_64;
+
+   // Stage 1 timers. These always run.
+   SMP.base_timer_8 = (old_8 + cycles) & 127;
+   SMP.base_timer_64 = (old_64 + cycles) & 15;
+
+   // Contitionally tick timers.
+   unsigned ctrl = SMP.control;
+   if (SMP.base_timer_8 < old_8) // Check edge
+   {
+      if (ctrl & 0x01)
+         smp_tick_timer_t0();
+      if (ctrl & 0x02)
+         smp_tick_timer_t1();
+   }
+   if (SMP.base_timer_64 < old_64)
+   {
+      if (ctrl & 0x04)
+         smp_tick_timer_t2();
+   }
+}
+
 unsigned ssnes_smp_run(unsigned cycles)
 {
+   // We try to scale master cycles from CPU down to SMP cycles (1.024MHz).
+   cycles /= 22;
    unsigned ran_cycles = 0;
    while (ran_cycles < cycles)
    {
@@ -72,7 +113,10 @@ unsigned ssnes_smp_run(unsigned cycles)
       //print_registers();
       ssnes_smp_optable[opcode]();
 
-      ran_cycles += ssnes_smp_cycle_table[opcode];
+      unsigned cycles = ssnes_smp_cycle_table[opcode];
+      ran_cycles += cycles;
+      smp_update_timers(ran_cycles);
    }
-   return ran_cycles;
+
+   return ran_cycles * 22;
 }

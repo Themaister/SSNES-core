@@ -25,6 +25,13 @@ struct smp_state
 
    uint8_t apuio[4]; // $f4-$f7 S-CPU <-> S-SMP communication. These are write only, we read from CPU-side bus.
 
+   unsigned base_timer_8;
+   unsigned base_timer_64;
+
+   uint8_t t0_tick;
+   uint8_t t1_tick;
+   uint8_t t2_tick;
+
    // $fa - $fc
    uint8_t t0_target;
    uint8_t t1_target;
