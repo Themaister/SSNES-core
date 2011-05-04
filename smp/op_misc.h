@@ -30,12 +30,36 @@ static inline void smp_op_setp(void)
    SMP.p.p = true;
 }
 
-// Wtf is this?
+// Wtf is this? Stole code from bSNES, hurr durr.
 static inline void smp_op_daa(void)
-{}
+{
+   if (SMP.p.c || SMP.ya.b.l > 0x99)
+   {
+      SMP.ya.b.l += 0x60;
+      SMP.p.c = true;
+   }
+
+   if (SMP.p.h || (SMP.ya.b.l & 15) > 0x09)
+      SMP.ya.b.l += 0x06;
+
+   SMP.p.n = SMP.ya.b.l & 0x80;
+   SMP.p.z = (SMP.ya.b.l == 0);
+}
 
 static inline void smp_op_das(void)
-{}
+{
+   if (!SMP.p.c || SMP.ya.b.l > 0x99)
+   {
+      SMP.ya.b.l -= 0x60;
+      SMP.p.c = true;
+   }
+
+   if (!SMP.p.h || (SMP.ya.b.l & 15) > 0x09)
+      SMP.ya.b.l -= 0x06;
+
+   SMP.p.n = SMP.ya.b.l & 0x80;
+   SMP.p.z = (SMP.ya.b.l == 0);
+}
 
 static inline void smp_op_brk(void)
 {} // Meh

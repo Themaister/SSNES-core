@@ -41,6 +41,7 @@ uint8_t ssnes_bus_read_2000(uint32_t addr)
 
    uint16_t daddr = addr & 0xffff;
    uint8_t res;
+   static const unsigned vram_addr_inc[] = {1, 32, 128, 128};
 
    switch (daddr)
    {
@@ -56,11 +57,20 @@ uint8_t ssnes_bus_read_2000(uint32_t addr)
             res = MEM.oam.b[(uint16_t)STATUS.regs.oam_addr.w << 1];
          return res;
 
+      // VRAM reads have a buffering mechanism.
       // VMDATALREAD
       case 0x2139:
+         res = STATUS.regs.vram_rd_buf.b.l;
+         iup_if(STATUS.regs.vram_rd_buf.w, ~STATUS.regs.vmain & 0x80, READ_VRAMW(vram_translation(STATUS.regs.vram_addr.w)));
+         STATUS.regs.vram_addr.w += isel_if(STATUS.regs.vmain & 0x80, 0, vram_addr_inc[STATUS.regs.vmain & 3]);
+         return res;
+
       // VMDATAHREAD
       case 0x213a:
-         return 0;
+         res = STATUS.regs.vram_rd_buf.b.h;
+         iup_if(STATUS.regs.vram_rd_buf.w, STATUS.regs.vmain & 0x80, READ_VRAMW(vram_translation(STATUS.regs.vram_addr.w)));
+         STATUS.regs.vram_addr.w += isel_if(STATUS.regs.vmain & 0x80, vram_addr_inc[STATUS.regs.vmain & 3], 0);
+         return res;
 
 
       // CGDATAREAD
@@ -212,6 +222,8 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
          {
             //fprintf(stderr, "\tWriting OAM buf <= $%02x\n", (unsigned)data);
             STATUS.regs.oam_buf = data;
+            // Writes to high table takes place immediately.
+            iup_if(MEM.oam.b[(uint16_t)STATUS.regs.oam_addr.w << 1], STATUS.regs.oam_addr.w & 0x100, data);
          }
          return;
 

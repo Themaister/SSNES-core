@@ -173,13 +173,31 @@ static inline void smp_op_mul(void)
    SMP.p.n = res & 0x8000;
 }
 
+// Weird SMP algorithm. Stole from bsnes. :D
 static inline void smp_op_div(void)
 {
-   uint8_t div = SMP.ya.w / SMP.x;
-   uint8_t rem = SMP.ya.w % SMP.x;
-   SMP.ya.b.l = div;
-   SMP.ya.b.h = rem;
-   // TODO: Fix flags :D
+   uint16_t ya = SMP.ya.w;
+
+   // Overflow set if quotient >= 256
+   SMP.p.v = SMP.ya.b.h >= SMP.x;
+   SMP.p.h = (SMP.ya.b.h & 15) >= (SMP.x & 15);
+
+   if (SMP.ya.b.h < (SMP.x << 1))
+   {
+      // If quotient is <= 511 (will fit into 9-bit result)
+      SMP.ya.b.l = ya / SMP.x;
+      SMP.ya.b.h = ya % SMP.x;
+   }
+   else
+   {
+      // otherwise, the quotient won't fit into regs.p.v + regs.a
+      // This emulates the odd behavior of the S-SMP in this case
+      SMP.ya.b.l = 255 - (ya - ((uint16_t)SMP.x << 9)) / (256 - SMP.x);
+      SMP.ya.b.h = SMP.x + (ya - ((uint16_t)SMP.x << 9)) % (256 - SMP.x);
+   }
+
+   SMP.p.n = SMP.ya.b.l & 0x80;
+   SMP.p.z = SMP.ya.b.l == 0;
 }
 
 
