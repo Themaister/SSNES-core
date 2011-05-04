@@ -3,6 +3,38 @@
 #include "system/macros.h"
 #include <stdio.h>
 
+static inline uint16_t vram_translation(uint16_t addr)
+{
+   unsigned trans = (STATUS.regs.vmain & 0x0c) >> 2;
+   uint16_t tmp;
+   switch (trans)
+   {
+      // No remapping.
+      case 0:
+         return addr;
+
+      // aaaaaaaaBBBccccc => aaaaaaaacccccBBB
+      case 1:
+         tmp = addr & 0xff;
+         tmp = (tmp << 3) | (tmp >> 5);
+         return (addr & 0xff00) | tmp;
+
+      // aaaaaaaBBBcccccc => aaaaaaaccccccBBB
+      case 2:
+         tmp = addr & 0x1ff;
+         tmp = (tmp << 3) | (tmp >> 6);
+         return (addr & 0xfe00) | tmp;
+
+      // aaaaaaBBBccccccc => aaaaaacccccccBBB
+      case 3:
+         tmp = addr & 0x3ff;
+         tmp = (tmp << 3) | (tmp >> 7);
+         return (addr & 0xfa00) | tmp;
+   }
+
+   return 0;
+}
+
 uint8_t ssnes_bus_read_2000(uint32_t addr)
 {
    CPU.status.cycles += 8;
@@ -203,17 +235,16 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
          STATUS.regs.vram_addr.b.h = data;
          return;
 
-      // Missing address remapping.
       // Block VRAM access unless we're in force blank or vblank.
       case 0x2118: // VMDATAL
          //fprintf(stderr, "Write VRAM word $%x -> $%x (low)\n", (unsigned)data, (unsigned)STATUS.regs.vram_addr.w);
-         iup_if(MEM.vram.b[(STATUS.regs.vram_addr.w & 0x7fff) << 1], PPU.vsync | (PPU.inidisp & 0x80), data);
+         iup_if(MEM.vram.b[(vram_translation(STATUS.regs.vram_addr.w) & 0x7fff) << 1], PPU.vsync | (PPU.inidisp & 0x80), data);
          STATUS.regs.vram_addr.w += isel_if(STATUS.regs.vmain & 0x80, 0, vram_addr_inc[STATUS.regs.vmain & 3]);
          return;
 
       case 0x2119: // VMDATAH
          //fprintf(stderr, "Write VRAM word $%x -> $%x (hi)\n", (unsigned)data, (unsigned)STATUS.regs.vram_addr.w);
-         iup_if(MEM.vram.b[((STATUS.regs.vram_addr.w & 0x7fff) << 1) + 1], PPU.vsync | (PPU.inidisp & 0x80), data);
+         iup_if(MEM.vram.b[((vram_translation(STATUS.regs.vram_addr.w) & 0x7fff) << 1) + 1], PPU.vsync | (PPU.inidisp & 0x80), data);
          STATUS.regs.vram_addr.w += isel_if(STATUS.regs.vmain & 0x80, vram_addr_inc[STATUS.regs.vmain & 3], 0);
          return;
       //////////////
@@ -257,7 +288,7 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
          return;
 
       case 0x2183: // WMADDH
-         STATUS.regs.wram_addr.b.hl = data;
+         STATUS.regs.wram_addr.b.hl = data & 0x1;
          return;
          
       
