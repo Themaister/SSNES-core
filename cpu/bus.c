@@ -40,6 +40,45 @@ uint8_t ssnes_bus_read_2000(uint32_t addr)
    CPU.status.cycles += 8;
 
    uint16_t daddr = addr & 0xffff;
+   uint8_t res;
+
+   switch (daddr)
+   {
+      // OAMDATAREAD
+      case 0x2138:
+         STATUS.regs.oam_odd ^= true;
+         if (!STATUS.regs.cg_odd)
+         {
+            res = MEM.oam.b[((uint16_t)STATUS.regs.oam_addr.w++ << 1) + 1];
+            STATUS.regs.oam_addr.w &= 0x3ff;
+         }
+         else
+            res = MEM.oam.b[(uint16_t)STATUS.regs.oam_addr.w << 1];
+         return res;
+
+      // VMDATALREAD
+      case 0x2139:
+      // VMDATAHREAD
+      case 0x213a:
+         return 0;
+
+
+      // CGDATAREAD
+      case 0x213b:
+         STATUS.regs.cg_odd ^= true;
+         if (!STATUS.regs.cg_odd)
+            res = MEM.cgram.b[((uint16_t)STATUS.regs.cgadd++ << 1) + 1];
+         else
+            res = MEM.cgram.b[(uint16_t)STATUS.regs.cgadd << 1];
+         return res;
+
+      // WMDATA
+      case 0x2180:
+         res = MEM.wram[STATUS.regs.wram_addr.l++];
+         STATUS.regs.wram_addr.l &= 0x1ffff;
+         return res;
+   }
+
    if (daddr >= 0x2140 && daddr < 0x2180)
    {
       STATUS.smp_state = true;
@@ -60,6 +99,15 @@ uint8_t ssnes_bus_read_4000(uint32_t addr)
    {
       case 0x4212: // HVBJOY
          return PPU.hvbjoy;
+
+      case 0x4214: // RDDIVL
+         return CPU.alu.div_quot.b.l;
+      case 0x4215: // RDDIVH
+         return CPU.alu.div_quot.b.h;
+      case 0x4216: // RDMPYL
+         return CPU.alu.mul_rem_res.b.l;
+      case 0x4217: // RDMPYH
+         return CPU.alu.mul_rem_res.b.h;
 
       case 0x4218: // JOY1L
          return STATUS.input[0].data1.b.l;
@@ -315,6 +363,41 @@ void ssnes_bus_write_4000(uint32_t addr, uint8_t data)
          STATUS.regs.nmitimen = data;
          return;
 
+      // Normally, there is a CPU 16-cycle delay before the proper values can be read from ALU registers, but for speed we don't bother emulating this.
+      // WRMPYA
+      case 0x4202:
+         CPU.alu.wrmpya = data;
+         return;
+
+      // WRMPYB
+      case 0x4203:
+         CPU.alu.wrmpyb = data;
+         CPU.alu.mul_rem_res.w = (uint16_t)CPU.alu.wrmpya * (uint16_t)CPU.alu.wrmpyb;
+         return;
+
+      // WRDIVL
+      case 0x4204:
+         CPU.alu.wrdiv.b.l = data;
+         return;
+
+      case 0x4205:
+         CPU.alu.wrdiv.b.h = data;
+         return;
+
+      case 0x4206:
+         CPU.alu.wrdivb = data;
+         if (CPU.alu.wrdivb == 0) // Handle special case.
+         {
+            CPU.alu.div_quot.w = 0xffff;
+            CPU.alu.mul_rem_res.w = CPU.alu.wrdiv.w;
+         }
+         else
+         {
+            CPU.alu.div_quot.w = CPU.alu.wrdiv.w / CPU.alu.wrdivb;
+            CPU.alu.mul_rem_res.w = CPU.alu.wrdiv.w % CPU.alu.wrdivb;
+         }
+         return;
+
       // H/V IRQ
       case 0x4207: // HTIMEL
          STATUS.irq.htime.b.l = data;
@@ -345,6 +428,11 @@ void ssnes_bus_write_4000(uint32_t addr, uint8_t data)
          STATUS.dma_enable = data;
          for (unsigned i = 0; i < 8; i++)
             STATUS.dma_channels[i].trans_cnt = 0;
+         return;
+
+      // MEMSEL
+      case 0x420d:
+         STATUS.regs.memsel = data & 1;
          return;
 
       default:

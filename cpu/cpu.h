@@ -98,6 +98,8 @@ struct cpu_status
       long_reg_t wram_addr;
 
       uint8_t apuio[4];
+
+      bool memsel;
    } regs;
 
    struct
@@ -109,15 +111,20 @@ struct cpu_status
 
 struct cpu_alu_state
 {
-   unsigned mpyctr;
-   unsigned divctr;
-   unsigned shift;
+   uint8_t wrmpya, wrmpyb;
+   word_reg_t wrdiv;
+   uint8_t wrdivb;
+
+   word_reg_t mul_rem_res; 
+   word_reg_t div_quot;
+   uint8_t div_rem;
 };
 
 struct cpu_state
 {
    struct cpu_regs regs;
    struct cpu_status status;
+   struct cpu_alu_state alu;
 };
 
 #endif
