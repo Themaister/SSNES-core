@@ -54,7 +54,7 @@ static void smp_write_regs(uint16_t addr, uint8_t data, uint8_t mask)
    switch (addr)
    {
       case 0xf0: // Testing stuff, we don't care.
-         fprintf(stderr, "SMP $f0 is being touch inappropriately, call da police!\n");
+         fprintf(stderr, "SMP $f0 is being touched inappropriately with $%02x (mask $%02x), call da police!\n", (unsigned)data, (unsigned)mask);
          return;
 
       case 0xf1: // Timer control, TODO.

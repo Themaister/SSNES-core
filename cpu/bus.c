@@ -222,14 +222,17 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
       /////////////// CGRAM
       case 0x2121: // CGADD
          STATUS.regs.cgadd = data;
+         STATUS.regs.cg_odd = false;
          return;
 
       case 0x2122: // CGDATA
          STATUS.regs.cg_odd ^= true;
          if (!STATUS.regs.cg_odd)
          {
-            MEM.cgram.b[STATUS.regs.cgadd << 1] = STATUS.regs.cgbuf;
-            MEM.cgram.b[((STATUS.regs.cgadd++) << 1) + 1] = data;
+            uint16_t res = STATUS.regs.cgbuf | ((uint16_t)data << 8);
+            //fprintf(stderr, "Writing $%04x to CGRAM $%02x.\n", (unsigned)res, (unsigned)STATUS.regs.cgadd);
+            WRITE_CGRAMW(STATUS.regs.cgadd, res);
+            STATUS.regs.cgadd++;
          }
          else
          {

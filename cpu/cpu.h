@@ -83,7 +83,7 @@ struct cpu_status
    {
       uint8_t nmitimen;
 
-      unsigned cgadd;
+      uint8_t cgadd;
       bool cg_odd;
       uint8_t cgbuf;
 
