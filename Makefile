@@ -1,8 +1,8 @@
-TARGET = libsnes.a
+TARGET = libsnes.so
 TEST_TARGET = main_test
 HEADERS = $(wildcard */*.h)
 INCDIRS = -I.
-PIC =
+PIC = -fPIC
 CFLAGS += -O3 -g -Wall -std=c99 $(PIC)
 
 SOURCES = $(wildcard */*.c)
@@ -19,7 +19,7 @@ $(TEST_TARGET): $(TEST_OBJ) lib
 	$(CC) -c -o $@ $< $(CFLAGS) $(INCDIRS)
 
 $(TARGET): $(OBJ)
-	$(AR) rcs $@ $(OBJ) $(LDFLAGS)
+	$(CC) -shared -o $@ $(OBJ) $(LDFLAGS)
 
 lib: $(TARGET)
 

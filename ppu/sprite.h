@@ -2,7 +2,7 @@
 #define __PPU_SPRITE_H
 
 // Hardcode shit for 8x8 :D
-static inline void ppu_render_sprite(uint16_t *pixels, uint32_t oam, unsigned scanline, unsigned offset, unsigned name)
+static void ppu_render_sprite(uint16_t *pixels, uint32_t oam, unsigned scanline, unsigned offset, unsigned name)
 {
    unsigned y = (oam >> 8) & 0xff;
 
@@ -53,7 +53,7 @@ static inline void ppu_render_sprite(uint16_t *pixels, uint32_t oam, unsigned sc
    }
 }
 
-static inline void ppu_render_sprite_big(uint16_t *pixels, uint32_t oam, unsigned scanline, unsigned offset, unsigned name)
+static void ppu_render_sprite_big(uint16_t *pixels, uint32_t oam, unsigned scanline, unsigned offset, unsigned name)
 {
    unsigned y = (oam >> 8) & 0xff;
    int line = (int)scanline - (int)y;
