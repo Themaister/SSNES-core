@@ -50,6 +50,13 @@ static void cpu_check_cycles(void)
    }
    else if ((int)STATUS.cycles - (int)STATUS.smp_cycles > 100)
       STATUS.smp_cycles += ssnes_smp_run(STATUS.cycles - STATUS.smp_cycles);
+
+   // Check HDMA
+   if (STATUS.hdma_run && STATUS.ppu.hcount > 0x116 * 4)
+   {
+      hdma_run();
+      STATUS.hdma_run = false;
+   }
 }
 
 static void cpu_finish_cycles(void)
@@ -139,6 +146,8 @@ static inline unsigned update_ppu_cycles(unsigned last_cycles)
       iup_eq(PPU.hvbjoy, STATUS.ppu.vcount, 225, 0x81);
       iup_eq(PPU.hvbjoy, STATUS.ppu.vcount, 228, 0x80);
 
+      STATUS.hdma_run = true;
+
       // HIRQ
       iup_eq(STATUS.pending_irq.irq_fired, STATUS.regs.nmitimen & 0x30, 0x10, false);
    }
@@ -153,10 +162,15 @@ void ssnes_cpu_run_frame(void)
    STATUS.smp_cycles = 0;
    STATUS.ppu.vcount = 0;
    STATUS.ppu.hcount = 0;
+   STATUS.irq.nmi_flag = 0;
+   STATUS.hdma_run = false;
    PPU.hvbjoy = 0;
    STATUS.pending_irq.irq_fired = false;
    PPU.vsync = false;
    unsigned last_cycles = 0;
+
+   // HDMA
+   hdma_frame_init();
 
    while (STATUS.cycles < CYCLES_PER_FRAME)
    {
@@ -202,15 +216,14 @@ void ssnes_cpu_run_frame(void)
          else
          {
             uint8_t opcode = cpu_read_pc();
-            fprintf(stderr, "%06x ", (unsigned)REGS.pc.l - 1);
-            fprintf(stderr, "%-14s", ssnes_cpu_opcode_names[opcode]); 
-            print_registers();
+            //fprintf(stderr, "%06x ", (unsigned)REGS.pc.l - 1);
+            //fprintf(stderr, "%-14s", ssnes_cpu_opcode_names[opcode]); 
+            //print_registers();
 
             ssnes_cpu_op_table[opcode]();
 
-            STATUS.cycles += ssnes_cpu_cycle_table[opcode];
+            //STATUS.cycles += ssnes_cpu_cycle_table[opcode];
             STATUS.cycles += 6;
-
          }
       }
 

@@ -43,6 +43,13 @@ struct dma_channel
    word_reg_t size;
 };
 
+struct hdma_channel
+{
+   word_reg_t table_addr;
+   uint8_t line_counter;
+   uint8_t indirect_bank;
+};
+
 struct cpu_status
 {
    struct
@@ -68,6 +75,9 @@ struct cpu_status
 
    struct dma_channel dma_channels[8];
    uint8_t dma_enable;
+   struct hdma_channel hdma_channels[8];
+   uint8_t hdma_enable;
+   bool hdma_run;
 
    struct
    {

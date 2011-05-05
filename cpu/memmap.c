@@ -19,7 +19,7 @@ static uint8_t lorom_read(uint32_t addr)
 
 static uint8_t lorom_read_fastrom(uint32_t addr)
 {
-   CPU.status.cycles += isel_if(~STATUS.regs.memsel | STATUS.dma_enable, 8, 6); // FastROM (needs to be 6 or 8 depending ...). DMA always takes 8 cycles even if FastROM.
+   CPU.status.cycles += isel_if(~STATUS.regs.memsel | STATUS.dma_enable | STATUS.hdma_enable, 8, 6); // FastROM (needs to be 6 or 8 depending ...). DMA always takes 8 cycles even if FastROM.
    return MEM.cart.rom[((addr & 0x7f0000) >> 1) | (0x7fff & addr)];
 }
 
@@ -47,7 +47,7 @@ static uint8_t hirom_read(uint32_t addr)
 
 static uint8_t hirom_read_fastrom(uint32_t addr)
 {
-   CPU.status.cycles += 6; // FastROM (needs to be 6 or 8 depending ...)
+   CPU.status.cycles += isel_if(~STATUS.regs.memsel | STATUS.dma_enable | STATUS.hdma_enable, 8, 6); // FastROM (needs to be 6 or 8 depending ...)
    return MEM.cart.rom[addr & 0x3fffff];
 }
 

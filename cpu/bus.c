@@ -177,6 +177,18 @@ uint8_t ssnes_bus_read_4000(uint32_t addr)
          case 6:
             return STATUS.dma_channels[channel].size.b.h;
 
+         case 7:
+            return STATUS.hdma_channels[channel].indirect_bank;
+
+         case 8:
+            return STATUS.hdma_channels[channel].table_addr.b.l;
+
+         case 9:
+            return STATUS.hdma_channels[channel].table_addr.b.h;
+
+         case 0xa:
+            return STATUS.hdma_channels[channel].line_counter;
+
          default:
             break;
       }
@@ -453,6 +465,11 @@ void ssnes_bus_write_4000(uint32_t addr, uint8_t data)
             STATUS.dma_channels[i].trans_cnt = 0;
          return;
 
+      case 0x420c: // HDMAEN
+         STATUS.dma_enable &= ~data; // Terminate DMA transfers on same channel.
+         STATUS.hdma_enable = data;
+         return;
+
       // MEMSEL
       case 0x420d:
          STATUS.regs.memsel = data & 1;
@@ -495,6 +512,22 @@ void ssnes_bus_write_4000(uint32_t addr, uint8_t data)
 
          case 6:
             STATUS.dma_channels[channel].size.b.h = data;
+            return;
+            
+         case 7:
+            STATUS.hdma_channels[channel].indirect_bank = data;
+            return;
+
+         case 8:
+            STATUS.hdma_channels[channel].table_addr.b.l = data;
+            return;
+
+         case 9:
+            STATUS.hdma_channels[channel].table_addr.b.h = data;
+            return;
+
+         case 0xa:
+            STATUS.hdma_channels[channel].line_counter = data;
             return;
 
          default:

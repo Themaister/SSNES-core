@@ -68,4 +68,16 @@ static inline void cpu_run_dma(void)
       run_dma_channel(7);
 }
 
+static inline void hdma_frame_init(void)
+{
+   for (unsigned i = 0; i < 8; i++)
+   {
+      STATUS.hdma_channels[i].table_addr.w = STATUS.dma_channels[i].src.w.l;
+   }
+}
+
+static inline void hdma_run(void)
+{
+}
+
 #endif
