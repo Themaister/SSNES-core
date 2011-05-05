@@ -1,5 +1,4 @@
 TARGET = libsnes.so
-TEST_TARGET = main_test
 HEADERS = $(wildcard */*.h)
 INCDIRS = -I.
 PIC = -fPIC
@@ -9,11 +8,9 @@ SOURCES = $(wildcard */*.c)
 OBJ = $(SOURCES:.c=.o)
 TEST_OBJ = main_test.o
 
-all: $(TEST_TARGET)
+all: lib
 
-$(TEST_TARGET): $(TEST_OBJ) lib
-	$(CC) -o $@ $(TEST_OBJ) $(TARGET)
-
+lib: $(TARGET)
 
 %.o: %.c $(HEADERS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(INCDIRS)
@@ -21,7 +18,6 @@ $(TEST_TARGET): $(TEST_OBJ) lib
 $(TARGET): $(OBJ)
 	$(CC) -shared -o $@ $(OBJ) $(LDFLAGS)
 
-lib: $(TARGET)
 
 clean:
 	rm -f $(OBJ) $(TARGET) $(TEST_OBJ) $(TEST_TARGET)
