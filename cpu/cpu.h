@@ -31,7 +31,6 @@ struct cpu_regs
 
    uint32_t db; // Data bank
    uint32_t dp; // Direct page
-
 };
 
 struct dma_channel
@@ -77,6 +76,9 @@ struct cpu_status
       unsigned vtrig;
       unsigned htrig;
       unsigned vhtrig;
+
+      uint8_t nmi_flag;
+      uint8_t irq_flag;
    } irq;
 
    struct

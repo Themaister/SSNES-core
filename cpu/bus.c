@@ -105,10 +105,18 @@ uint8_t ssnes_bus_read_4000(uint32_t addr)
    CPU.status.cycles += 8;
 
    uint16_t daddr = addr & 0xffff;
+   uint8_t tmp;
    switch (daddr)
    {
       case 0x4210: // RDNMI
-         return ((uint8_t)PPU.vsync << 7) | 2;
+         tmp = STATUS.irq.nmi_flag;
+         STATUS.irq.nmi_flag = 0;
+         return tmp | 2;
+
+      case 0x4211: // TIMEUP
+         tmp = STATUS.irq.irq_flag;
+         STATUS.irq.irq_flag = 0;
+         return tmp;
 
       case 0x4212: // HVBJOY
          return PPU.hvbjoy;
