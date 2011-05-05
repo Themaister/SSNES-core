@@ -107,6 +107,9 @@ uint8_t ssnes_bus_read_4000(uint32_t addr)
    uint16_t daddr = addr & 0xffff;
    switch (daddr)
    {
+      case 0x4210: // RDNMI
+         return ((uint8_t)PPU.vsync << 7) | 2;
+
       case 0x4212: // HVBJOY
          return PPU.hvbjoy;
 

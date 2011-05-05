@@ -20,6 +20,11 @@ unsigned snes_library_revision_minor(void)
    return 3;
 }
 
+const char *snes_library_id(void)
+{
+   return "SSNES-core v0.01";
+}
+
 void snes_set_video_refresh(snes_video_refresh_t cb)
 {
    ssnes_video_cb = cb;
