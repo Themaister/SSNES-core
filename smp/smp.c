@@ -89,21 +89,30 @@ static inline void smp_update_timers(unsigned cycles)
    if (SMP.base_timer_8 < old_8) // Check edge
    {
       if (ctrl & 0x01)
+      {
+         //fprintf(stderr, "Ticking timer 0\n");
          smp_tick_timer_t0();
+      }
       if (ctrl & 0x02)
+      {
+         //fprintf(stderr, "Ticking timer 1\n");
          smp_tick_timer_t1();
+      }
    }
    if (SMP.base_timer_64 < old_64)
    {
       if (ctrl & 0x04)
+      {
+         //fprintf(stderr, "Ticking timer 2\n");
          smp_tick_timer_t2();
+      }
    }
 }
 
 unsigned ssnes_smp_run(unsigned cycles)
 {
    // We try to scale master cycles from CPU down to SMP cycles (1.024MHz).
-   cycles /= 22;
+   cycles /= 10;
    unsigned ran_cycles = 0;
    while (ran_cycles < cycles)
    {
@@ -118,5 +127,5 @@ unsigned ssnes_smp_run(unsigned cycles)
       smp_update_timers(ran_cycles);
    }
 
-   return ran_cycles * 22;
+   return ran_cycles * 10;
 }

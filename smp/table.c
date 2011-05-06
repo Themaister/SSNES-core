@@ -269,7 +269,7 @@ smp_op_t ssnes_smp_optable[256] = {
    BBS(7),                 // 0xe3
    MOVE(A, dp),            // 0xe4
    MOVE(A, addr),          // 0xe5
-   MOVE(A, dpix),          // 0xe6
+   MOVE(A, dpx),          // 0xe6
    MOVE(A, idpx),          // 0xe7
    MOVE(A, const),         // 0xe8
    MOVE(X, addr),          // 0xe9
@@ -284,14 +284,14 @@ smp_op_t ssnes_smp_optable[256] = {
    TCALL(15),              // 0xf1
    CLR1(7),                // 0xf2
    BBC(7),                 // 0xf3
-   MOVE(A, dpx),           // 0xf4
+   MOVE(A, dpix),          // 0xf4
    MOVE(A, addrx),         // 0xf5
    MOVE(A, addry),         // 0xf6
    MOVE(A, idpy),          // 0xf7
    MOVE(X, dp),            // 0xf8
    MOVE(X, dpy),           // 0xf9
    smp_op_move_dp_dp,      // 0xfa
-   MOVE(Y, dpx),           // 0xfb
+   MOVE(Y, dpix),          // 0xfb
    RMW(Y, inc),            // 0xfc
    MOVE(Y, a),             // 0xfd
    smp_op_dbnz_y,          // 0xfe

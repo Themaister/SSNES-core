@@ -59,6 +59,9 @@ static void smp_write_regs(uint16_t addr, uint8_t data, uint8_t mask)
 
       case 0xf1: // Timer control, TODO.
          smp_write_control(data, mask);
+         SMP.t0_out = 0;
+         SMP.t1_out = 0;
+         SMP.t2_out = 0;
          return;
 
       // DSP communication. Dummy for now.
@@ -96,12 +99,15 @@ static void smp_write_regs(uint16_t addr, uint8_t data, uint8_t mask)
       // Timing stuff.
       case 0xfa:
          SMP.t0_target ^= (SMP.t0_target ^ data) & mask;
+         //fprintf(stderr, "Timer 0xfa target = $%02x\n", (unsigned)SMP.t0_target);
          return;
       case 0xfb:
          SMP.t1_target ^= (SMP.t1_target ^ data) & mask;
+         //fprintf(stderr, "Timer 0xfb target = $%02x\n", (unsigned)SMP.t1_target);
          return;
       case 0xfc:
          SMP.t2_target ^= (SMP.t2_target ^ data) & mask;
+         //fprintf(stderr, "Timer 0xfc target = $%02x\n", (unsigned)SMP.t2_target);
          return;
    }
 }
@@ -127,14 +133,17 @@ static uint8_t smp_read_regs(uint16_t addr)
       // Timing stuff
       case 0xfd:
          ret = SMP.t0_out;
+         //fprintf(stderr, "Returned timer0 = %u\n", (unsigned)ret);
          SMP.t0_out = 0;
          return ret;
       case 0xfe:
          ret = SMP.t1_out;
+         //fprintf(stderr, "Returned timer1 = %u\n", (unsigned)ret);
          SMP.t1_out = 0;
          return ret;
       case 0xff:
          ret = SMP.t2_out;
+         //fprintf(stderr, "Returned timer2 = %u\n", (unsigned)ret);
          SMP.t2_out = 0;
          return ret;
    }
