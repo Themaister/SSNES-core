@@ -77,6 +77,8 @@ struct cpu_status
    uint8_t dma_enable;
    struct hdma_channel hdma_channels[8];
    uint8_t hdma_enable;
+   uint8_t hdma_enable_frame;
+   uint8_t hdma_do_transfer;
    bool hdma_run;
 
    struct

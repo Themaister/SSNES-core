@@ -31,7 +31,7 @@
   BRK EmptyHandler
   ABORT EmptyHandler
   NMI VBlank
-  IRQ VIRQ
+  IRQ EmptyHandler
 .ENDNATIVEVECTOR
 
 .SNESEMUVECTOR                  ; Define Emulation Mode interrupt vector table
