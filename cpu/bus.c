@@ -48,7 +48,7 @@ uint8_t ssnes_bus_read_2000(uint32_t addr)
       // OAMDATAREAD
       case 0x2138:
          STATUS.regs.oam_odd ^= true;
-         if (!STATUS.regs.cg_odd)
+         if (!STATUS.regs.oam_odd)
          {
             // Not sure of read semantics when we go past available memory.
             if (STATUS.regs.oam_addr.w < 256 + 16)
@@ -56,7 +56,7 @@ uint8_t ssnes_bus_read_2000(uint32_t addr)
             else
                res = 0;
 
-            STATUS.regs.oam_addr.w &= 0x1ff;
+            STATUS.regs.oam_addr.w &= isel_if(STATUS.regs.oam_addr.w & 0x100, 0x10f, 0x1ff);
          }
          else
             res = MEM.oam.b[(uint16_t)STATUS.regs.oam_addr.w << 1];
@@ -245,17 +245,19 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
             uint16_t oam_data = STATUS.regs.oam_buf | ((uint16_t)data << 8);
             //dprintf(stderr, "\tWriting OAM $%04x => $%x (word)\n", (unsigned)oam_data, (unsigned)STATUS.regs.oam_addr.w);
             // Not sure of semantics when we try to write in hi-table but over byte 32 ...
-            if (STATUS.regs.oam_addr.w < 256 + 16)
-               WRITE_OAMW(STATUS.regs.oam_addr.w++, oam_data);
+            WRITE_OAMW(STATUS.regs.oam_addr.w++, oam_data);
          }
          else
          {
             //dprintf(stderr, "\tWriting OAM buf <= $%02x\n", (unsigned)data);
-            STATUS.regs.oam_buf = data;
             // Writes to high table takes place immediately.
-            iup_if(MEM.oam.b[(uint16_t)STATUS.regs.oam_addr.w << 1], STATUS.regs.oam_addr.w & 0x100, data);
+
+            if (STATUS.regs.oam_addr.w & 0x100)
+               MEM.oam.b[STATUS.regs.oam_addr.w << 1] = data;
+
+            STATUS.regs.oam_buf = data;
          }
-         STATUS.regs.oam_addr.w &= 0x1ff;
+         STATUS.regs.oam_addr.w &= isel_if(STATUS.regs.oam_addr.w & 0x100, 0x10f, 0x1ff);
          return;
 
       case 0x2105: // BGMODE
