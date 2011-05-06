@@ -4,13 +4,13 @@
 static inline void ppu_render_bg_mode1(uint16_t *pixels, unsigned scanline, unsigned hofs,
       unsigned tilemap_addr, unsigned character_data)
 {
-   hofs &= 0xff;
    tilemap_addr += (((scanline & 0xff) >> 3) << 5);
+   tilemap_addr += (scanline & 0x100) << 5;
    unsigned y = scanline & 7;
 
    for (unsigned i = 0; i < 32; i++)
    {
-      uint16_t tile = READ_VRAMW(tilemap_addr + i);
+      uint16_t tile = READ_VRAMW(tilemap_addr + i + ((hofs & 0x100) << 4));
       unsigned pal = (tile & 0x1c00) >> 6;
 
       unsigned index = tile & 0x3ff;
@@ -53,13 +53,13 @@ static inline void ppu_render_bg_mode1(uint16_t *pixels, unsigned scanline, unsi
 static inline void ppu_render_bg_mode1_16(uint16_t *pixels, unsigned scanline, unsigned hofs,
       unsigned tilemap_addr, unsigned character_data)
 {
-   hofs &= 0x1ff;
    tilemap_addr += ((scanline & 0x1ff) >> 4) << 5; // Where is address of first tile?
+   tilemap_addr += (scanline & 0x200) << 4;
    unsigned y = scanline & 15; // Find line in our sprite.
 
    for (unsigned i = 0; i < 32; i++)
    {
-      uint16_t tile = READ_VRAMW(tilemap_addr + i);
+      uint16_t tile = READ_VRAMW(tilemap_addr + i + ((hofs & 0x200) << 3));
       unsigned pal = (tile & 0x1c00) >> 6;
 
       unsigned index = tile & 0x3ff;
@@ -130,17 +130,21 @@ static void ppu_render_mode1(uint16_t *out_buf, unsigned scanline)
    {
       unsigned vofs = PPU.bg3vofs;
       unsigned line = (scanline + vofs) & 0xff;
-      unsigned hofs = 1024 - (PPU.bg3hofs & 0x3ff);
+      unsigned hofs = 1024 - PPU.bg3hofs;
       unsigned tilemap_addr = (PPU.bg3sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg12nba & 0x0f) << 12;
 
       if (PPU.bgmode & 0x40)
       {
+         hofs &= isel_if(PPU.bg3sc & 0x01, 0x3ff, 0x1ff);
+         line &= isel_if(PPU.bg3sc & 0x02, 0x3ff, 0x1ff);
          ppu_render_bg_mode0_16(out_buf, line,
                hofs, tilemap_addr, character_data, 0);
       }
       else
       {
+         hofs &= isel_if(PPU.bg3sc & 0x01, 0x1ff, 0xff);
+         line &= isel_if(PPU.bg3sc & 0x02, 0x1ff, 0xff);
          ppu_render_bg_mode0(out_buf, line,
                hofs, tilemap_addr, character_data, 0);
       }
@@ -150,17 +154,21 @@ static void ppu_render_mode1(uint16_t *out_buf, unsigned scanline)
    {
       unsigned vofs = PPU.bg2vofs;
       unsigned line = (scanline + vofs) & 0xff;
-      unsigned hofs = 1024 - (PPU.bg2hofs & 0x3ff);
+      unsigned hofs = 1024 - PPU.bg2hofs;
       unsigned tilemap_addr = (PPU.bg2sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg12nba & 0xf0) << 8;
 
       if (PPU.bgmode & 0x20)
       {
+         hofs &= isel_if(PPU.bg2sc & 0x01, 0x3ff, 0x1ff);
+         line &= isel_if(PPU.bg2sc & 0x02, 0x3ff, 0x1ff);
          ppu_render_bg_mode1_16(out_buf, line,
                hofs, tilemap_addr, character_data);
       }
       else
       {
+         hofs &= isel_if(PPU.bg2sc & 0x01, 0x1ff, 0xff);
+         line &= isel_if(PPU.bg2sc & 0x02, 0x1ff, 0xff);
          ppu_render_bg_mode1(out_buf, line,
                hofs, tilemap_addr, character_data);
       }
@@ -170,17 +178,21 @@ static void ppu_render_mode1(uint16_t *out_buf, unsigned scanline)
    {
       unsigned vofs = PPU.bg1vofs;
       unsigned line = (scanline + vofs) & 0xff;
-      unsigned hofs = 1024 - (PPU.bg1hofs & 0x3ff);
+      unsigned hofs = 1024 - PPU.bg1hofs;
       unsigned tilemap_addr = (PPU.bg1sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg12nba & 0xf) << 12;
 
       if (PPU.bgmode & 0x10)
       {
+         hofs &= isel_if(PPU.bg1sc & 0x01, 0x3ff, 0x1ff);
+         line &= isel_if(PPU.bg1sc & 0x02, 0x3ff, 0x1ff);
          ppu_render_bg_mode1_16(out_buf, line,
                hofs, tilemap_addr, character_data);
       }
       else
       {
+         hofs &= isel_if(PPU.bg1sc & 0x01, 0x1ff, 0xff);
+         line &= isel_if(PPU.bg1sc & 0x02, 0x1ff, 0xff);
          ppu_render_bg_mode1(out_buf, line,
                hofs, tilemap_addr, character_data);
       }
