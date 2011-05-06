@@ -32,7 +32,7 @@ void ssnes_cpu_reset(void)
 }
 
 // Depends.
-#define CYCLES_PER_FRAME (263 * 1364)
+#define CYCLES_PER_FRAME (262 * 1364)
 
 static void cpu_check_cycles(void)
 {

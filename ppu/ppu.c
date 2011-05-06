@@ -73,6 +73,12 @@ static void blit_scanline_lo(uint16_t * restrict output, const uint16_t * restri
 // Just a background color for now :D
 void ssnes_ppu_scanline(unsigned scanline)
 {
+
+   dprintf("BG1 vhflip: %s\n", PPU.bg1sc & 0x03 ? "yes" : "no");
+   dprintf("BG2 vhflip: %s\n", PPU.bg2sc & 0x03 ? "yes" : "no");
+   dprintf("BG3 vhflip: %s\n", PPU.bg3sc & 0x03 ? "yes" : "no");
+   dprintf("BG4 vhflip: %s\n", PPU.bg4sc & 0x03 ? "yes" : "no");
+
    uint16_t out_buf[256];
    ppu_render_bg(out_buf, scanline);
 
