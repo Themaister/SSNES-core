@@ -42,22 +42,22 @@ void ssnes_smp_deinit(void)
 
 static inline void print_flags(void)
 {
-   fputc(SMP.p.n ? 'N' : 'n', stderr);
-   fputc(SMP.p.v ? 'V' : 'v', stderr);
-   fputc(SMP.p.p ? 'P' : 'p', stderr);
-   fputc('-', stderr);
-   fputc(SMP.p.h ? 'H' : 'h', stderr);
-   fputc(SMP.p.i ? 'I' : 'i', stderr);
-   fputc(SMP.p.z ? 'Z' : 'z', stderr);
-   fputc(SMP.p.c ? 'C' : 'c', stderr);
-   fputc('\n', stderr);
+   dputc(SMP.p.n ? 'N' : 'n');
+   dputc(SMP.p.v ? 'V' : 'v');
+   dputc(SMP.p.p ? 'P' : 'p');
+   dputc('-');
+   dputc(SMP.p.h ? 'H' : 'h');
+   dputc(SMP.p.i ? 'I' : 'i');
+   dputc(SMP.p.z ? 'Z' : 'z');
+   dputc(SMP.p.c ? 'C' : 'c');
+   dprintf("\n");
 }
 
 static inline void print_registers(void)
 {
-   fprintf(stderr, "A: %02x X: %02x Y: %02x YA: %04x ", 
+   dprintf("A: %02x X: %02x Y: %02x YA: %04x ", 
          (unsigned)SMP.ya.b.l, (unsigned)SMP.x, (unsigned)SMP.ya.b.h, (unsigned)SMP.ya.w);
-   fprintf(stderr, "S: %02x ", (unsigned)SMP.sp);
+   dprintf("S: %02x ", (unsigned)SMP.sp);
    print_flags();
 }
 
@@ -90,12 +90,12 @@ static inline void smp_update_timers(unsigned cycles)
    {
       if (ctrl & 0x01)
       {
-         //fprintf(stderr, "Ticking timer 0\n");
+         //dprintf(stderr, "Ticking timer 0\n");
          smp_tick_timer_t0();
       }
       if (ctrl & 0x02)
       {
-         //fprintf(stderr, "Ticking timer 1\n");
+         //dprintf(stderr, "Ticking timer 1\n");
          smp_tick_timer_t1();
       }
    }
@@ -103,7 +103,7 @@ static inline void smp_update_timers(unsigned cycles)
    {
       if (ctrl & 0x04)
       {
-         //fprintf(stderr, "Ticking timer 2\n");
+         //dprintf(stderr, "Ticking timer 2\n");
          smp_tick_timer_t2();
       }
    }
@@ -116,10 +116,10 @@ unsigned ssnes_smp_run(unsigned cycles)
    unsigned ran_cycles = 0;
    while (ran_cycles < cycles)
    {
-      //fprintf(stderr, "  %04x ", (unsigned)SMP.pc);
+      dprintf("  %04x ", (unsigned)SMP.pc);
       uint8_t opcode = smp_read_pc();
-      //fprintf(stderr, "%-14s", ssnes_smp_opname[opcode]);
-      //print_registers();
+      dprintf("%-14s", ssnes_smp_opname[opcode]);
+      print_registers();
       ssnes_smp_optable[opcode]();
 
       unsigned cycles = ssnes_smp_cycle_table[opcode];

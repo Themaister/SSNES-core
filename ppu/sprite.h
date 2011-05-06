@@ -16,7 +16,7 @@ static void ppu_render_sprite(uint16_t *pixels, uint32_t oam, unsigned scanline,
 
    offset += isel_if(attr & 0x01, name, 0);
 
-   //fprintf(stderr, "OAM data: x = %u, y = %u, sprite = %u, attr = $%02x\n", x, y, index, attr);
+   //dprintf(stderr, "OAM data: x = %u, y = %u, sprite = %u, attr = $%02x\n", x, y, index, attr);
 
    unsigned addr = (offset + (index << 4)) & 0x7fff;
    unsigned pal = 128 + ((attr & 0xe) << 3);
@@ -147,7 +147,7 @@ static inline void ppu_render_sprites(uint16_t *line, const uint8_t *oam_hi, uns
       {
          if (~oam_hi[i] & 0x40)
          {
-            //fprintf(stderr, "Rendering sprite: %d\n", (i << 2) + 3);
+            //dprintf(stderr, "Rendering sprite: %d\n", (i << 2) + 3);
             if (oam_hi[i] & 0x80)
                ppu_render_sprite_big(line, READ_OAML((i << 2) + 3), scanline, offset, name);
             else
@@ -155,7 +155,7 @@ static inline void ppu_render_sprites(uint16_t *line, const uint8_t *oam_hi, uns
          }
          if (~oam_hi[i] & 0x10)
          {
-            //fprintf(stderr, "Rendering sprite: %d\n", (i << 2) + 2);
+            //dprintf(stderr, "Rendering sprite: %d\n", (i << 2) + 2);
             if (oam_hi[i] & 0x20)
                ppu_render_sprite_big(line, READ_OAML((i << 2) + 2), scanline, offset, name);
             else
@@ -163,7 +163,7 @@ static inline void ppu_render_sprites(uint16_t *line, const uint8_t *oam_hi, uns
          }
          if (~oam_hi[i] & 0x04)
          {
-            //fprintf(stderr, "Rendering sprite: %d\n", (i << 2) + 1);
+            //dprintf(stderr, "Rendering sprite: %d\n", (i << 2) + 1);
             if (oam_hi[i] & 0x08)
                ppu_render_sprite_big(line, READ_OAML((i << 2) + 1), scanline, offset, name);
             else
@@ -171,7 +171,7 @@ static inline void ppu_render_sprites(uint16_t *line, const uint8_t *oam_hi, uns
          }
          if (~oam_hi[i] & 0x01)
          {
-            //fprintf(stderr, "Rendering sprite: %d\n", (i << 2) + 0);
+            //dprintf(stderr, "Rendering sprite: %d\n", (i << 2) + 0);
             if (oam_hi[i] & 0x02)
                ppu_render_sprite_big(line, READ_OAML((i << 2) + 0), scanline, offset, name);
             else

@@ -87,32 +87,32 @@ void ssnes_ppu_scanline(unsigned scanline)
          break;
 
       case 2:
-         fprintf(stderr, "Mode 2: Unimplemented ...\n");
+         dprintf("Mode 2: Unimplemented ...\n");
          //ppu_render_mode2(out_buf, scanline);
          break;
 
       case 3:
-         fprintf(stderr, "Mode 3: Unimplemented ...\n");
+         dprintf("Mode 3: Unimplemented ...\n");
          //ppu_render_mode3(out_buf, scanline);
          break;
 
       case 4:
-         fprintf(stderr, "Mode 4: Unimplemented ...\n");
+         dprintf("Mode 4: Unimplemented ...\n");
          //ppu_render_mode4(out_buf, scanline);
          break;
 
       case 5:
-         fprintf(stderr, "Mode 5: Unimplemented ...\n");
+         dprintf("Mode 5: Unimplemented ...\n");
          //ppu_render_mode5(out_buf, scanline);
          break;
 
       case 6: // ...
-         fprintf(stderr, "Mode 6: Unimplemented ...\n");
+         dprintf("Mode 6: Unimplemented ...\n");
          //ppu_render_mode6(out_buf, scanline);
          break;
 
       case 7: // O.O
-         fprintf(stderr, "Mode 7: Unimplemented ...\n");
+         dprintf("Mode 7: Unimplemented ...\n");
          //ppu_render_mode7(out_buf, scanline);
          break;
    }

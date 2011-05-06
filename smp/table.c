@@ -53,7 +53,7 @@ smp_op_t ssnes_smp_optable[256] = {
    ALU(DP_IMM, or),        // 0x18
    ALU(DPX_DPY, or),       // 0x19
    RMWW(decw),             // 0x1a
-   RMW(DPX, asl),          // 0x1b
+   RMW(DPIX, asl),         // 0x1b
    RMW(A, asl),            // 0x1c
    RMW(X, dec),            // 0x1d
    ALUXY(x, addr),         // 0x1e
@@ -87,7 +87,7 @@ smp_op_t ssnes_smp_optable[256] = {
    ALU(DP_IMM, and),       // 0x38
    ALU(DPX_DPY, and),      // 0x39
    RMWW(incw),             // 0x3a
-   RMW(DPX, rol),          // 0x3b
+   RMW(DPIX, rol),         // 0x3b
    RMW(A, rol),            // 0x3c
    RMW(X, inc),            // 0x3d
    ALUXY(x, dp),           // 0x3e
@@ -99,7 +99,7 @@ smp_op_t ssnes_smp_optable[256] = {
    BBS(2),                 // 0x43
    ALU(DP, eor),           // 0x44
    ALU(ADDR, eor),         // 0x45
-   ALU(DPIX, eor),         // 0x46
+   ALU(DPX, eor),          // 0x46
    ALU(IDPX, eor),         // 0x47
    ALU(IMM, eor),          // 0x48
    ALU(DP_DP, eor),        // 0x49
@@ -121,7 +121,7 @@ smp_op_t ssnes_smp_optable[256] = {
    ALU(DP_IMM, eor),       // 0x58
    ALU(DPX_DPY, eor),      // 0x59
    ALUW(cmpw),             // 0x5a
-   RMW(DPX, lsr),          // 0x5b
+   RMW(DPIX, lsr),         // 0x5b
    RMW(A, lsr),            // 0x5c
    MOVE(X, a),             // 0x5d
    ALUXY(y, addr),         // 0x5e
@@ -148,14 +148,14 @@ smp_op_t ssnes_smp_optable[256] = {
    TCALL(7),               // 0x71
    CLR1(3),                // 0x72
    BBC(3),                 // 0x73
-   CMP(a, dpx),            // 0x74
+   CMP(a, dpix),           // 0x74
    CMP(a, addrx),          // 0x75
    CMP(a, addry),          // 0x76
    CMP(a, idpy),           // 0x77
    CMP(dp, const),         // 0x78
    CMP(dpx, dpy),          // 0x79
    ALUW(addw),             // 0x7a
-   RMW(DPX, ror),          // 0x7b
+   RMW(DPIX, ror),         // 0x7b
    RMW(A, ror),            // 0x7c
    MOVE(A, x),             // 0x7d
    ALUXY(y, dp),           // 0x7e
@@ -167,7 +167,7 @@ smp_op_t ssnes_smp_optable[256] = {
    BBS(4),                 // 0x83
    ALU(DP, adc),           // 0x84
    ALU(ADDR, adc),         // 0x85
-   ALU(DPIX, adc),         // 0x86
+   ALU(DPX, adc),          // 0x86
    ALU(IDPX, adc),         // 0x87
    ALU(IMM, adc),          // 0x88
    ALU(DP_DP, adc),        // 0x89
@@ -182,14 +182,14 @@ smp_op_t ssnes_smp_optable[256] = {
    TCALL(9),               // 0x91
    CLR1(4),                // 0x92
    BBC(4),                 // 0x93
-   ALU(DPX, adc),          // 0x94
+   ALU(DPIX, adc),         // 0x94
    ALU(ADDRX, adc),        // 0x95
    ALU(ADDRY, adc),        // 0x96
    ALU(IDPY, adc),         // 0x97
    ALU(DP_IMM, adc),       // 0x98
    ALU(DPX_DPY, adc),      // 0x99
    ALUW(subw),             // 0x9a
-   RMW(DPX, dec),          // 0x9b
+   RMW(DPIX, dec),         // 0x9b
    RMW(A, dec),            // 0x9c
    MOVE(X, sp),            // 0x9d
    smp_op_div,             // 0x9e
@@ -201,7 +201,7 @@ smp_op_t ssnes_smp_optable[256] = {
    BBS(5),                 // 0xa3
    ALU(DP, sbc),           // 0xa4
    ALU(ADDR, sbc),         // 0xa5
-   ALU(DPIX, sbc),         // 0xa6
+   ALU(DPX, sbc),          // 0xa6
    ALU(IDPX, sbc),         // 0xa7
    ALU(IMM, sbc),          // 0xa8
    ALU(DP_DP, sbc),        // 0xa9
@@ -216,14 +216,14 @@ smp_op_t ssnes_smp_optable[256] = {
    TCALL(11),              // 0xb1
    CLR1(5),                // 0xb2
    BBC(5),                 // 0xb3
-   ALU(DPX, sbc),          // 0xb4
+   ALU(DPIX, sbc),         // 0xb4
    ALU(ADDRX, sbc),        // 0xb5
    ALU(ADDRY, sbc),        // 0xb6
    ALU(IDPY, sbc),         // 0xb7
    ALU(DP_IMM, sbc),       // 0xb8
    ALU(DPX_DPY, sbc),      // 0xb9
    smp_op_movw_ya_d,       // 0xba
-   RMW(DPX, inc),          // 0xbb
+   RMW(DPIX, inc),         // 0xbb
    RMW(A, inc),            // 0xbc
    smp_op_move_sp_x,       // 0xbd
    smp_op_das,             // 0xbe
@@ -250,7 +250,7 @@ smp_op_t ssnes_smp_optable[256] = {
    TCALL(13),              // 0xd1
    CLR1(6),                // 0xd2
    BBC(6),                 // 0xd3
-   MOVE_(dpx, a),          // 0xd4
+   MOVE_(dpix, a),         // 0xd4
    MOVE_(addrx, a),        // 0xd5
    MOVE_(addry, a),        // 0xd6
    MOVE_(idpy, a),         // 0xd7
@@ -269,7 +269,7 @@ smp_op_t ssnes_smp_optable[256] = {
    BBS(7),                 // 0xe3
    MOVE(A, dp),            // 0xe4
    MOVE(A, addr),          // 0xe5
-   MOVE(A, dpx),          // 0xe6
+   MOVE(A, dpx),           // 0xe6
    MOVE(A, idpx),          // 0xe7
    MOVE(A, const),         // 0xe8
    MOVE(X, addr),          // 0xe9

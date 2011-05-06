@@ -8,6 +8,10 @@ SOURCES = $(wildcard */*.c)
 OBJ = $(SOURCES:.c=.o)
 TEST_OBJ = main_test.o
 
+ifneq ($(DEBUG),)
+   CFLAGS += -DSSNES_DEBUG
+endif
+
 all: lib
 
 lib: $(TARGET)

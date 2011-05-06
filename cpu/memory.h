@@ -11,7 +11,7 @@
 static inline uint8_t cpu_readl(uint32_t addr)
 {
    uint8_t result = ssnes_memmap_read_table[addr >> 13](addr);
-   //fprintf(stderr, "\tRead: $%02x <= $%06x\n", (unsigned)result, (unsigned)addr);
+   dprintf("\tRead: $%02x <= $%06x\n", (unsigned)result, (unsigned)addr);
    return result;
 
    //return ssnes_memmap_read_table[addr >> 13](addr);
@@ -19,7 +19,7 @@ static inline uint8_t cpu_readl(uint32_t addr)
 
 static inline void cpu_writel(uint32_t addr, uint8_t data)
 {
-   //fprintf(stderr, "\tWrite: $%02x => $%06x\n", (unsigned)data, (unsigned)addr);
+   dprintf("\tWrite: $%02x => $%06x\n", (unsigned)data, (unsigned)addr);
    ssnes_memmap_write_table[addr >> 13](addr, data);
 }
 

@@ -12,7 +12,7 @@ memmap_write_t ssnes_memmap_write_table[256 * 8];
 static uint8_t lorom_read(uint32_t addr)
 {
    uint8_t ret = MEM.cart.rom[((addr & 0x7f0000) >> 1) | (0x7fff & addr)];
-   //fprintf(stderr, "Read 0x%x from addr 0x%x.\n", (unsigned)ret, (unsigned)addr);
+   //dprintf(stderr, "Read 0x%x from addr 0x%x.\n", (unsigned)ret, (unsigned)addr);
    CPU.status.cycles += 8; // SlowROM
    return ret;
 }
@@ -26,7 +26,7 @@ static uint8_t lorom_read_fastrom(uint32_t addr)
 // ;)
 static void lorom_write(uint32_t addr, uint8_t data)
 {
-   //fprintf(stderr, "HEY! Attempted to write 0x%x to addr: %x\n", (unsigned)data, (unsigned)addr);
+   //dprintf(stderr, "HEY! Attempted to write 0x%x to addr: %x\n", (unsigned)data, (unsigned)addr);
    (void)addr;
    (void)data;
 }
@@ -34,7 +34,7 @@ static void lorom_write(uint32_t addr, uint8_t data)
 // ;)
 static void lorom_write_fastrom(uint32_t addr, uint8_t data)
 {
-   //fprintf(stderr, "HEY! Attempted to write 0x%x to addr: %x\n", (unsigned)data, (unsigned)addr);
+   //dprintf(stderr, "HEY! Attempted to write 0x%x to addr: %x\n", (unsigned)data, (unsigned)addr);
    (void)addr;
    (void)data;
 }
@@ -54,7 +54,7 @@ static uint8_t hirom_read_fastrom(uint32_t addr)
 // ;)
 static void hirom_write(uint32_t addr, uint8_t data)
 {
-   //fprintf(stderr, "HEY! Attempted to write 0x%x to addr: %x\n", (unsigned)data, (unsigned)addr);
+   //dprintf(stderr, "HEY! Attempted to write 0x%x to addr: %x\n", (unsigned)data, (unsigned)addr);
    (void)addr;
    (void)data;
 }
@@ -62,7 +62,7 @@ static void hirom_write(uint32_t addr, uint8_t data)
 // ;)
 static void hirom_write_fastrom(uint32_t addr, uint8_t data)
 {
-   //fprintf(stderr, "HEY! Attempted to write 0x%x to addr: %x\n", (unsigned)data, (unsigned)addr);
+   //dprintf(stderr, "HEY! Attempted to write 0x%x to addr: %x\n", (unsigned)data, (unsigned)addr);
    (void)addr;
    (void)data;
 }
@@ -70,14 +70,14 @@ static void hirom_write_fastrom(uint32_t addr, uint8_t data)
 static uint8_t lowram_read(uint32_t addr)
 {
    uint8_t ret = MEM.wram[addr & 0x1fff];
-   //fprintf(stderr, "Read 0x%x from addr 0x%x.\n", (unsigned)ret, (unsigned)addr);
+   //dprintf(stderr, "Read 0x%x from addr 0x%x.\n", (unsigned)ret, (unsigned)addr);
    CPU.status.cycles += 8;
    return ret;
 }
 
 static void lowram_write(uint32_t addr, uint8_t data)
 {
-   //fprintf(stderr, "Wrote 0x%x to 0x%x.\n", (unsigned)data, (unsigned)addr);
+   //dprintf(stderr, "Wrote 0x%x to 0x%x.\n", (unsigned)data, (unsigned)addr);
    CPU.status.cycles += 8;
    MEM.wram[addr & 0x1fff] = data;
 }
@@ -86,7 +86,7 @@ static uint8_t wram_read(uint32_t addr)
 {
    uint8_t ret = MEM.wram[addr & 0x1ffff];
    CPU.status.cycles += 8;
-   //fprintf(stderr, "Reading 0x%x from addr 0x%x.\n", (unsigned)ret, (unsigned)addr);
+   //dprintf(stderr, "Reading 0x%x from addr 0x%x.\n", (unsigned)ret, (unsigned)addr);
    return ret;
 }
 
@@ -94,7 +94,7 @@ static void wram_write(uint32_t addr, uint8_t data)
 {
    CPU.status.cycles += 8;
    MEM.wram[addr & 0x1ffff] = data;
-   //fprintf(stderr, "Writing 0x%x to addr 0x%x.\n", (unsigned)data, (unsigned)addr);
+   //dprintf(stderr, "Writing 0x%x to addr 0x%x.\n", (unsigned)data, (unsigned)addr);
 }
 
 // Sets up whole memory map.
@@ -190,7 +190,7 @@ void ssnes_memmap_init(enum ssnes_mapper_type type)
          break;
 
       default:
-         //fprintf(stderr, "No valid MMAP?!?!\n");
+         //dprintf(stderr, "No valid MMAP?!?!\n");
          break;
    }
 

@@ -30,9 +30,9 @@
       smp_write_dp(dp, smp_op_##op (smp_read_dp(dp))); \
    }
 
-#define SMP_OP_RMW_DPX_DECL(op) smp_op_rmw_dpx_##op
-#define SMP_OP_RMW_DPX(op) \
-   static inline void SMP_OP_RMW_DPX_DECL(op) (void) \
+#define SMP_OP_RMW_DPIX_DECL(op) smp_op_rmw_dpix_##op
+#define SMP_OP_RMW_DPIX(op) \
+   static inline void SMP_OP_RMW_DPIX_DECL(op) (void) \
    { \
       uint8_t dp = smp_read_pc() + SMP.x; \
       smp_write_dp(dp, smp_op_##op (smp_read_dp(dp))); \
@@ -68,12 +68,12 @@ SMP_OP_RMW_DP(asl)
 SMP_OP_RMW_DP(rol)
 SMP_OP_RMW_DP(ror)
 
-SMP_OP_RMW_DPX(dec)
-SMP_OP_RMW_DPX(inc)
-SMP_OP_RMW_DPX(lsr)
-SMP_OP_RMW_DPX(asl)
-SMP_OP_RMW_DPX(rol)
-SMP_OP_RMW_DPX(ror)
+SMP_OP_RMW_DPIX(dec)
+SMP_OP_RMW_DPIX(inc)
+SMP_OP_RMW_DPIX(lsr)
+SMP_OP_RMW_DPIX(asl)
+SMP_OP_RMW_DPIX(rol)
+SMP_OP_RMW_DPIX(ror)
 
 SMP_OP_RMW_ADDR(dec)
 SMP_OP_RMW_ADDR(inc)

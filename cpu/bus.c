@@ -93,7 +93,7 @@ uint8_t ssnes_bus_read_2000(uint32_t addr)
    {
       STATUS.smp_state = true;
       uint8_t ret = SMP.apuio[daddr & 3];
-      //fprintf(stderr, "CPU: APUIO%d = $%x\n", (int)daddr & 3, (unsigned)ret);
+      //dprintf(stderr, "CPU: APUIO%d = $%x\n", (int)daddr & 3, (unsigned)ret);
       return ret;
    }
 
@@ -238,12 +238,12 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
          if (!STATUS.regs.oam_odd)
          {
             uint16_t oam_data = STATUS.regs.oam_buf | ((uint16_t)data << 8);
-            //fprintf(stderr, "\tWriting OAM $%04x => $%x (word)\n", (unsigned)oam_data, (unsigned)STATUS.regs.oam_addr.w);
+            //dprintf(stderr, "\tWriting OAM $%04x => $%x (word)\n", (unsigned)oam_data, (unsigned)STATUS.regs.oam_addr.w);
             WRITE_OAMW(STATUS.regs.oam_addr.w++ & 0x1ff, oam_data);
          }
          else
          {
-            //fprintf(stderr, "\tWriting OAM buf <= $%02x\n", (unsigned)data);
+            //dprintf(stderr, "\tWriting OAM buf <= $%02x\n", (unsigned)data);
             STATUS.regs.oam_buf = data;
             // Writes to high table takes place immediately.
             iup_if(MEM.oam.b[(uint16_t)STATUS.regs.oam_addr.w << 1], STATUS.regs.oam_addr.w & 0x100, data);
@@ -320,13 +320,13 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
 
       // Block VRAM access unless we're in force blank or vblank.
       case 0x2118: // VMDATAL
-         //fprintf(stderr, "Write VRAM word $%x -> $%x (low)\n", (unsigned)data, (unsigned)STATUS.regs.vram_addr.w);
+         //dprintf(stderr, "Write VRAM word $%x -> $%x (low)\n", (unsigned)data, (unsigned)STATUS.regs.vram_addr.w);
          iup_if(MEM.vram.b[(vram_translation(STATUS.regs.vram_addr.w) & 0x7fff) << 1], PPU.vsync | (PPU.inidisp & 0x80), data);
          STATUS.regs.vram_addr.w += isel_if(STATUS.regs.vmain & 0x80, 0, vram_addr_inc[STATUS.regs.vmain & 3]);
          return;
 
       case 0x2119: // VMDATAH
-         //fprintf(stderr, "Write VRAM word $%x -> $%x (hi)\n", (unsigned)data, (unsigned)STATUS.regs.vram_addr.w);
+         //dprintf(stderr, "Write VRAM word $%x -> $%x (hi)\n", (unsigned)data, (unsigned)STATUS.regs.vram_addr.w);
          iup_if(MEM.vram.b[((vram_translation(STATUS.regs.vram_addr.w) & 0x7fff) << 1) + 1], PPU.vsync | (PPU.inidisp & 0x80), data);
          STATUS.regs.vram_addr.w += isel_if(STATUS.regs.vmain & 0x80, vram_addr_inc[STATUS.regs.vmain & 3], 0);
          return;
@@ -344,7 +344,7 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
          if (!STATUS.regs.cg_odd)
          {
             uint16_t res = STATUS.regs.cgbuf | ((uint16_t)data << 8);
-            //fprintf(stderr, "Writing $%04x to CGRAM $%02x.\n", (unsigned)res, (unsigned)STATUS.regs.cgadd);
+            //dprintf(stderr, "Writing $%04x to CGRAM $%02x.\n", (unsigned)res, (unsigned)STATUS.regs.cgadd);
             WRITE_CGRAMW(STATUS.regs.cgadd, res);
             STATUS.regs.cgadd++;
          }

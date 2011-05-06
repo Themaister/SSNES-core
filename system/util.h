@@ -122,4 +122,15 @@ static inline uint32_t isel_lt(int32_t var1, int32_t var2, uint32_t a, uint32_t 
 #define iup_gte(var, check, val, a) { var = isel_gte(check, val, a, var); }
 #define iup_lt(var, check, val, a) { var = isel_lt(check, val, a, var); }
 
+
+#ifdef SSNES_DEBUG
+#include <stdio.h>
+#define dprintf(fmt, args...) fprintf(stderr, fmt, ##args)
+#define dputc(c) fputc((c), stderr)
+#else
+#define dprintf(fmt, args...)
+#define dputc(c)
+#endif
+
+
 #endif

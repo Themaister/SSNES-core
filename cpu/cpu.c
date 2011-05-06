@@ -117,18 +117,18 @@ static void cpu_check_irq(void)
 
 static inline void print_registers(void)
 {
-   fprintf(stderr, "A: %04x X: %04x Y: %04x ", (unsigned)REGS.a.w, (unsigned)REGS.x.w, (unsigned)REGS.y.w);
-   fprintf(stderr, "S: %04x D: %04x ", (unsigned)REGS.sp.w, (unsigned)(REGS.dp >> 8));
-   fprintf(stderr, "DB: %02x ", (unsigned)(REGS.db >> 16));
-   fputc(REGS.p.n ? 'N' : 'n', stderr);
-   fputc(REGS.p.v ? 'V' : 'v', stderr);
-   fputc(REGS.p.m ? 'M' : 'm', stderr);
-   fputc(REGS.p.x ? 'X' : 'x', stderr);
-   fputc(REGS.p.d ? 'D' : 'd', stderr);
-   fputc(REGS.p.i ? 'I' : 'i', stderr);
-   fputc(REGS.p.z ? 'Z' : 'z', stderr);
-   fputc(REGS.p.c ? 'C' : 'c', stderr);
-   fprintf(stderr, " V: %03u H: %04u\n", STATUS.ppu.vcount, STATUS.ppu.hcount);
+   dprintf("A: %04x X: %04x Y: %04x ", (unsigned)REGS.a.w, (unsigned)REGS.x.w, (unsigned)REGS.y.w);
+   dprintf("S: %04x D: %04x ", (unsigned)REGS.sp.w, (unsigned)(REGS.dp >> 8));
+   dprintf("DB: %02x ", (unsigned)(REGS.db >> 16));
+   dputc(REGS.p.n ? 'N' : 'n');
+   dputc(REGS.p.v ? 'V' : 'v');
+   dputc(REGS.p.m ? 'M' : 'm');
+   dputc(REGS.p.x ? 'X' : 'x');
+   dputc(REGS.p.d ? 'D' : 'd');
+   dputc(REGS.p.i ? 'I' : 'i');
+   dputc(REGS.p.z ? 'Z' : 'z');
+   dputc(REGS.p.c ? 'C' : 'c');
+   dprintf(" V: %03u H: %04u\n", STATUS.ppu.vcount, STATUS.ppu.hcount);
 }
 
 static inline unsigned update_ppu_cycles(unsigned last_cycles)
@@ -216,13 +216,14 @@ void ssnes_cpu_run_frame(void)
          else
          {
             uint8_t opcode = cpu_read_pc();
-            //fprintf(stderr, "%06x ", (unsigned)REGS.pc.l - 1);
-            //fprintf(stderr, "%-14s", ssnes_cpu_opcode_names[opcode]); 
-            //print_registers();
+
+            dprintf("%06x ", (unsigned)REGS.pc.l - 1);
+            dprintf("%-14s", ssnes_cpu_opcode_names[opcode]); 
+            print_registers();
 
             ssnes_cpu_op_table[opcode]();
 
-            //STATUS.cycles += ssnes_cpu_cycle_table[opcode];
+            STATUS.cycles += ssnes_cpu_cycle_table[opcode];
             STATUS.cycles += 6;
          }
       }

@@ -13,7 +13,7 @@ static const uint8_t *smp_hiram_data;
 
 static void smp_write_ram(uint16_t addr, uint8_t data, uint8_t mask)
 {
-   //fprintf(stderr, "Write RAM: $%x => $%x\n", (unsigned)addr, (unsigned)data);
+   //dprintf(stderr, "Write RAM: $%x => $%x\n", (unsigned)addr, (unsigned)data);
    uint8_t orig = MEM.apuram[addr];
    uint8_t delta = orig ^ data;
    delta &= mask;
@@ -54,7 +54,7 @@ static void smp_write_regs(uint16_t addr, uint8_t data, uint8_t mask)
    switch (addr)
    {
       case 0xf0: // Testing stuff, we don't care.
-         fprintf(stderr, "SMP $f0 is being touched inappropriately with $%02x (mask $%02x), call da police!\n", (unsigned)data, (unsigned)mask);
+         dprintf("SMP $f0 is being touched inappropriately with $%02x (mask $%02x), call da police!\n", (unsigned)data, (unsigned)mask);
          return;
 
       case 0xf1: // Timer control, TODO.
@@ -75,19 +75,19 @@ static void smp_write_regs(uint16_t addr, uint8_t data, uint8_t mask)
 
       case 0xf4:
          SMP.apuio[0] ^= (SMP.apuio[0] ^ data) & mask;
-         //fprintf(stderr, "SMP: APUIO0 = $%x\n", (unsigned)SMP.apuio[0]);
+         //dprintf(stderr, "SMP: APUIO0 = $%x\n", (unsigned)SMP.apuio[0]);
          return;
       case 0xf5:
          SMP.apuio[1] ^= (SMP.apuio[1] ^ data) & mask;
-         //fprintf(stderr, "SMP: APUIO1 = $%x\n", (unsigned)SMP.apuio[1]);
+         //dprintf(stderr, "SMP: APUIO1 = $%x\n", (unsigned)SMP.apuio[1]);
          return;
       case 0xf6:
          SMP.apuio[2] ^= (SMP.apuio[2] ^ data) & mask;
-         //fprintf(stderr, "SMP: APUIO2 = $%x\n", (unsigned)SMP.apuio[2]);
+         //dprintf(stderr, "SMP: APUIO2 = $%x\n", (unsigned)SMP.apuio[2]);
          return;
       case 0xf7:
          SMP.apuio[3] ^= (SMP.apuio[3] ^ data) & mask;
-         //fprintf(stderr, "SMP: APUIO3 = $%x\n", (unsigned)SMP.apuio[3]);
+         //dprintf(stderr, "SMP: APUIO3 = $%x\n", (unsigned)SMP.apuio[3]);
          return;
 
       // Normal ram.
@@ -99,15 +99,15 @@ static void smp_write_regs(uint16_t addr, uint8_t data, uint8_t mask)
       // Timing stuff.
       case 0xfa:
          SMP.t0_target ^= (SMP.t0_target ^ data) & mask;
-         //fprintf(stderr, "Timer 0xfa target = $%02x\n", (unsigned)SMP.t0_target);
+         //dprintf(stderr, "Timer 0xfa target = $%02x\n", (unsigned)SMP.t0_target);
          return;
       case 0xfb:
          SMP.t1_target ^= (SMP.t1_target ^ data) & mask;
-         //fprintf(stderr, "Timer 0xfb target = $%02x\n", (unsigned)SMP.t1_target);
+         //dprintf(stderr, "Timer 0xfb target = $%02x\n", (unsigned)SMP.t1_target);
          return;
       case 0xfc:
          SMP.t2_target ^= (SMP.t2_target ^ data) & mask;
-         //fprintf(stderr, "Timer 0xfc target = $%02x\n", (unsigned)SMP.t2_target);
+         //dprintf(stderr, "Timer 0xfc target = $%02x\n", (unsigned)SMP.t2_target);
          return;
    }
 }
@@ -133,17 +133,17 @@ static uint8_t smp_read_regs(uint16_t addr)
       // Timing stuff
       case 0xfd:
          ret = SMP.t0_out;
-         //fprintf(stderr, "Returned timer0 = %u\n", (unsigned)ret);
+         //dprintf(stderr, "Returned timer0 = %u\n", (unsigned)ret);
          SMP.t0_out = 0;
          return ret;
       case 0xfe:
          ret = SMP.t1_out;
-         //fprintf(stderr, "Returned timer1 = %u\n", (unsigned)ret);
+         //dprintf(stderr, "Returned timer1 = %u\n", (unsigned)ret);
          SMP.t1_out = 0;
          return ret;
       case 0xff:
          ret = SMP.t2_out;
-         //fprintf(stderr, "Returned timer2 = %u\n", (unsigned)ret);
+         //dprintf(stderr, "Returned timer2 = %u\n", (unsigned)ret);
          SMP.t2_out = 0;
          return ret;
    }
