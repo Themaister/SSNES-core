@@ -140,23 +140,23 @@ static inline void smp_op_ret1(void)
 
 static inline void smp_op_cbne_dp(void)
 {
-   uint8_t target = smp_read_pc();
    uint8_t data = smp_op_read_dp();
+   uint8_t target = smp_read_pc();
    SMP.pc += (int8_t)isel_eq(data, SMP.ya.b.l, 0, target);
 }
 
 static inline void smp_op_cbne_dpix(void)
 {
-   uint8_t target = smp_read_pc();
    uint8_t data = smp_op_read_dpix();
+   uint8_t target = smp_read_pc();
    SMP.pc += (int8_t)isel_eq(data, SMP.ya.b.l, 0, target);
 }
 
 // Probably wrong :D
 static inline void smp_op_dbnz_dp(void)
 {
-   uint8_t target = smp_read_pc();
    uint8_t dp = smp_read_pc();
+   uint8_t target = smp_read_pc();
    uint8_t data = smp_read_dp(dp) - 1;
    SMP.pc += (int8_t)isel_if(data, target, 0);
    smp_write_dp(dp, data);
