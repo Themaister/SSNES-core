@@ -112,7 +112,7 @@ static inline void smp_update_timers(unsigned cycles)
 unsigned ssnes_smp_run(unsigned cycles)
 {
    // We try to scale master cycles from CPU down to SMP cycles (1.024MHz).
-   cycles /= 10;
+   cycles /= 21;
    unsigned ran_cycles = 0;
    while (ran_cycles < cycles)
    {
@@ -127,5 +127,5 @@ unsigned ssnes_smp_run(unsigned cycles)
       smp_update_timers(ran_cycles);
    }
 
-   return ran_cycles * 10;
+   return ran_cycles * 21;
 }

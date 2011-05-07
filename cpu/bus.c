@@ -7,6 +7,7 @@ static inline uint16_t vram_translation(uint16_t addr)
 {
    unsigned trans = (STATUS.regs.vmain & 0x0c) >> 2;
    uint16_t tmp;
+   dprintf("VRAM write translation %u\n", trans);
    switch (trans)
    {
       // No remapping.
@@ -86,6 +87,12 @@ uint8_t ssnes_bus_read_2000(uint32_t addr)
          else
             res = MEM.cgram.b[(uint16_t)STATUS.regs.cgadd << 1];
          return res;
+
+      case 0x213e: // STAT77
+         return 1;
+
+      case 0x213f: // STAT78
+         return PPU.stat78 | 3;
 
       // WMDATA
       case 0x2180:
@@ -319,9 +326,6 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
          PPU.bg4vofs = (PPU.bg4vofs >> 8) | ((uint16_t)data << 8);
          return;
 
-      case 0x212c:
-         PPU.tm = data;
-         return;
 
 
       /////////////// VRAM
@@ -372,8 +376,49 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
             STATUS.regs.cgbuf = data;
          }
          return;
-
       /////////////////////
+      
+      /////////////////// WINDOW
+      case 0x2123:
+         PPU.w12sel = data;
+         return;
+      case 0x2124:
+         PPU.w34sel = data;
+         return;
+      case 0x2125:
+         PPU.wobjsel = data;
+         return;
+      case 0x2126:
+         PPU.wh0 = data;
+         return;
+      case 0x2127:
+         PPU.wh1 = data;
+         return;
+      case 0x2128:
+         PPU.wh2 = data;
+         return;
+      case 0x2129:
+         PPU.wh3 = data;
+         return;
+
+      case 0x212a:
+         PPU.wbglog = data;
+         return;
+      case 0x212b:
+         PPU.wobjlog = data;
+
+      case 0x212c:
+         PPU.tm = data;
+         return;
+      case 0x212d:
+         PPU.ts = data;
+         return;
+      case 0x212e:
+         PPU.tmw = data;
+         return;
+      case 0x212f:
+         PPU.tsw = data;
+         return;
 
       // WRAM
       case 0x2180: // WMDATA

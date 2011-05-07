@@ -31,8 +31,10 @@ void ssnes_cpu_reset(void)
    cpu_init_registers();
 }
 
-// Depends.
-#define CYCLES_PER_FRAME (262 * 1364)
+// Depends on regions, and probably not inaccurate anyways. :)
+#define CYCLES_PER_SCANLINE (1364)
+#define SCANLINES_PER_FRAME (262)
+#define CYCLES_PER_FRAME (CYCLES_PER_SCANLINE * SCANLINES_PER_FRAME)
 
 static void cpu_check_cycles(void)
 {
@@ -54,9 +56,15 @@ static void cpu_check_cycles(void)
    // Check HDMA
    if (STATUS.hdma_run && STATUS.ppu.hcount > 0x116 * 4)
    {
-      hdma_run();
-      STATUS.hdma_run = false;
+      if (STATUS.hdma_run)
+      {
+         hdma_run();
+         STATUS.hdma_run = false;
+      }
    }
+
+   // hblank
+   PPU.hvbjoy |= isel_gte(STATUS.ppu.hcount, 0x121 * 4, 0x40, 0);
 }
 
 static void cpu_finish_cycles(void)
@@ -110,6 +118,8 @@ static void cpu_check_irq(void)
       // Joypad autopoll
       if (STATUS.regs.nmitimen & 0x01)
          input_autopoll();
+
+      PPU.stat78 ^= 0x80; // Interlace field.
    }
 
    cpu_check_vhirq();
@@ -135,18 +145,18 @@ static inline unsigned update_ppu_cycles(unsigned last_cycles)
 {
    unsigned cycles = STATUS.cycles - last_cycles;
    STATUS.ppu.hcount += cycles;
-   if (STATUS.ppu.hcount >= 1364)
+   if (STATUS.ppu.hcount >= CYCLES_PER_SCANLINE)
    {
-      STATUS.ppu.hcount -= 1364;
+      STATUS.ppu.hcount -= CYCLES_PER_SCANLINE;
       STATUS.ppu.vcount++;
 
       iup_lt(STATUS.ppu.scanline_ready, STATUS.ppu.vcount, 226, true);
+      iup_lt(STATUS.hdma_run, STATUS.ppu.vcount, 225, true);
       PPU.vsync = isel_gte(STATUS.ppu.vcount, 225, true, false);
       STATUS.ppu.frame_ready = isel_eq(STATUS.ppu.vcount, 225, true, false);
       iup_eq(PPU.hvbjoy, STATUS.ppu.vcount, 225, 0x81);
       iup_eq(PPU.hvbjoy, STATUS.ppu.vcount, 228, 0x80);
-
-      STATUS.hdma_run = true;
+      PPU.hvbjoy &= ~0x40; // Not in hblank anymore.
 
       // HIRQ
       iup_eq(STATUS.pending_irq.irq_fired, STATUS.regs.nmitimen & 0x30, 0x10, false);
@@ -155,20 +165,27 @@ static inline unsigned update_ppu_cycles(unsigned last_cycles)
    return STATUS.cycles;
 }
 
-
-void ssnes_cpu_run_frame(void)
+static void cpu_start_frame(void)
 {
-   STATUS.cycles = 0;
-   STATUS.smp_cycles = 0;
+   STATUS.cycles -= CYCLES_PER_FRAME;
+   STATUS.smp_cycles -= CYCLES_PER_FRAME;
+
    STATUS.ppu.vcount = 0;
    STATUS.ppu.hcount = 0;
+
    STATUS.irq.nmi_flag = 0;
    STATUS.hdma_run = false;
+
    PPU.hvbjoy = 0;
    STATUS.pending_irq.irq_fired = false;
    PPU.vsync = false;
-   unsigned last_cycles = 0;
+}
 
+void ssnes_cpu_run_frame(void)
+{
+   cpu_start_frame();
+   unsigned last_cycles = STATUS.cycles;
+   
    // HDMA
    hdma_frame_init();
 
@@ -223,7 +240,7 @@ void ssnes_cpu_run_frame(void)
 
             ssnes_cpu_op_table[opcode]();
 
-            STATUS.cycles += ssnes_cpu_cycle_table[opcode];
+            //STATUS.cycles += ssnes_cpu_cycle_table[opcode];
             STATUS.cycles += 6;
          }
       }
