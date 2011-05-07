@@ -70,6 +70,7 @@ Start:
    jsr InitOAM
    jsr InitSprite
    jsr InitWindow
+   jsr InitHDMA
 
    lda #$01
    sta OBSEL
@@ -245,16 +246,74 @@ InitWindow:
 
    lda #$03
    sta W12SEL
-   lda #$20
-   sta WH0
-   lda #$e0
-   sta WH1
 
    lda #$01
    sta TMW
 
    pla
    rts
+
+InitHDMA:
+   pha
+
+   lda #$01
+   sta DMAP0
+   ldx #HDMATable
+   stx A1T0L
+   stz A1B0
+
+   stz DASB0
+
+   lda #<WH0
+   sta BBAD0
+
+   lda #$01
+   sta HDMAEN
+
+   pla
+   rts
+
+HDMATable:
+   .db $0a
+   .db $ff, $00
+   .db ($80 + (_data_end - _data_start) / 2)
+_data_start:
+   .db $d0, $d0
+   .db $cf, $d1
+   .db $ce, $d2
+   .db $cd, $d3
+   .db $cc, $d4
+   .db $cb, $d5
+   .db $ca, $d6
+   .db $c9, $d7
+   .db $c8, $d8
+   .db $c7, $d9
+   .db $c6, $da
+   .db $c5, $db
+   .db $c4, $dc
+   .db $c3, $dd
+   .db $c2, $de
+   .db $c1, $df
+   .db $c0, $e0
+   .db $c1, $df
+   .db $c2, $de
+   .db $c3, $dd
+   .db $c4, $dc
+   .db $c5, $db
+   .db $c6, $da
+   .db $c7, $d9
+   .db $c8, $d8
+   .db $c9, $d7
+   .db $ca, $d6
+   .db $cb, $d5
+   .db $cc, $d4
+   .db $cd, $d3
+   .db $ce, $d2 
+   .db $cf, $d1
+   .db $d0, $d0
+   .db $ff, $00
+_data_end:
+   .db $00
 
 .ends
    
