@@ -85,7 +85,7 @@ const cpu_op_t ssnes_cpu_op_table_EMUL[256] = {
    CPU_OP_RMW_REG_B_DECL(a, lsr),   // 4a
    cpu_op_phk,                      // 4b
    cpu_op_jmp_addr,                 // 4c
-   ALUOP(CONST_B, eor),             // 4d
+   ALUOP(ADDR_B, eor),              // 4d
    RMWOP(ADDR_B, lsr),              // 4e
    ALUOP(LONG_B, eor),              // 4f
    CPU_OP_BRANCH_REG_N_DECL(v),     // 50
@@ -344,7 +344,7 @@ const cpu_op_t ssnes_cpu_op_table_MX[256] = {
    CPU_OP_RMW_REG_B_DECL(a, lsr),   // 4a
    cpu_op_phk,                      // 4b
    cpu_op_jmp_addr,                 // 4c
-   ALUOP(CONST_B, eor),             // 4d
+   ALUOP(ADDR_B, eor),              // 4d
    RMWOP(ADDR_B, lsr),              // 4e
    ALUOP(LONG_B, eor),              // 4f
    CPU_OP_BRANCH_REG_N_DECL(v),     // 50
@@ -603,7 +603,7 @@ const cpu_op_t ssnes_cpu_op_table_mx[256] = {
    CPU_OP_RMW_REG_W_DECL(a, lsr),   // 4a
    cpu_op_phk,                      // 4b
    cpu_op_jmp_addr,                 // 4c
-   ALUOP(CONST_W, eor),             // 4d
+   ALUOP(ADDR_W, eor),              // 4d
    RMWOP(ADDR_W, lsr),              // 4e
    ALUOP(LONG_W, eor),              // 4f
    CPU_OP_BRANCH_REG_N_DECL(v),     // 50
@@ -862,7 +862,7 @@ const cpu_op_t ssnes_cpu_op_table_mX[256] = {
    CPU_OP_RMW_REG_W_DECL(a, lsr),   // 4a
    cpu_op_phk,                      // 4b
    cpu_op_jmp_addr,                 // 4c
-   ALUOP(CONST_W, eor),             // 4d
+   ALUOP(ADDR_W, eor),              // 4d
    RMWOP(ADDR_W, lsr),              // 4e
    ALUOP(LONG_W, eor),              // 4f
    CPU_OP_BRANCH_REG_N_DECL(v),     // 50
@@ -1121,7 +1121,7 @@ const cpu_op_t ssnes_cpu_op_table_Mx[256] = {
    CPU_OP_RMW_REG_B_DECL(a, lsr),   // 4a
    cpu_op_phk,                      // 4b
    cpu_op_jmp_addr,                 // 4c
-   ALUOP(CONST_B, eor),             // 4d
+   ALUOP(ADDR_B, eor),              // 4d
    RMWOP(ADDR_B, lsr),              // 4e
    ALUOP(LONG_B, eor),              // 4f
    CPU_OP_BRANCH_REG_N_DECL(v),     // 50
