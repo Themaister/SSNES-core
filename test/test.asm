@@ -69,6 +69,7 @@ Start:
 
    jsr InitOAM
    jsr InitSprite
+   jsr InitWindow
 
    lda #$01
    sta OBSEL
@@ -237,6 +238,22 @@ UploadSPC:
 InitSPC:
    jsr StallSPC
    jsr UploadSPC
+   rts
+
+InitWindow:
+   pha
+
+   lda #$03
+   sta W12SEL
+   lda #$20
+   sta WH0
+   lda #$e0
+   sta WH1
+
+   lda #$01
+   sta TMW
+
+   pla
    rts
 
 .ends

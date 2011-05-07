@@ -31,12 +31,17 @@ static void init_xbgr_lut(void)
    }
 }
 
+static uint8_t window_mask_none_buf[256];
+
 void ssnes_ppu_init(void)
 {
    ALLOCATE(PPU.buffer, 1024, 1024 * 256 * sizeof(uint16_t));
    ALLOCATE(xbgr2rgb_lut, 1024, 1 << 20);
 
    init_xbgr_lut();
+
+   for (unsigned i = 0; i < 256; i++)
+      window_mask_none_buf[i] = 0xff;
 }
 
 void ssnes_ppu_deinit(void)
@@ -58,6 +63,8 @@ static void ppu_render_bg(uint16_t *out_buf, unsigned scanline)
    }
 }
 
+
+#include "window.h"
 #include "sprite.h"
 #include "mode0.h"
 #include "mode1.h"
@@ -69,6 +76,7 @@ static void blit_scanline_lo(uint16_t * restrict output, const uint16_t * restri
    for (unsigned i = 0; i < 256; i++)
       *output++ = COLOR_LUT_S(*input++, bright);
 }
+
 
 // Just a background color for now :D
 void ssnes_ppu_scanline(unsigned scanline)

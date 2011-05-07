@@ -2,7 +2,8 @@
 #define __PPU_SPRITE_H
 
 // Hardcode shit for 8x8 :D
-static void ppu_render_sprite(uint16_t *pixels, uint32_t oam, unsigned scanline, unsigned offset, unsigned name)
+static void ppu_render_sprite(uint16_t *pixels, uint32_t oam, unsigned scanline, unsigned offset, unsigned name, 
+      const uint8_t* mask_buf)
 {
    unsigned y = (oam >> 8) & 0xff;
 
@@ -46,6 +47,7 @@ static void ppu_render_sprite(uint16_t *pixels, uint32_t oam, unsigned scanline,
          color |= ((plane0 >> (15 - i)) & 1) << 1;
          color |= ((plane1 >> (7 - i)) & 1) << 2;
          color |= ((plane1 >> (15 - i)) & 1) << 3;
+         color &= mask_buf[x & 0xff];
 
          iup_if(pixels[x & 0xff], color, READ_CGRAMW(pal + color));
          x++;
@@ -53,7 +55,8 @@ static void ppu_render_sprite(uint16_t *pixels, uint32_t oam, unsigned scanline,
    }
 }
 
-static void ppu_render_sprite_big(uint16_t *pixels, uint32_t oam, unsigned scanline, unsigned offset, unsigned name)
+static void ppu_render_sprite_big(uint16_t *pixels, uint32_t oam, unsigned scanline, unsigned offset, unsigned name,
+      const uint8_t *mask_buf)
 {
    unsigned y = (oam >> 8) & 0xff;
    int line = (int)scanline - (int)y;
@@ -105,6 +108,7 @@ static void ppu_render_sprite_big(uint16_t *pixels, uint32_t oam, unsigned scanl
          color |= ((tile0_plane0 >> (i + 8)) & 1) << 1;
          color |= ((tile0_plane1 >> i) & 1) << 2;
          color |= ((tile0_plane1 >> (i + 8)) & 1) << 3;
+         color &= mask_buf[x & 0xff];
 
          iup_if(pixels[x & 0xff], color, READ_CGRAMW(pal + color));
          x++;
@@ -118,6 +122,7 @@ static void ppu_render_sprite_big(uint16_t *pixels, uint32_t oam, unsigned scanl
          color |= ((tile0_plane0 >> (15 - i)) & 1) << 1;
          color |= ((tile0_plane1 >> (7 - i)) & 1) << 2;
          color |= ((tile0_plane1 >> (15 - i)) & 1) << 3;
+         color &= mask_buf[x & 0xff];
 
          iup_if(pixels[x & 0xff], color, READ_CGRAMW(pal + color));
          x++;
@@ -136,7 +141,7 @@ static void ppu_render_sprite_big(uint16_t *pixels, uint32_t oam, unsigned scanl
    }
 }
 
-static inline void ppu_render_sprites(uint16_t *line, const uint8_t *oam_hi, unsigned scanline)
+static inline void ppu_render_sprites(uint16_t *line, const uint8_t *oam_hi, unsigned scanline, const uint8_t *mask_win)
 {
    unsigned offset = ((unsigned)PPU.obsel & 7) << 13;
    unsigned name = (((unsigned)PPU.obsel & 0x18) + 1) << 9;
@@ -149,33 +154,33 @@ static inline void ppu_render_sprites(uint16_t *line, const uint8_t *oam_hi, uns
          {
             //dprintf(stderr, "Rendering sprite: %d\n", (i << 2) + 3);
             if (oam_hi[i] & 0x80)
-               ppu_render_sprite_big(line, READ_OAML((i << 2) + 3), scanline, offset, name);
+               ppu_render_sprite_big(line, READ_OAML((i << 2) + 3), scanline, offset, name, mask_win);
             else
-               ppu_render_sprite(line, READ_OAML((i << 2) + 3), scanline, offset, name);
+               ppu_render_sprite(line, READ_OAML((i << 2) + 3), scanline, offset, name, mask_win);
          }
          if (~oam_hi[i] & 0x10)
          {
             //dprintf(stderr, "Rendering sprite: %d\n", (i << 2) + 2);
             if (oam_hi[i] & 0x20)
-               ppu_render_sprite_big(line, READ_OAML((i << 2) + 2), scanline, offset, name);
+               ppu_render_sprite_big(line, READ_OAML((i << 2) + 2), scanline, offset, name, mask_win);
             else
-               ppu_render_sprite(line, READ_OAML((i << 2) + 2), scanline, offset, name);
+               ppu_render_sprite(line, READ_OAML((i << 2) + 2), scanline, offset, name, mask_win);
          }
          if (~oam_hi[i] & 0x04)
          {
             //dprintf(stderr, "Rendering sprite: %d\n", (i << 2) + 1);
             if (oam_hi[i] & 0x08)
-               ppu_render_sprite_big(line, READ_OAML((i << 2) + 1), scanline, offset, name);
+               ppu_render_sprite_big(line, READ_OAML((i << 2) + 1), scanline, offset, name, mask_win);
             else
-               ppu_render_sprite(line, READ_OAML((i << 2) + 1), scanline, offset, name);
+               ppu_render_sprite(line, READ_OAML((i << 2) + 1), scanline, offset, name, mask_win);
          }
          if (~oam_hi[i] & 0x01)
          {
             //dprintf(stderr, "Rendering sprite: %d\n", (i << 2) + 0);
             if (oam_hi[i] & 0x02)
-               ppu_render_sprite_big(line, READ_OAML((i << 2) + 0), scanline, offset, name);
+               ppu_render_sprite_big(line, READ_OAML((i << 2) + 0), scanline, offset, name, mask_win);
             else
-               ppu_render_sprite(line, READ_OAML((i << 2) + 0), scanline, offset, name);
+               ppu_render_sprite(line, READ_OAML((i << 2) + 0), scanline, offset, name, mask_win);
          }
       }
    }
