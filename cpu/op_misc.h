@@ -97,14 +97,14 @@ static inline void cpu_op_tsx_w(void)
 static inline void cpu_op_tcd(void)
 {
    uint32_t trans = REGS.a.w;
-   REGS.dp = trans << 8;
+   REGS.dp = trans;
    REGS.p.n = trans & 0x8000;
    REGS.p.z = (trans == 0);
 }
 
 static inline void cpu_op_tdc(void)
 {
-   uint16_t trans = REGS.dp >> 8;
+   uint16_t trans = REGS.dp;
    REGS.a.w = trans;
    REGS.p.n = trans & 0x8000;
    REGS.p.z = (trans == 0);
@@ -202,10 +202,10 @@ static inline void cpu_op_tay_MX(void)
 
 static inline void cpu_op_tay_Mx(void)
 {
-   uint8_t trans = REGS.a.b.l;
+   uint16_t trans = REGS.a.w;
    REGS.y.w = trans;
    REGS.p.z = (trans == 0);
-   REGS.p.n = (trans & 0x80);
+   REGS.p.n = (trans & 0x8000);
 }
 
 static inline void cpu_op_tay_mX(void)
@@ -234,10 +234,10 @@ static inline void cpu_op_tax_MX(void)
 
 static inline void cpu_op_tax_Mx(void)
 {
-   uint8_t trans = REGS.a.b.l;
+   uint16_t trans = REGS.a.w;
    REGS.x.w = trans;
    REGS.p.z = (trans == 0);
-   REGS.p.n = (trans & 0x80);
+   REGS.p.n = (trans & 0x8000);
 }
 
 static inline void cpu_op_tax_mX(void)
@@ -320,8 +320,8 @@ static inline void cpu_op_phb(void)
 
 static inline void cpu_op_phd(void)
 {
-   cpu_stack_push(REGS.dp >> 16);
-   cpu_stack_push((REGS.dp >> 8) & 0xFF);
+   cpu_stack_push(REGS.dp >> 8);
+   cpu_stack_push(REGS.dp & 0xFF);
 }
 
 static inline void cpu_op_phk(void)
@@ -402,14 +402,13 @@ static inline void cpu_op_plb(void)
 
 static inline void cpu_op_pld(void)
 {
-   uint32_t low = 0, hi = 0;
-   low = cpu_stack_pull();
-   hi = cpu_stack_pull();
-   uint32_t res = (low << 8) | (hi << 16);
-   REGS.dp = res;
+   word_reg_t w;
+   w.b.l = cpu_stack_pull();
+   w.b.h = cpu_stack_pull();
+   REGS.dp = w.w;
 
-   REGS.p.n = res & 0x800000;
-   REGS.p.z = (res == 0);
+   REGS.p.n = w.w & 0x8000;
+   REGS.p.z = (w.w == 0);
 }
 
 static inline void cpu_op_plp_e(void)

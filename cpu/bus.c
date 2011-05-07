@@ -92,6 +92,10 @@ uint8_t ssnes_bus_read_2000(uint32_t addr)
          res = MEM.wram[STATUS.regs.wram_addr.l++];
          STATUS.regs.wram_addr.l &= 0x1ffff;
          return res;
+
+      default:
+         if (daddr < 0x2140 || daddr >= 0x2180)
+            dprintf("Reading from unimplemented $%04x", (unsigned)daddr);
    }
 
    if (daddr >= 0x2140 && daddr < 0x2180)
@@ -151,6 +155,10 @@ uint8_t ssnes_bus_read_4000(uint32_t addr)
          return STATUS.input[1].data2.b.l;
       case 0x421f: // JOY4H
          return STATUS.input[1].data2.b.h;
+
+      default:
+         if ((daddr >> 8) != 0x43)
+            dprintf("Reading from unimplemented $%04x.\n", (unsigned)daddr);
    }
 
    // Read DMA registers.
@@ -205,6 +213,7 @@ uint8_t ssnes_bus_read_4000(uint32_t addr)
 uint8_t ssnes_bus_read_6000(uint32_t addr)
 {
    CPU.status.cycles += 8;
+   dprintf("Reading from unimplemented $%04x\n", (unsigned)addr);
    return 0;
 }
 
@@ -386,6 +395,8 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
          
       
       default:
+         if (daddr < 0x2140 || daddr >= 0x2180)
+            dprintf("Writing $%02x to unimplemented $%04x\n", (unsigned)data, (unsigned)daddr);
          break;
    }
 
@@ -486,6 +497,8 @@ void ssnes_bus_write_4000(uint32_t addr, uint8_t data)
          return;
 
       default:
+         if ((baddr >> 8) != 0x43)
+            dprintf("Writing $%02x to unimplemented $%04x\n", (unsigned)data, (unsigned)baddr);
          break;
    }
 
@@ -548,5 +561,6 @@ void ssnes_bus_write_4000(uint32_t addr, uint8_t data)
 
 void ssnes_bus_write_6000(uint32_t addr, uint8_t data)
 {
+   dprintf("Writing $%02x to unimplemented $%04x\n", (unsigned)data, (unsigned)addr & 0xffff);
    CPU.status.cycles += 8;
 }

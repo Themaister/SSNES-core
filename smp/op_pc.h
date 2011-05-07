@@ -129,13 +129,12 @@ static inline void smp_op_ret(void)
    SMP.pc = target;
 }
 
-// Pop flags first or return addr? :V
 static inline void smp_op_ret1(void)
 {
+   smp_set_p(smp_pop_stack());
    uint16_t target = smp_pop_stack();
    target |= (uint16_t)smp_pop_stack() << 8;
    SMP.pc = target;
-   smp_set_p(smp_pop_stack());
 }
 
 static inline void smp_op_cbne_dp(void)

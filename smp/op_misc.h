@@ -62,7 +62,16 @@ static inline void smp_op_das(void)
 }
 
 static inline void smp_op_brk(void)
-{} // Meh
+{
+   uint16_t addr = smp_read(0xffde);
+   addr |= (uint16_t)smp_read(0xffdf) << 8;
+   smp_push_stack(SMP.pc >> 8);
+   smp_push_stack(SMP.pc & 0xff);
+   smp_push_stack(smp_get_p());
+   SMP.pc = addr;
+   SMP.p.b = true;
+   SMP.p.i = false;
+}
 
 static inline void smp_op_di(void)
 {

@@ -1366,7 +1366,7 @@ const char* ssnes_cpu_opcode_names[] = {
    "bvs",         "adc (idpy)",     "adc (idp)",   "adc (isry)",           // 0x70
    "stz (dpx)",   "adc (dpx)",      "ror (dpx)",   "adc (ildpy)",          // 0x74
    "sei",         "adc (addry)",    "ply",         "tdc",                  // 0x78
-   "jmp (ilong)", "adc (addrx)",    "ror (addrx)", "adc (longx)",          // 0x7c
+   "jmp (iaddrx)", "adc (addrx)",    "ror (addrx)", "adc (longx)",         // 0x7c
 
    "bra",         "sta (idpx)",     "brl",         "sta (sr)",             // 0x80
    "sty (dp)",    "sta (dp)",       "stx (dp)",    "sta (ildp)",           // 0x84

@@ -30,7 +30,7 @@ struct cpu_regs
    bool wai;
 
    uint32_t db; // Data bank
-   uint32_t dp; // Direct page
+   uint16_t dp; // Direct page
 };
 
 struct dma_channel

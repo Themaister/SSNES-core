@@ -45,7 +45,7 @@ static inline void print_flags(void)
    dputc(SMP.p.n ? 'N' : 'n');
    dputc(SMP.p.v ? 'V' : 'v');
    dputc(SMP.p.p ? 'P' : 'p');
-   dputc('-');
+   dputc(SMP.p.b ? 'B' : 'b');
    dputc(SMP.p.h ? 'H' : 'h');
    dputc(SMP.p.i ? 'I' : 'i');
    dputc(SMP.p.z ? 'Z' : 'z');

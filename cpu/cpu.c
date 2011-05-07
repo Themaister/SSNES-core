@@ -118,7 +118,7 @@ static void cpu_check_irq(void)
 static inline void print_registers(void)
 {
    dprintf("A: %04x X: %04x Y: %04x ", (unsigned)REGS.a.w, (unsigned)REGS.x.w, (unsigned)REGS.y.w);
-   dprintf("S: %04x D: %04x ", (unsigned)REGS.sp.w, (unsigned)(REGS.dp >> 8));
+   dprintf("S: %04x D: %04x ", (unsigned)REGS.sp.w, (unsigned)REGS.dp);
    dprintf("DB: %02x ", (unsigned)(REGS.db >> 16));
    dputc(REGS.p.n ? 'N' : 'n');
    dputc(REGS.p.v ? 'V' : 'v');
