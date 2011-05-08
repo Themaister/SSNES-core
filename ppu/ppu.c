@@ -86,7 +86,7 @@ void ssnes_ppu_scanline(unsigned scanline)
    dprintf("BG3 vhflip: %s\n", PPU.bg3sc & 0x03 ? "yes" : "no");
    dprintf("BG4 vhflip: %s\n", PPU.bg4sc & 0x03 ? "yes" : "no");
 
-   uint16_t out_buf[1024];
+   uint16_t out_buf[1024] ALIGNED;
    ppu_render_bg(out_buf, scanline);
 
    switch (PPU.bgmode & 7)

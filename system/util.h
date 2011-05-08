@@ -133,4 +133,7 @@ static inline uint32_t isel_lt(int32_t var1, int32_t var2, uint32_t a, uint32_t 
 #endif
 
 
+#define ALIGNED __attribute__((aligned(16)))
+
+
 #endif

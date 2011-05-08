@@ -4,13 +4,79 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include <assert.h>
+
+#if 0
+static void ppu_merge_bg(uint16_t * restrict dst, const uint16_t * restrict src, uint16_t * restrict z_dst, const uint16_t * restrict z_src)
+{
+   for (unsigned i = 0; i < 256; i++)
+   {
+      if (z_src[i] > z_dst[i])
+      {
+         dst[i] = src[i];
+         z_dst[i] = z_src[i];
+      }
+   }
+}
+#else
+#include <emmintrin.h>
+// SSE2 line merger.
+static void ppu_merge_bg(uint16_t * restrict dst, const uint16_t * restrict src, uint16_t * restrict z_dst, const uint16_t * restrict z_src)
+{
+   for (unsigned i = 0; i < 32; i += 2)
+   {
+      __m128i z_dst_0 = _mm_load_si128((__m128i*)z_dst + i + 0);
+      __m128i z_dst_1 = _mm_load_si128((__m128i*)z_dst + i + 1);
+      __m128i z_src_0 = _mm_load_si128((__m128i*)z_src + i + 0);
+      __m128i z_src_1 = _mm_load_si128((__m128i*)z_src + i + 1);
+      __m128i dst_0 = _mm_load_si128((__m128i*)dst + i + 0);
+      __m128i dst_1 = _mm_load_si128((__m128i*)dst + i + 1);
+      __m128i src_0 = _mm_load_si128((__m128i*)src + i + 0);
+      __m128i src_1 = _mm_load_si128((__m128i*)src + i + 1);
+
+      __m128i gt_mask0 = _mm_cmpgt_epi16(z_src_0, z_dst_0);
+      __m128i gt_mask1 = _mm_cmpgt_epi16(z_src_1, z_dst_1);
+      dst_0 = _mm_or_si128(_mm_and_si128(gt_mask0, src_0), _mm_andnot_si128(gt_mask0, dst_0));
+      dst_1 = _mm_or_si128(_mm_and_si128(gt_mask1, src_1), _mm_andnot_si128(gt_mask1, dst_1));
+
+      _mm_store_si128((__m128i*)dst + i + 0, dst_0);
+      _mm_store_si128((__m128i*)dst + i + 1, dst_1);
+      _mm_store_si128((__m128i*)z_dst + i + 0, _mm_max_epi16(z_dst_0, z_src_0));
+      _mm_store_si128((__m128i*)z_dst + i + 1, _mm_max_epi16(z_dst_1, z_src_1));
+   }
+}
+#endif
+
+// This should be very SIMD friendly :) :)
+static void ppu_merge_bgs(uint16_t (* restrict linebuf)[1024], uint16_t (* restrict z_buf)[1024], uint16_t * restrict out_buf, const unsigned *merge_list, unsigned bgs)
+{
+   uint16_t * restrict line_dst = NULL;
+   const uint16_t * restrict line_src = NULL;
+   uint16_t * restrict z_dst = NULL;
+   const uint16_t * restrict z_src = NULL;
+
+   for (unsigned j = 0; j < bgs - 1; j++)
+   {
+      unsigned dst = merge_list[j + 1];
+      unsigned src = merge_list[j];
+
+      line_dst = linebuf[dst];
+      line_src = linebuf[src];
+      z_dst = z_buf[dst];
+      z_src = z_buf[src];
+
+      ppu_merge_bg(line_dst, line_src, z_dst, z_src);
+   }
+}
+
+
 // A fuckton of code incoming! :D
 
 static inline void ppu_render_tile_2bpp_8x8(
-      uint16_t *pixels, 
+      uint16_t * restrict pixels, 
       uint16_t plane, unsigned x, unsigned x_mask,
       unsigned palette, bool hflip, bool prio,
-      const uint8_t *mask_buf, const uint8_t *z_prio, uint8_t *z_buffer)
+      const uint8_t *mask_buf, const uint16_t *z_prio, uint16_t * restrict z_buffer)
 {
    unsigned z_value = z_prio[prio];
    if (hflip)
@@ -19,12 +85,9 @@ static inline void ppu_render_tile_2bpp_8x8(
       {
          unsigned color = (plane >> i) & 1; // Pull out the two bitplane values.
          color |= ((plane >> (i + 8)) & 1) << 1;
-         color &= mask_buf[x & 0xff]; // Window mask.
-         if (z_value > z_buffer[x] && color) // If prio is higher and color is not 0 (transparent), update pixel and z-buffer.
-         {
-            z_buffer[x] = z_value;
-            pixels[x] = READ_CGRAMW(palette + color);
-         }
+
+         z_buffer[x] = z_value & mask_buf[x & 0xff] & isel_if(color, 0xff, 0); // Window mask and transparency
+         pixels[x] = READ_CGRAMW(palette + color);
          x = (x + 1) & x_mask;
       }
    }
@@ -34,22 +97,19 @@ static inline void ppu_render_tile_2bpp_8x8(
       {
          unsigned color = (plane >> (7 - i)) & 1; // Pull out the two bitplane values.
          color |= ((plane >> (15 - i)) & 1) << 1;
-         color &= mask_buf[x & 0xff]; // Window mask.
-         if (z_value > z_buffer[x] && color)
-         {
-            z_buffer[x] = z_value;
-            pixels[x] = READ_CGRAMW(palette + color);
-         }
+
+         z_buffer[x] = z_value & mask_buf[x & 0xff] & isel_if(color, 0xff, 0); // Window mask and transparency
+         pixels[x] = READ_CGRAMW(palette + color);
          x = (x + 1) & x_mask;
       }
    }
 }
 
 static inline void ppu_render_tile_2bpp_16x16(
-      uint16_t *pixels, 
+      uint16_t * restrict pixels, 
       uint32_t plane, unsigned x, unsigned x_mask,
       unsigned palette, bool hflip, bool prio,
-      const uint8_t *mask_buf, const uint8_t *z_prio, uint8_t *z_buffer)
+      const uint8_t *mask_buf, const uint16_t *z_prio, uint16_t * restrict z_buffer)
 {
    unsigned z_value = z_prio[prio];
    if (hflip)
@@ -58,12 +118,9 @@ static inline void ppu_render_tile_2bpp_16x16(
       {
          unsigned color = (plane >> i) & 1; // Pull out the two bitplane values.
          color |= ((plane >> (i + 8)) & 1) << 1;
-         color &= mask_buf[x & 0xff]; // Window mask.
-         if (z_value > z_buffer[x] && color) // If prio is higher and color is not 0 (transparent), update pixel and z-buffer.
-         {
-            z_buffer[x] = z_value;
-            pixels[x] = READ_CGRAMW(palette + color);
-         }
+
+         z_buffer[x] = z_value & mask_buf[x & 0xff] & isel_if(color, 0xff, 0); // Window mask and transparency
+         pixels[x] = READ_CGRAMW(palette + color);
          x = (x + 1) & x_mask;
       }
 
@@ -71,12 +128,9 @@ static inline void ppu_render_tile_2bpp_16x16(
       {
          unsigned color = (plane >> (i + 16)) & 1; // Pull out the two bitplane values.
          color |= ((plane >> (i + 24)) & 1) << 1;
-         color &= mask_buf[x & 0xff]; // Window mask.
-         if (z_value > z_buffer[x] && color) // If prio is higher and color is not 0 (transparent), update pixel and z-buffer.
-         {
-            z_buffer[x] = z_value;
-            pixels[x] = READ_CGRAMW(palette + color);
-         }
+
+         z_buffer[x] = z_value & mask_buf[x & 0xff] & isel_if(color, 0xff, 0); // Window mask and transparency
+         pixels[x] = READ_CGRAMW(palette + color);
          x = (x + 1) & x_mask;
       }
    }
@@ -86,12 +140,9 @@ static inline void ppu_render_tile_2bpp_16x16(
       {
          unsigned color = (plane >> (7 - i)) & 1; // Pull out the two bitplane values.
          color |= ((plane >> (15 - i)) & 1) << 1;
-         color &= mask_buf[x & 0xff]; // Window mask.
-         if (z_value > z_buffer[x] && color)
-         {
-            z_buffer[x] = z_value;
-            pixels[x] = READ_CGRAMW(palette + color);
-         }
+
+         z_buffer[x] = z_value & mask_buf[x & 0xff] & isel_if(color, 0xff, 0); // Window mask and transparency
+         pixels[x] = READ_CGRAMW(palette + color);
          x = (x + 1) & x_mask;
       }
 
@@ -99,22 +150,19 @@ static inline void ppu_render_tile_2bpp_16x16(
       {
          unsigned color = (plane >> (23 - i)) & 1; // Pull out the two bitplane values.
          color |= ((plane >> (31 - i)) & 1) << 1;
-         color &= mask_buf[x & 0xff]; // Window mask.
-         if (z_value > z_buffer[x] && color)
-         {
-            z_buffer[x] = z_value;
-            pixels[x] = READ_CGRAMW(palette + color);
-         }
+
+         z_buffer[x] = z_value & mask_buf[x & 0xff] & isel_if(color, 0xff, 0); // Window mask and transparency
+         pixels[x] = READ_CGRAMW(palette + color);
          x = (x + 1) & x_mask;
       }
    }
 }
 
 static inline void ppu_render_tile_4bpp_8x8(
-      uint16_t *pixels, 
+      uint16_t * restrict pixels, 
       uint32_t plane, unsigned x, unsigned x_mask,
       unsigned palette, bool hflip, bool prio,
-      const uint8_t *mask_buf, const uint8_t *z_prio, uint8_t *z_buffer)
+      const uint8_t *mask_buf, const uint16_t *z_prio, uint16_t * restrict z_buffer)
 {
    unsigned z_value = z_prio[prio];
    if (hflip)
@@ -125,12 +173,9 @@ static inline void ppu_render_tile_4bpp_8x8(
          color |= ((plane >> (i + 8)) & 1) << 1;
          color |= ((plane >> (i + 16)) & 1) << 2;
          color |= ((plane >> (i + 24)) & 1) << 3;
-         color &= mask_buf[x & 0xff]; // Window mask.
-         if (z_value > z_buffer[x] && color) // If prio is higher and color is not 0 (transparent), update pixel and z-buffer.
-         {
-            z_buffer[x] = z_value;
-            pixels[x] = READ_CGRAMW(palette + color);
-         }
+
+         z_buffer[x] = z_value & mask_buf[x & 0xff] & isel_if(color, 0xff, 0); // Window mask and transparency
+         pixels[x] = READ_CGRAMW(palette + color);
          x = (x + 1) & x_mask;
       }
    }
@@ -142,22 +187,19 @@ static inline void ppu_render_tile_4bpp_8x8(
          color |= ((plane >> (15 - i)) & 1) << 1;
          color |= ((plane >> (23 - i)) & 1) << 2;
          color |= ((plane >> (31 - i)) & 1) << 3;
-         color &= mask_buf[x & 0xff]; // Window mask.
-         if (z_value > z_buffer[x] && color)
-         {
-            z_buffer[x] = z_value;
-            pixels[x] = READ_CGRAMW(palette + color);
-         }
+
+         z_buffer[x] = z_value & mask_buf[x & 0xff] & isel_if(color, 0xff, 0); // Window mask and transparency
+         pixels[x] = READ_CGRAMW(palette + color);
          x = (x + 1) & x_mask;
       }
    }
 }
 
 static inline void ppu_render_tile_4bpp_16x16(
-      uint16_t *pixels, 
+      uint16_t * restrict pixels, 
       uint64_t plane, unsigned x, unsigned x_mask,
       unsigned palette, bool hflip, bool prio,
-      const uint8_t *mask_buf, const uint8_t *z_prio, uint8_t *z_buffer)
+      const uint8_t *mask_buf, const uint16_t *z_prio, uint16_t * restrict z_buffer)
 {
    unsigned z_value = z_prio[prio];
    if (hflip)
@@ -168,12 +210,9 @@ static inline void ppu_render_tile_4bpp_16x16(
          color |= ((plane >> (i + 8)) & 1) << 1;
          color |= ((plane >> (i + 16)) & 1) << 2;
          color |= ((plane >> (i + 24)) & 1) << 3;
-         color &= mask_buf[x & 0xff]; // Window mask.
-         if (z_value > z_buffer[x] && color) // If prio is higher and color is not 0 (transparent), update pixel and z-buffer.
-         {
-            z_buffer[x] = z_value;
-            pixels[x] = READ_CGRAMW(palette + color);
-         }
+
+         z_buffer[x] = z_value & mask_buf[x & 0xff] & isel_if(color, 0xff, 0); // Window mask and transparency
+         pixels[x] = READ_CGRAMW(palette + color);
          x = (x + 1) & x_mask;
       }
 
@@ -183,12 +222,9 @@ static inline void ppu_render_tile_4bpp_16x16(
          color |= ((plane >> (i + 40)) & 1) << 1;
          color |= ((plane >> (i + 48)) & 1) << 2;
          color |= ((plane >> (i + 56)) & 1) << 3;
-         color &= mask_buf[x & 0xff]; // Window mask.
-         if (z_value > z_buffer[x] && color) // If prio is higher and color is not 0 (transparent), update pixel and z-buffer.
-         {
-            z_buffer[x] = z_value;
-            pixels[x] = READ_CGRAMW(palette + color);
-         }
+
+         z_buffer[x] = z_value & mask_buf[x & 0xff] & isel_if(color, 0xff, 0); // Window mask and transparency
+         pixels[x] = READ_CGRAMW(palette + color);
          x = (x + 1) & x_mask;
       }
    }
@@ -200,12 +236,9 @@ static inline void ppu_render_tile_4bpp_16x16(
          color |= ((plane >> (15 - i)) & 1) << 1;
          color |= ((plane >> (23 - i)) & 1) << 2;
          color |= ((plane >> (31 - i)) & 1) << 3;
-         color &= mask_buf[x & 0xff]; // Window mask.
-         if (z_value > z_buffer[x] && color)
-         {
-            z_buffer[x] = z_value;
-            pixels[x] = READ_CGRAMW(palette + color);
-         }
+
+         z_buffer[x] = z_value & mask_buf[x & 0xff] & isel_if(color, 0xff, 0); // Window mask and transparency
+         pixels[x] = READ_CGRAMW(palette + color);
          x = (x + 1) & x_mask;
       }
 
@@ -215,12 +248,9 @@ static inline void ppu_render_tile_4bpp_16x16(
          color |= ((plane >> (47 - i)) & 1) << 1;
          color |= ((plane >> (55 - i)) & 1) << 2;
          color |= ((plane >> (63 - i)) & 1) << 3;
-         color &= mask_buf[x & 0xff]; // Window mask.
-         if (z_value > z_buffer[x] && color)
-         {
-            z_buffer[x] = z_value;
-            pixels[x] = READ_CGRAMW(palette + color);
-         }
+
+         z_buffer[x] = z_value & mask_buf[x & 0xff] & isel_if(color, 0xff, 0); // Window mask and transparency
+         pixels[x] = READ_CGRAMW(palette + color);
          x = (x + 1) & x_mask;
       }
    }
@@ -228,11 +258,11 @@ static inline void ppu_render_tile_4bpp_16x16(
 
 
 static inline void ppu_render_bg_2bpp_8x8 (
-      uint16_t *pixels,
+      uint16_t * restrict pixels,
       unsigned scanline, unsigned vofs, bool vmirror,
       unsigned hofs, bool hmirror,
       unsigned tilemap_addr, unsigned character_data, unsigned base_palette,
-      const uint8_t *mask_buf, const uint8_t* z_prio, uint8_t *z_buffer)
+      const uint8_t *mask_buf, const uint16_t* z_prio, uint16_t * restrict z_buffer)
 {
    scanline += vofs + 1;
    scanline &= isel_if(vmirror, 0x1ff, 0xff);
@@ -269,11 +299,11 @@ static inline void ppu_render_bg_2bpp_8x8 (
 }
 
 static inline void ppu_render_bg_4bpp_8x8 (
-      uint16_t *pixels,
+      uint16_t * restrict pixels,
       unsigned scanline, unsigned vofs, bool vmirror,
       unsigned hofs, bool hmirror,
       unsigned tilemap_addr, unsigned character_data, unsigned base_palette,
-      const uint8_t *mask_buf, const uint8_t* z_prio, uint8_t *z_buffer)
+      const uint8_t *mask_buf, const uint16_t* z_prio, uint16_t * restrict z_buffer)
 {
    scanline += vofs + 1;
    scanline &= isel_if(vmirror, 0x1ff, 0xff);
@@ -311,11 +341,11 @@ static inline void ppu_render_bg_4bpp_8x8 (
 
 
 static inline void ppu_render_bg_2bpp_16x16 (
-      uint16_t *pixels,
+      uint16_t * restrict pixels,
       unsigned scanline, unsigned vofs, bool vmirror,
       unsigned hofs, bool hmirror,
       unsigned tilemap_addr, unsigned character_data, unsigned base_palette,
-      const uint8_t *mask_buf, const uint8_t* z_prio, uint8_t *z_buffer)
+      const uint8_t *mask_buf, const uint16_t* z_prio, uint16_t * restrict z_buffer)
 {
    scanline += vofs + 1;
    scanline &= isel_if(vmirror, 0x3ff, 0x1ff);
@@ -353,11 +383,11 @@ static inline void ppu_render_bg_2bpp_16x16 (
 }
 
 static inline void ppu_render_bg_4bpp_16x16 (
-      uint16_t *pixels,
+      uint16_t * restrict pixels,
       unsigned scanline, unsigned vofs, bool vmirror,
       unsigned hofs, bool hmirror,
       unsigned tilemap_addr, unsigned character_data, unsigned base_palette,
-      const uint8_t *mask_buf, const uint8_t* z_prio, uint8_t *z_buffer)
+      const uint8_t *mask_buf, const uint16_t* z_prio, uint16_t * restrict z_buffer)
 {
    scanline += vofs + 1;
    scanline &= isel_if(vmirror, 0x3ff, 0x1ff);
