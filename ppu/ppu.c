@@ -31,7 +31,7 @@ static void init_xbgr_lut(void)
    }
 }
 
-static uint8_t window_mask_none_buf[256];
+static uint16_t window_mask_none_buf[256] ALIGNED;
 
 void ssnes_ppu_init(void)
 {

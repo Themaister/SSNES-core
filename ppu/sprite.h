@@ -3,7 +3,7 @@
 
 // Hardcode shit for 8x8 :D
 static void ppu_render_sprite(uint16_t *pixels, uint32_t oam, unsigned scanline, unsigned offset, unsigned name, 
-      const uint8_t* mask_buf, const uint16_t* z_prio, uint16_t *z_buf)
+      const uint16_t* mask_buf, const uint16_t* z_prio, uint16_t *z_buf)
 {
    unsigned y = (oam >> 8) & 0xff;
 
@@ -66,8 +66,8 @@ static void ppu_render_sprite(uint16_t *pixels, uint32_t oam, unsigned scanline,
    }
 }
 
-static void ppu_render_sprite_big(uint16_t *pixels, uint32_t oam, unsigned scanline, unsigned offset, unsigned name,
-      const uint8_t *mask_buf, const uint16_t *z_prio, uint16_t *z_buf)
+static void ppu_render_sprite_big(uint16_t * restrict pixels, uint32_t oam, unsigned scanline, unsigned offset, unsigned name,
+      const uint16_t * restrict mask_buf, const uint16_t * restrict z_prio, uint16_t * restrict z_buf)
 {
    unsigned y = (oam >> 8) & 0xff;
    int line = (int)scanline - (int)y;
@@ -170,7 +170,7 @@ static void ppu_render_sprite_big(uint16_t *pixels, uint32_t oam, unsigned scanl
    }
 }
 
-static inline void ppu_render_sprites(uint16_t *line, const uint8_t *oam_hi, unsigned scanline, const uint8_t *mask_win, const uint16_t *z_prio, uint16_t *z_buf)
+static inline void ppu_render_sprites(uint16_t * restrict line, const uint8_t *oam_hi, unsigned scanline, const uint16_t * restrict mask_win, const uint16_t * restrict z_prio, uint16_t * restrict z_buf)
 {
    unsigned offset = ((unsigned)PPU.obsel & 7) << 13;
    unsigned name = (((unsigned)PPU.obsel & 0x18) + 1) << 9;
