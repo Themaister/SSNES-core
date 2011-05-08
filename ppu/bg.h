@@ -47,7 +47,7 @@ static inline void ppu_render_tile_2bpp_8x8(
 
 static inline void ppu_render_tile_2bpp_16x16(
       uint16_t *pixels, 
-      uint16_t plane, unsigned x, unsigned x_mask,
+      uint32_t plane, unsigned x, unsigned x_mask,
       unsigned palette, bool hflip, bool prio,
       const uint8_t *mask_buf, const uint8_t *z_prio, uint8_t *z_buffer)
 {
@@ -259,7 +259,7 @@ static inline void ppu_render_bg_2bpp_8x8 (
       unsigned base_addr = character_data + (index << 3) + tile_y;
       uint16_t plane = READ_VRAMW(base_addr);
 
-      unsigned start_x = (map_index & 0x1f) + (map_index >> 5);
+      unsigned start_x = ((map_index & 0x1f) + (map_index >> 5)) << 3;
       start_x -= hofs;
       start_x &= x_mask;
 
@@ -289,7 +289,7 @@ static inline void ppu_render_bg_4bpp_8x8 (
       unsigned x = (i + hofs) & x_mask;
       unsigned map_index = ((x & 0xff) >> 3) + ((x & 0x100) << 2);
       unsigned tile_attr = READ_VRAMW(tilemap_addr + map_index);
-      unsigned pal = (tile_attr & 0x1c00) >> 8;
+      unsigned pal = (tile_attr & 0x1c00) >> 6;
       pal += base_palette;
 
       unsigned index = tile_attr & 0x3ff;
@@ -304,7 +304,7 @@ static inline void ppu_render_bg_4bpp_8x8 (
       start_x -= hofs;
       start_x &= x_mask;
 
-      ppu_render_tile_2bpp_8x8(pixels, plane, start_x, x_mask, pal, hflip, prio,
+      ppu_render_tile_4bpp_8x8(pixels, plane, start_x, x_mask, pal, hflip, prio,
             mask_buf, z_prio, z_buffer);
    }
 }
@@ -318,7 +318,7 @@ static inline void ppu_render_bg_2bpp_16x16 (
       const uint8_t *mask_buf, const uint8_t* z_prio, uint8_t *z_buffer)
 {
    scanline += vofs + 1;
-   scanline &= isel_if(vmirror, 0x1ff, 0xff);
+   scanline &= isel_if(vmirror, 0x3ff, 0x1ff);
    
    tilemap_addr += ((scanline & 0x1ff) >> 4) << 5;
    tilemap_addr += (scanline & 0x200) << 2;
@@ -360,7 +360,7 @@ static inline void ppu_render_bg_4bpp_16x16 (
       const uint8_t *mask_buf, const uint8_t* z_prio, uint8_t *z_buffer)
 {
    scanline += vofs + 1;
-   scanline &= isel_if(vmirror, 0x1ff, 0xff);
+   scanline &= isel_if(vmirror, 0x3ff, 0x1ff);
    
    tilemap_addr += ((scanline & 0x1ff) >> 4) << 5;
    tilemap_addr += (scanline & 0x200) << 2;
@@ -373,7 +373,7 @@ static inline void ppu_render_bg_4bpp_16x16 (
       unsigned x = (i + hofs) & x_mask;
       unsigned map_index = ((x & 0x1ff) >> 4) + ((x & 0x200) << 1);
       unsigned tile_attr = READ_VRAMW(tilemap_addr + map_index);
-      unsigned pal = (tile_attr & 0x1c00) >> 8;
+      unsigned pal = (tile_attr & 0x1c00) >> 6;
       pal += base_palette;
 
       unsigned index = tile_attr & 0x3ff;
