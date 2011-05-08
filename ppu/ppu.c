@@ -40,8 +40,7 @@ void ssnes_ppu_init(void)
 
    init_xbgr_lut();
 
-   for (unsigned i = 0; i < 256; i++)
-      window_mask_none_buf[i] = 0xff;
+   memset(window_mask_none_buf, 0xff, sizeof(window_mask_none_buf));
 }
 
 void ssnes_ppu_deinit(void)
@@ -81,22 +80,23 @@ static void blit_scanline_lo(uint16_t * restrict output, const uint16_t * restri
 // Just a background color for now :D
 void ssnes_ppu_scanline(unsigned scanline)
 {
-
    dprintf("BG1 vhflip: %s\n", PPU.bg1sc & 0x03 ? "yes" : "no");
    dprintf("BG2 vhflip: %s\n", PPU.bg2sc & 0x03 ? "yes" : "no");
    dprintf("BG3 vhflip: %s\n", PPU.bg3sc & 0x03 ? "yes" : "no");
    dprintf("BG4 vhflip: %s\n", PPU.bg4sc & 0x03 ? "yes" : "no");
 
-   uint16_t out_buf[256];
+   uint16_t out_buf[1024];
    ppu_render_bg(out_buf, scanline);
 
    switch (PPU.bgmode & 7)
    {
       case 0:
+         dprintf("Mode 0\n");
          ppu_render_mode0(out_buf, scanline);
          break;
 
       case 1:
+         dprintf("Mode 1\n");
          ppu_render_mode1(out_buf, scanline);
          break;
 

@@ -2,15 +2,15 @@
 #define __PPU_MODE1_H
 
 static inline void ppu_render_bg_mode1(uint16_t *pixels, unsigned scanline, unsigned hofs,
-      unsigned tilemap_addr, unsigned character_data, const uint8_t *mask_win)
+      unsigned tilemap_addr, unsigned character_data, unsigned mask, const uint8_t *mask_win)
 {
    tilemap_addr += (((scanline & 0xff) >> 3) << 5);
-   tilemap_addr += (scanline & 0x100) << 5;
+   tilemap_addr += (scanline & 0x100) << 3;
    unsigned y = scanline & 7;
 
    for (unsigned i = 0; i < 32; i++)
    {
-      uint16_t tile = READ_VRAMW(tilemap_addr + i + ((hofs & 0x100) << 4));
+      uint16_t tile = READ_VRAMW(tilemap_addr + i + ((hofs & mask & 0x100) << 2));
       unsigned pal = (tile & 0x1c00) >> 6;
 
       unsigned index = tile & 0x3ff;
@@ -21,6 +21,7 @@ static inline void ppu_render_bg_mode1(uint16_t *pixels, unsigned scanline, unsi
       uint16_t plane0 = READ_VRAMW(base_addr);
       uint16_t plane1 = READ_VRAMW(base_addr + 8);
 
+      hofs &= mask;
       if (tile & 0x4000)
       {
          for (unsigned i = 0; i < 8; i++)
@@ -29,9 +30,9 @@ static inline void ppu_render_bg_mode1(uint16_t *pixels, unsigned scanline, unsi
             color |= ((plane0 >> (i + 8)) & 1) << 1;
             color |= ((plane1 >> i) & 1) << 2;
             color |= ((plane1 >> (i + 8)) & 1) << 3;
-            color &= mask_win[hofs];
+            color &= mask_win[hofs & 0xff];
             iup_if(pixels[hofs], color, READ_CGRAMW(color + pal));
-            hofs = (hofs + 1) & 0xff;
+            hofs = (hofs + 1) & mask;
          }
       }
       else
@@ -42,9 +43,9 @@ static inline void ppu_render_bg_mode1(uint16_t *pixels, unsigned scanline, unsi
             color |= ((plane0 >> (15 - i)) & 1) << 1;
             color |= ((plane1 >> (7 - i)) & 1) << 2;
             color |= ((plane1 >> (15 - i)) & 1) << 3;
-            color &= mask_win[hofs];
+            color &= mask_win[hofs & 0xff];
             iup_if(pixels[hofs], color, READ_CGRAMW(color + pal));
-            hofs = (hofs + 1) & 0xff;
+            hofs = (hofs + 1) & mask;
          }
       }
    }
@@ -53,15 +54,15 @@ static inline void ppu_render_bg_mode1(uint16_t *pixels, unsigned scanline, unsi
 // TODO: Not exactly optimized in any way ... ;) It renders too much.
 // 512x512 BG. Cannot render it all. Render half of the scanline.
 static inline void ppu_render_bg_mode1_16(uint16_t *pixels, unsigned scanline, unsigned hofs,
-      unsigned tilemap_addr, unsigned character_data, const uint8_t *mask_win)
+      unsigned tilemap_addr, unsigned character_data, unsigned mask, const uint8_t *mask_win)
 {
    tilemap_addr += ((scanline & 0x1ff) >> 4) << 5; // Where is address of first tile?
-   tilemap_addr += (scanline & 0x200) << 4;
+   tilemap_addr += (scanline & 0x200) << 2;
    unsigned y = scanline & 15; // Find line in our sprite.
 
    for (unsigned i = 0; i < 32; i++)
    {
-      uint16_t tile = READ_VRAMW(tilemap_addr + i + ((hofs & 0x200) << 3));
+      uint16_t tile = READ_VRAMW(tilemap_addr + i + ((hofs & mask & 0x200) << 1));
       unsigned pal = (tile & 0x1c00) >> 6;
 
       unsigned index = tile & 0x3ff;
@@ -76,6 +77,7 @@ static inline void ppu_render_bg_mode1_16(uint16_t *pixels, unsigned scanline, u
       uint16_t tile1_plane0 = READ_VRAMW(base_addr + 16);
       uint16_t tile1_plane1 = READ_VRAMW(base_addr + 24);
 
+      hofs &= mask;
       if (tile & 0x4000)
       {
          for (unsigned i = 0; i < 8; i++)
@@ -86,7 +88,7 @@ static inline void ppu_render_bg_mode1_16(uint16_t *pixels, unsigned scanline, u
             color |= ((tile1_plane1 >> (i + 8)) & 1) << 3;
             color &= mask_win[hofs & 0xff];
             iup_if(pixels[hofs], color, READ_CGRAMW(color + pal));
-            hofs = (hofs + 1) & 0x1ff;
+            hofs = (hofs + 1) & mask;
          }
 
          for (unsigned i = 0; i < 8; i++)
@@ -97,7 +99,7 @@ static inline void ppu_render_bg_mode1_16(uint16_t *pixels, unsigned scanline, u
             color |= ((tile0_plane1 >> (i + 8)) & 1) << 3;
             color &= mask_win[hofs & 0xff];
             iup_if(pixels[hofs], color, READ_CGRAMW(color + pal));
-            hofs = (hofs + 1) & 0x1ff;
+            hofs = (hofs + 1) & mask;
          }
       }
       else
@@ -110,7 +112,7 @@ static inline void ppu_render_bg_mode1_16(uint16_t *pixels, unsigned scanline, u
             color |= ((tile0_plane1 >> (15 - i)) & 1) << 3;
             color &= mask_win[hofs & 0xff];
             iup_if(pixels[hofs], color, READ_CGRAMW(color + pal));
-            hofs = (hofs + 1) & 0xff;
+            hofs = (hofs + 1) & mask;
          }
 
          for (unsigned i = 0; i < 8; i++)
@@ -121,7 +123,7 @@ static inline void ppu_render_bg_mode1_16(uint16_t *pixels, unsigned scanline, u
             color |= ((tile1_plane1 >> (15 - i)) & 1) << 3;
             color &= mask_win[hofs & 0xff];
             iup_if(pixels[hofs], color, READ_CGRAMW(color + pal));
-            hofs = (hofs + 1) & 0xff;
+            hofs = (hofs + 1) & mask;
          }
       }
    }
@@ -138,7 +140,7 @@ static void ppu_render_mode1(uint16_t *out_buf, unsigned scanline)
    if (PPU.tm & 0x04) // BG3
    {
       unsigned vofs = PPU.bg3vofs;
-      unsigned line = (scanline + vofs) & 0xff;
+      unsigned line = scanline + vofs + 1;
       unsigned hofs = 1024 - PPU.bg3hofs;
       unsigned tilemap_addr = (PPU.bg3sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg12nba & 0x0f) << 12;
@@ -147,24 +149,24 @@ static void ppu_render_mode1(uint16_t *out_buf, unsigned scanline)
 
       if (PPU.bgmode & 0x40)
       {
-         hofs &= isel_if(PPU.bg3sc & 0x01, 0x3ff, 0x1ff);
+         unsigned mask = isel_if(PPU.bg3sc & 0x01, 0x3ff, 0x1ff);
          line &= isel_if(PPU.bg3sc & 0x02, 0x3ff, 0x1ff);
          ppu_render_bg_mode0_16(out_buf, line,
-               hofs, tilemap_addr, character_data, 0, use_win_mask);
+               hofs, tilemap_addr, character_data, 0, mask, use_win_mask);
       }
       else
       {
-         hofs &= isel_if(PPU.bg3sc & 0x01, 0x1ff, 0xff);
+         unsigned mask = isel_if(PPU.bg3sc & 0x01, 0x1ff, 0xff);
          line &= isel_if(PPU.bg3sc & 0x02, 0x1ff, 0xff);
          ppu_render_bg_mode0(out_buf, line,
-               hofs, tilemap_addr, character_data, 0, use_win_mask);
+               hofs, tilemap_addr, character_data, 0, mask, use_win_mask);
       }
    }
 
    if (PPU.tm & 0x02) // BG2
    {
       unsigned vofs = PPU.bg2vofs;
-      unsigned line = (scanline + vofs) & 0xff;
+      unsigned line = scanline + vofs + 1;
       unsigned hofs = 1024 - PPU.bg2hofs;
       unsigned tilemap_addr = (PPU.bg2sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg12nba & 0xf0) << 8;
@@ -173,24 +175,24 @@ static void ppu_render_mode1(uint16_t *out_buf, unsigned scanline)
 
       if (PPU.bgmode & 0x20)
       {
-         hofs &= isel_if(PPU.bg2sc & 0x01, 0x3ff, 0x1ff);
+         unsigned mask = isel_if(PPU.bg2sc & 0x01, 0x3ff, 0x1ff);
          line &= isel_if(PPU.bg2sc & 0x02, 0x3ff, 0x1ff);
          ppu_render_bg_mode1_16(out_buf, line,
-               hofs, tilemap_addr, character_data, use_win_mask);
+               hofs, tilemap_addr, character_data, mask, use_win_mask);
       }
       else
       {
-         hofs &= isel_if(PPU.bg2sc & 0x01, 0x1ff, 0xff);
+         unsigned mask = isel_if(PPU.bg2sc & 0x01, 0x1ff, 0xff);
          line &= isel_if(PPU.bg2sc & 0x02, 0x1ff, 0xff);
          ppu_render_bg_mode1(out_buf, line,
-               hofs, tilemap_addr, character_data, use_win_mask);
+               hofs, tilemap_addr, character_data, mask, use_win_mask);
       }
    }
 
    if (PPU.tm & 0x01) // BG1
    {
       unsigned vofs = PPU.bg1vofs;
-      unsigned line = (scanline + vofs) & 0xff;
+      unsigned line = scanline + vofs + 1;
       unsigned hofs = 1024 - PPU.bg1hofs;
       unsigned tilemap_addr = (PPU.bg1sc & 0xfc) << 8;
       unsigned character_data = (PPU.bg12nba & 0xf) << 12;
@@ -199,17 +201,17 @@ static void ppu_render_mode1(uint16_t *out_buf, unsigned scanline)
 
       if (PPU.bgmode & 0x10)
       {
-         hofs &= isel_if(PPU.bg1sc & 0x01, 0x3ff, 0x1ff);
+         unsigned mask = isel_if(PPU.bg1sc & 0x01, 0x3ff, 0x1ff);
          line &= isel_if(PPU.bg1sc & 0x02, 0x3ff, 0x1ff);
          ppu_render_bg_mode1_16(out_buf, line,
-               hofs, tilemap_addr, character_data, use_win_mask);
+               hofs, tilemap_addr, character_data, mask, use_win_mask);
       }
       else
       {
-         hofs &= isel_if(PPU.bg1sc & 0x01, 0x1ff, 0xff);
+         unsigned mask = isel_if(PPU.bg1sc & 0x01, 0x1ff, 0xff);
          line &= isel_if(PPU.bg1sc & 0x02, 0x1ff, 0xff);
          ppu_render_bg_mode1(out_buf, line,
-               hofs, tilemap_addr, character_data, use_win_mask);
+               hofs, tilemap_addr, character_data, mask, use_win_mask);
       }
    }
 
