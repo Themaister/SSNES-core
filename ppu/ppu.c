@@ -65,6 +65,7 @@ static void ppu_render_bg(uint16_t *out_buf, unsigned scanline)
 
 #include "window.h"
 #include "sprite.h"
+#include "bg.h"
 #include "mode0.h"
 #include "mode1.h"
 

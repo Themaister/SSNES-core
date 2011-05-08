@@ -3,7 +3,7 @@
 
 // Hardcode shit for 8x8 :D
 static void ppu_render_sprite(uint16_t *pixels, uint32_t oam, unsigned scanline, unsigned offset, unsigned name, 
-      const uint8_t* mask_buf)
+      const uint8_t* mask_buf, const uint8_t* z_prio, uint8_t *z_buf)
 {
    unsigned y = (oam >> 8) & 0xff;
 
@@ -23,6 +23,8 @@ static void ppu_render_sprite(uint16_t *pixels, uint32_t oam, unsigned scanline,
    unsigned pal = 128 + ((attr & 0xe) << 3);
    unsigned real_line = isel_if(attr & 0x80, 7 - line, line);
 
+   unsigned prio = z_prio[(attr >> 4) & 3];
+
    uint16_t plane0 = READ_VRAMW(addr + real_line);
    uint16_t plane1 = READ_VRAMW(addr + real_line + 8);
 
@@ -34,9 +36,14 @@ static void ppu_render_sprite(uint16_t *pixels, uint32_t oam, unsigned scanline,
          color |= ((plane0 >> (i + 8)) & 1) << 1;
          color |= ((plane1 >> i) & 1) << 2;
          color |= ((plane1 >> (i + 8)) & 1) << 3;
+         color &= mask_buf[x & 0xff];
 
-         iup_if(pixels[x & 0xff], color, READ_CGRAMW(pal + color));
-         x++;
+         if (prio >= z_buf[x] && color)
+         {
+            z_buf[x] = prio;
+            pixels[x] = READ_CGRAMW(pal + color);
+         }
+         x = (x + 1) & 0xff;
       }
    }
    else
@@ -49,14 +56,18 @@ static void ppu_render_sprite(uint16_t *pixels, uint32_t oam, unsigned scanline,
          color |= ((plane1 >> (15 - i)) & 1) << 3;
          color &= mask_buf[x & 0xff];
 
-         iup_if(pixels[x & 0xff], color, READ_CGRAMW(pal + color));
-         x++;
+         if (prio >= z_buf[x] && color)
+         {
+            z_buf[x] = prio;
+            pixels[x] = READ_CGRAMW(pal + color);
+         }
+         x = (x + 1) & 0xff;
       }
    }
 }
 
 static void ppu_render_sprite_big(uint16_t *pixels, uint32_t oam, unsigned scanline, unsigned offset, unsigned name,
-      const uint8_t *mask_buf)
+      const uint8_t *mask_buf, const uint8_t *z_prio, uint8_t *z_buf)
 {
    unsigned y = (oam >> 8) & 0xff;
    int line = (int)scanline - (int)y;
@@ -71,6 +82,8 @@ static void ppu_render_sprite_big(uint16_t *pixels, uint32_t oam, unsigned scanl
 
    unsigned pal = 128 + ((attr & 0xe) << 3);
    unsigned real_line = isel_if(attr & 0x80, 15 - line, line);
+
+   unsigned prio = z_prio[(attr >> 4) & 3];
 
    // Sprite tiles "wrap" in terms of a 16x16 grid.
    const uint16_t indices[4] = {
@@ -98,8 +111,12 @@ static void ppu_render_sprite_big(uint16_t *pixels, uint32_t oam, unsigned scanl
          color |= ((tile1_plane1 >> i) & 1) << 2;
          color |= ((tile1_plane1 >> (i + 8)) & 1) << 3;
 
-         iup_if(pixels[x & 0xff], color, READ_CGRAMW(pal + color));
-         x++;
+         if (prio >= z_buf[x] && color)
+         {
+            z_buf[x] = prio;
+            pixels[x] = READ_CGRAMW(pal + color);
+         }
+         x = (x + 1) & 0xff;
       }
 
       for (unsigned i = 0; i < 8; i++)
@@ -110,8 +127,12 @@ static void ppu_render_sprite_big(uint16_t *pixels, uint32_t oam, unsigned scanl
          color |= ((tile0_plane1 >> (i + 8)) & 1) << 3;
          color &= mask_buf[x & 0xff];
 
-         iup_if(pixels[x & 0xff], color, READ_CGRAMW(pal + color));
-         x++;
+         if (prio >= z_buf[x] && color)
+         {
+            z_buf[x] = prio;
+            pixels[x] = READ_CGRAMW(pal + color);
+         }
+         x = (x + 1) & 0xff;
       }
    }
    else
@@ -124,8 +145,12 @@ static void ppu_render_sprite_big(uint16_t *pixels, uint32_t oam, unsigned scanl
          color |= ((tile0_plane1 >> (15 - i)) & 1) << 3;
          color &= mask_buf[x & 0xff];
 
-         iup_if(pixels[x & 0xff], color, READ_CGRAMW(pal + color));
-         x++;
+         if (prio >= z_buf[x] && color)
+         {
+            z_buf[x] = prio;
+            pixels[x] = READ_CGRAMW(pal + color);
+         }
+         x = (x + 1) & 0xff;
       }
 
       for (unsigned i = 0; i < 8; i++)
@@ -135,13 +160,17 @@ static void ppu_render_sprite_big(uint16_t *pixels, uint32_t oam, unsigned scanl
          color |= ((tile1_plane1 >> (7 - i)) & 1) << 2;
          color |= ((tile1_plane1 >> (15 - i)) & 1) << 3;
 
-         iup_if(pixels[x & 0xff], color, READ_CGRAMW(pal + color));
-         x++;
+         if (prio >= z_buf[x] && color)
+         {
+            z_buf[x] = prio;
+            pixels[x] = READ_CGRAMW(pal + color);
+         }
+         x = (x + 1) & 0xff;
       }
    }
 }
 
-static inline void ppu_render_sprites(uint16_t *line, const uint8_t *oam_hi, unsigned scanline, const uint8_t *mask_win)
+static inline void ppu_render_sprites(uint16_t *line, const uint8_t *oam_hi, unsigned scanline, const uint8_t *mask_win, const uint8_t *z_prio, uint8_t *z_buf)
 {
    unsigned offset = ((unsigned)PPU.obsel & 7) << 13;
    unsigned name = (((unsigned)PPU.obsel & 0x18) + 1) << 9;
@@ -154,33 +183,57 @@ static inline void ppu_render_sprites(uint16_t *line, const uint8_t *oam_hi, uns
          {
             //dprintf(stderr, "Rendering sprite: %d\n", (i << 2) + 3);
             if (oam_hi[i] & 0x80)
-               ppu_render_sprite_big(line, READ_OAML((i << 2) + 3), scanline, offset, name, mask_win);
+            {
+               ppu_render_sprite_big(line, READ_OAML((i << 2) + 3), scanline, offset, name, 
+                     mask_win, z_prio, z_buf);
+            }
             else
-               ppu_render_sprite(line, READ_OAML((i << 2) + 3), scanline, offset, name, mask_win);
+            {
+               ppu_render_sprite(line, READ_OAML((i << 2) + 3), scanline, offset, name, 
+                     mask_win, z_prio, z_buf);
+            }
          }
          if (~oam_hi[i] & 0x10)
          {
             //dprintf(stderr, "Rendering sprite: %d\n", (i << 2) + 2);
             if (oam_hi[i] & 0x20)
-               ppu_render_sprite_big(line, READ_OAML((i << 2) + 2), scanline, offset, name, mask_win);
+            {
+               ppu_render_sprite_big(line, READ_OAML((i << 2) + 2), scanline, offset, name, 
+                     mask_win, z_prio, z_buf);
+            }
             else
-               ppu_render_sprite(line, READ_OAML((i << 2) + 2), scanline, offset, name, mask_win);
+            {
+               ppu_render_sprite(line, READ_OAML((i << 2) + 2), scanline, offset, name, 
+                     mask_win, z_prio, z_buf);
+            }
          }
          if (~oam_hi[i] & 0x04)
          {
             //dprintf(stderr, "Rendering sprite: %d\n", (i << 2) + 1);
             if (oam_hi[i] & 0x08)
-               ppu_render_sprite_big(line, READ_OAML((i << 2) + 1), scanline, offset, name, mask_win);
+            {
+               ppu_render_sprite_big(line, READ_OAML((i << 2) + 1), scanline, offset, name, 
+                     mask_win, z_prio, z_buf);
+            }
             else
-               ppu_render_sprite(line, READ_OAML((i << 2) + 1), scanline, offset, name, mask_win);
+            {
+               ppu_render_sprite(line, READ_OAML((i << 2) + 1), scanline, offset, name, 
+                     mask_win, z_prio, z_buf);
+            }
          }
          if (~oam_hi[i] & 0x01)
          {
             //dprintf(stderr, "Rendering sprite: %d\n", (i << 2) + 0);
             if (oam_hi[i] & 0x02)
-               ppu_render_sprite_big(line, READ_OAML((i << 2) + 0), scanline, offset, name, mask_win);
+            {
+               ppu_render_sprite_big(line, READ_OAML((i << 2) + 0), scanline, offset, name, 
+                     mask_win, z_prio, z_buf);
+            }
             else
-               ppu_render_sprite(line, READ_OAML((i << 2) + 0), scanline, offset, name, mask_win);
+            {
+               ppu_render_sprite(line, READ_OAML((i << 2) + 0), scanline, offset, name, 
+                     mask_win, z_prio, z_buf);
+            }
          }
       }
    }
