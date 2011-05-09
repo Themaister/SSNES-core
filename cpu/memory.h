@@ -118,7 +118,7 @@ static inline void cpu_stack_push(uint8_t data)
 // Direct page.
 static inline uint8_t cpu_read_dp(uint16_t addr)
 {
-   return cpu_readl(REGS.dp + addr);
+   return cpu_readl((REGS.dp + addr) & 0xffff);
 }
 
 static inline uint16_t cpu_readw_dp(uint16_t addr)
@@ -140,7 +140,7 @@ static inline uint32_t cpu_readl_dp(uint8_t addr)
 
 static inline void cpu_write_dp(uint16_t addr, uint8_t data)
 {
-   cpu_writel(REGS.dp + addr, data);
+   cpu_writel((REGS.dp + addr) & 0xffff, data);
 }
 
 static inline void cpu_writew_dp(uint16_t addr, uint16_t data)

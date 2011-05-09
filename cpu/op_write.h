@@ -179,14 +179,14 @@ static inline void cpu_op_sta_ildp_w(void)
 // sta (dp, x)
 static inline void cpu_op_sta_idpx_b(void)
 {
-   uint8_t dp = cpu_read_pc();
+   uint16_t dp = cpu_read_pc();
    uint16_t addr = cpu_readw_dp(dp + REGS.x.w);
    cpu_write(addr, REGS.a.b.l);
 }
 
 static inline void cpu_op_sta_idpx_w(void)
 {
-   uint8_t dp = cpu_read_pc();
+   uint16_t dp = cpu_read_pc();
    uint16_t addr = cpu_readw_dp(dp + REGS.x.w);
    cpu_writew(addr, REGS.a.w);
 }
@@ -194,14 +194,14 @@ static inline void cpu_op_sta_idpx_w(void)
 // sta (dp), y
 static inline void cpu_op_sta_idpy_b(void)
 {
-   uint8_t dp = cpu_read_pc();
+   uint16_t dp = cpu_read_pc();
    uint16_t addr = cpu_readw_dp(dp) + REGS.y.w;
    cpu_write(addr, REGS.a.b.l);
 }
 
 static inline void cpu_op_sta_idpy_w(void)
 {
-   uint8_t dp = cpu_read_pc();
+   uint16_t dp = cpu_read_pc();
    uint16_t addr = cpu_readw_dp(dp) + REGS.y.w;
    cpu_writew(addr, REGS.a.w);
 }
@@ -210,14 +210,14 @@ static inline void cpu_op_sta_idpy_w(void)
 // sta [dp], y
 static inline void cpu_op_sta_ildpy_b(void)
 {
-   uint8_t dp = cpu_read_pc();
+   uint16_t dp = cpu_read_pc();
    uint32_t addr = cpu_readl_dp(dp) + REGS.y.w;
    cpu_writel(addr, REGS.a.b.l);
 }
 
 static inline void cpu_op_sta_ildpy_w(void)
 {
-   uint8_t dp = cpu_read_pc();
+   uint16_t dp = cpu_read_pc();
    uint32_t addr = cpu_readl_dp(dp) + REGS.y.w;
    cpu_writelw(addr, REGS.a.w);
 }
