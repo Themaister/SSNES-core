@@ -63,6 +63,13 @@ uint8_t ssnes_bus_read_2000(uint32_t addr)
             res = MEM.oam.b[(uint16_t)STATUS.regs.oam_addr.w << 1];
          return res;
 
+      case 0x2134: // MPYL
+         return (STATUS.regs.m7mul >> 0) & 0xff;
+      case 0x2135: // MPYM
+         return (STATUS.regs.m7mul >> 8) & 0xff;
+      case 0x2136: // MPYH
+         return (STATUS.regs.m7mul >> 16) & 0xff;
+
       // VRAM reads have a buffering mechanism.
       // VMDATALREAD
       case 0x2139:
@@ -354,6 +361,25 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
          STATUS.regs.vram_addr.w += isel_if(STATUS.regs.vmain & 0x80, vram_addr_inc[STATUS.regs.vmain & 3], 0);
          return;
       //////////////
+      
+      case 0x211b: // M7A
+         STATUS.regs.m7a = ((uint16_t)data << 8) | STATUS.regs.m7prev;
+         STATUS.regs.m7prev = data;
+         STATUS.regs.m7mul = (int16_t)STATUS.regs.m7a * (int8_t)(STATUS.regs.m7b >> 8);
+         return;
+      case 0x211c: // M7B
+         STATUS.regs.m7b = ((uint16_t)data << 8) | STATUS.regs.m7prev;
+         STATUS.regs.m7prev = data;
+         STATUS.regs.m7mul = (int16_t)STATUS.regs.m7a * (int8_t)(STATUS.regs.m7b >> 8);
+         return;
+      case 0x211d: // M7C
+         STATUS.regs.m7c = ((uint16_t)data << 8) | STATUS.regs.m7prev;
+         STATUS.regs.m7prev = data;
+         return;
+      case 0x211e: // M7D
+         STATUS.regs.m7d = ((uint16_t)data << 8) | STATUS.regs.m7prev;
+         STATUS.regs.m7prev = data;
+         return;
 
 
       /////////////// CGRAM

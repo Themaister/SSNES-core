@@ -115,6 +115,10 @@ struct cpu_status
       uint8_t apuio[4];
 
       bool memsel;
+
+      uint16_t m7a, m7b, m7c, m7d;
+      uint8_t m7prev;
+      uint32_t m7mul;
    } regs;
 
    struct

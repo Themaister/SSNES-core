@@ -58,24 +58,32 @@ static inline void cpu_op_jmp_iaddr(void)
 {
    uint16_t addr = cpu_readw_pc();
 
-   uint16_t jmp_addr = cpu_readw(addr);
-   REGS.pc.w.l = jmp_addr;
+   word_reg_t jmp_addr;
+   jmp_addr.b.l = cpu_readl(addr++);
+   jmp_addr.b.h = cpu_readl(addr);
+   REGS.pc.w.l = jmp_addr.w;
 }
 
+// This seems to read indirect data from program bank, while the others do not? :(
 static inline void cpu_op_jmp_iaddrx(void) 
 {
    uint16_t addr = cpu_readw_pc();
-   uint16_t jmp_addr = cpu_readlw((((uint32_t)REGS.pc.b.hl << 16) | addr) + REGS.x.w);
+   long_reg_t src;
+   src.w.h = REGS.pc.w.h;
+   src.w.l = addr + REGS.x.w;
+
+   uint16_t jmp_addr = cpu_readlw(src.l);
    REGS.pc.w.l = jmp_addr;
 }
 
 static inline void cpu_op_jmp_iladdr(void) 
 {
    uint16_t addr = cpu_readw_pc();
-   long_reg_t jmp_addr;
-   jmp_addr.w.l = cpu_readlw(((uint32_t)REGS.pc.b.hl << 16) | addr);
-   jmp_addr.w.h = cpu_readl(((((uint32_t)REGS.pc.b.hl << 16)) | addr) + 2);
-   REGS.pc = jmp_addr;
+   long_reg_t dst;
+   dst.b.ll = cpu_readl(addr++);
+   dst.b.lh = cpu_readl(addr++);
+   dst.w.h = cpu_readl(addr);
+   REGS.pc = dst;
 }
 
 static inline void cpu_op_jsr_addr(void) 
