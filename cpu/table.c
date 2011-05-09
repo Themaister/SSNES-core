@@ -31,7 +31,7 @@ const cpu_op_t ssnes_cpu_op_table_EMUL[256] = {
    RMWOP(DP_B, trb),                // 14
    CPU_OP_READ_DPR_B_DECL(ora, x),  // 15
    RMWOP(DPX_B, asl),               // 16
-   ALUOP(IDPY_B, ora),              // 17
+   ALUOP(ILDPY_B, ora),             // 17
    CPU_OP_RESET_FLAG_DECL(c),       // 18
    ALUOP(ADDRY_B, ora),             // 19
    CPU_OP_RMW_REG_B_DECL(a, inc),   // 1a
@@ -290,7 +290,7 @@ const cpu_op_t ssnes_cpu_op_table_MX[256] = {
    RMWOP(DP_B, trb),                // 14
    CPU_OP_READ_DPR_B_DECL(ora, x),  // 15
    RMWOP(DPX_B, asl),               // 16
-   ALUOP(IDPY_B, ora),              // 17
+   ALUOP(ILDPY_B, ora),             // 17
    CPU_OP_RESET_FLAG_DECL(c),       // 18
    ALUOP(ADDRY_B, ora),             // 19
    CPU_OP_RMW_REG_B_DECL(a, inc),   // 1a
@@ -549,7 +549,7 @@ const cpu_op_t ssnes_cpu_op_table_mx[256] = {
    RMWOP(DP_W, trb),                // 14
    CPU_OP_READ_DPR_W_DECL(ora, x),  // 15
    RMWOP(DPX_W, asl),               // 16
-   ALUOP(IDPY_W, ora),              // 17
+   ALUOP(ILDPY_W, ora),             // 17
    CPU_OP_RESET_FLAG_DECL(c),       // 18
    ALUOP(ADDRY_W, ora),             // 19
    CPU_OP_RMW_REG_W_DECL(a, inc),   // 1a
@@ -808,7 +808,7 @@ const cpu_op_t ssnes_cpu_op_table_mX[256] = {
    RMWOP(DP_B, trb),                // 14
    CPU_OP_READ_DPR_W_DECL(ora, x),  // 15
    RMWOP(DPX_W, asl),               // 16
-   ALUOP(IDPY_W, ora),              // 17
+   ALUOP(ILDPY_W, ora),             // 17
    CPU_OP_RESET_FLAG_DECL(c),       // 18
    ALUOP(ADDRY_W, ora),             // 19
    CPU_OP_RMW_REG_W_DECL(a, inc),   // 1a
@@ -1067,7 +1067,7 @@ const cpu_op_t ssnes_cpu_op_table_Mx[256] = {
    RMWOP(DP_B, trb),                // 14
    CPU_OP_READ_DPR_B_DECL(ora, x),  // 15
    RMWOP(DPX_B, asl),               // 16
-   ALUOP(IDPY_B, ora),              // 17
+   ALUOP(ILDPY_B, ora),             // 17
    CPU_OP_RESET_FLAG_DECL(c),       // 18
    ALUOP(ADDRY_B, ora),             // 19
    CPU_OP_RMW_REG_B_DECL(a, inc),   // 1a
