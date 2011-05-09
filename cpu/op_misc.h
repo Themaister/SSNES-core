@@ -482,21 +482,51 @@ static inline void cpu_op_stp(void)
    REGS.pc.l--;
 }
 
-static inline void cpu_op_mvn(void)
+static inline void cpu_op_mvn_b(void)
 {
    uint32_t db = ((uint32_t)cpu_read_pc()) << 16;
    uint32_t sb = ((uint32_t)cpu_read_pc()) << 16;
+   REGS.db = db;
 
-   cpu_writel(db | REGS.y.w++, cpu_readl(sb | REGS.x.w++));
+   cpu_writel(db | REGS.y.w, cpu_readl(sb | REGS.x.w));
+   REGS.y.b.l++;
+   REGS.x.b.l++;
    REGS.pc.w.l = isel_if(REGS.a.w--, REGS.pc.w.l - 3, REGS.pc.w.l);
 }
 
-static inline void cpu_op_mvp(void)
+static inline void cpu_op_mvp_b(void)
 {
    uint32_t db = ((uint32_t)cpu_read_pc()) << 16;
    uint32_t sb = ((uint32_t)cpu_read_pc()) << 16;
+   REGS.db = db;
 
-   cpu_writel(db | REGS.y.w--, cpu_readl(sb | REGS.x.w--));
+   cpu_writel(db | REGS.y.w, cpu_readl(sb | REGS.x.w));
+   REGS.y.b.l--;
+   REGS.x.b.l--;
+   REGS.pc.w.l = isel_if(REGS.a.w--, REGS.pc.w.l - 3, REGS.pc.w.l);
+}
+
+static inline void cpu_op_mvn_w(void)
+{
+   uint32_t db = ((uint32_t)cpu_read_pc()) << 16;
+   uint32_t sb = ((uint32_t)cpu_read_pc()) << 16;
+   REGS.db = db;
+
+   cpu_writel(db | REGS.y.w, cpu_readl(sb | REGS.x.w));
+   REGS.y.w++;
+   REGS.x.w++;
+   REGS.pc.w.l = isel_if(REGS.a.w--, REGS.pc.w.l - 3, REGS.pc.w.l);
+}
+
+static inline void cpu_op_mvp_w(void)
+{
+   uint32_t db = ((uint32_t)cpu_read_pc()) << 16;
+   uint32_t sb = ((uint32_t)cpu_read_pc()) << 16;
+   REGS.db = db;
+
+   cpu_writel(db | REGS.y.w, cpu_readl(sb | REGS.x.w));
+   REGS.y.w--;
+   REGS.x.w--;
    REGS.pc.w.l = isel_if(REGS.a.w--, REGS.pc.w.l - 3, REGS.pc.w.l);
 }
 

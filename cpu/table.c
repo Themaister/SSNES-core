@@ -76,7 +76,7 @@ const cpu_op_t ssnes_cpu_op_table_EMUL[256] = {
    ALUOP(IDPX_B, eor),              // 41
    cpu_op_wdm,                      // 42
    ALUOP(SR_B, eor),                // 43
-   cpu_op_mvp,                      // 44
+   cpu_op_mvp_b,                    // 44
    ALUOP(DP_B, eor),                // 45
    RMWOP(DP_B, lsr),                // 46
    ALUOP(ILDP_B, eor),              // 47
@@ -92,7 +92,7 @@ const cpu_op_t ssnes_cpu_op_table_EMUL[256] = {
    ALUOP(IDPY_B, eor),              // 51
    ALUOP(IDP_B, eor),               // 52
    ALUOP(ISRY_B, eor),              // 53
-   cpu_op_mvn,                      // 54
+   cpu_op_mvn_b,                    // 54
    CPU_OP_READ_DPR_B_DECL(eor, x),  // 55
    RMWOP(DPX_B, lsr),               // 56
    ALUOP(ILDPY_B, eor),             // 57
@@ -335,7 +335,7 @@ const cpu_op_t ssnes_cpu_op_table_MX[256] = {
    ALUOP(IDPX_B, eor),              // 41
    cpu_op_wdm,                      // 42
    ALUOP(SR_B, eor),                // 43
-   cpu_op_mvp,                      // 44
+   cpu_op_mvp_b,                    // 44
    ALUOP(DP_B, eor),                // 45
    RMWOP(DP_B, lsr),                // 46
    ALUOP(ILDP_B, eor),              // 47
@@ -351,7 +351,7 @@ const cpu_op_t ssnes_cpu_op_table_MX[256] = {
    ALUOP(IDPY_B, eor),              // 51
    ALUOP(IDP_B, eor),               // 52
    ALUOP(ISRY_B, eor),              // 53
-   cpu_op_mvn,                      // 54
+   cpu_op_mvn_b,                    // 54
    CPU_OP_READ_DPR_B_DECL(eor, x),  // 55
    RMWOP(DPX_B, lsr),               // 56
    ALUOP(ILDPY_B, eor),             // 57
@@ -594,7 +594,7 @@ const cpu_op_t ssnes_cpu_op_table_mx[256] = {
    ALUOP(IDPX_W, eor),              // 41
    cpu_op_wdm,                      // 42
    ALUOP(SR_W, eor),                // 43
-   cpu_op_mvp,                      // 44
+   cpu_op_mvp_w,                    // 44
    ALUOP(DP_W, eor),                // 45
    RMWOP(DP_W, lsr),                // 46
    ALUOP(ILDP_W, eor),              // 47
@@ -610,7 +610,7 @@ const cpu_op_t ssnes_cpu_op_table_mx[256] = {
    ALUOP(IDPY_W, eor),              // 51
    ALUOP(IDP_W, eor),               // 52
    ALUOP(ISRY_W, eor),              // 53
-   cpu_op_mvn,                      // 54
+   cpu_op_mvn_w,                    // 54
    CPU_OP_READ_DPR_W_DECL(eor, x),  // 55
    RMWOP(DPX_W, lsr),               // 56
    ALUOP(ILDPY_W, eor),             // 57
@@ -853,7 +853,7 @@ const cpu_op_t ssnes_cpu_op_table_mX[256] = {
    ALUOP(IDPX_W, eor),              // 41
    cpu_op_wdm,                      // 42
    ALUOP(SR_W, eor),                // 43
-   cpu_op_mvp,                      // 44
+   cpu_op_mvp_b,                    // 44
    ALUOP(DP_W, eor),                // 45
    RMWOP(DP_W, lsr),                // 46
    ALUOP(ILDP_W, eor),              // 47
@@ -869,7 +869,7 @@ const cpu_op_t ssnes_cpu_op_table_mX[256] = {
    ALUOP(IDPY_W, eor),              // 51
    ALUOP(IDP_W, eor),               // 52
    ALUOP(ISRY_W, eor),              // 53
-   cpu_op_mvn,                      // 54
+   cpu_op_mvn_b,                    // 54
    CPU_OP_READ_DPR_W_DECL(eor, x),  // 55
    RMWOP(DPX_W, lsr),               // 56
    ALUOP(ILDPY_W, eor),             // 57
@@ -1112,7 +1112,7 @@ const cpu_op_t ssnes_cpu_op_table_Mx[256] = {
    ALUOP(IDPX_B, eor),              // 41
    cpu_op_wdm,                      // 42
    ALUOP(SR_B, eor),                // 43
-   cpu_op_mvp,                      // 44
+   cpu_op_mvp_w,                    // 44
    ALUOP(DP_B, eor),                // 45
    RMWOP(DP_B, lsr),                // 46
    ALUOP(ILDP_B, eor),              // 47
@@ -1128,7 +1128,7 @@ const cpu_op_t ssnes_cpu_op_table_Mx[256] = {
    ALUOP(IDPY_B, eor),              // 51
    ALUOP(IDP_B, eor),               // 52
    ALUOP(ISRY_B, eor),              // 53
-   cpu_op_mvn,                      // 54
+   cpu_op_mvn_w,                    // 54
    CPU_OP_READ_DPR_B_DECL(eor, x),  // 55
    RMWOP(DPX_B, lsr),               // 56
    ALUOP(ILDPY_B, eor),             // 57
