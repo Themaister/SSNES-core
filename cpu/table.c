@@ -8,7 +8,7 @@
 #define NOP cpu_op_nop
 
 const cpu_op_t ssnes_cpu_op_table_EMUL[256] = {
-   CPU_OP_INTERRUPT_N_DECL(brk),    // 00 
+   CPU_OP_INTERRUPT_E_DECL(brk),    // 00 
    ALUOP(IDPX_B, ora),              // 01
    NOP,                             // 02 ?!?!
    ALUOP(SR_B, ora),                // 03
@@ -805,7 +805,7 @@ const cpu_op_t ssnes_cpu_op_table_mX[256] = {
    ALUOP(IDPY_W, ora),              // 11
    ALUOP(IDP_W, ora),               // 12
    ALUOP(ISRY_W, ora),              // 13
-   RMWOP(DP_B, trb),                // 14
+   RMWOP(DP_W, trb),                // 14
    CPU_OP_READ_DPR_W_DECL(ora, x),  // 15
    RMWOP(DPX_W, asl),               // 16
    ALUOP(ILDPY_W, ora),             // 17
@@ -1017,7 +1017,7 @@ const cpu_op_t ssnes_cpu_op_table_mX[256] = {
    ALUOP(DP_W, sbc),                // e5
    RMWOP(DP_W, inc),                // e6
    ALUOP(ILDP_W, sbc),              // e7
-   CPU_OP_RMW_REG_W_DECL(x, inc),   // e8
+   CPU_OP_RMW_REG_B_DECL(x, inc),   // e8
    ALUOP(CONST_W, sbc),             // e9
    NOP,                             // ea
    cpu_op_xba,                      // eb
