@@ -36,7 +36,7 @@ static inline void generate_window_dual_mask(uint16_t *mask_buf, unsigned left_m
       case 0: // OR
          for (unsigned i = 0; i < left_mask1; i++)
             mask_buf[i] |= unmask1;
-         for (unsigned i = right_mask1; right_mask1 < 256; i++)
+         for (unsigned i = right_mask1; i < 256; i++)
             mask_buf[i] |= unmask1;
          for (unsigned i = left_mask1; i < right_mask1; i++)
             mask_buf[i] |= mask1;
@@ -45,7 +45,7 @@ static inline void generate_window_dual_mask(uint16_t *mask_buf, unsigned left_m
       case 1: // AND
          for (unsigned i = 0; i < left_mask1; i++)
             mask_buf[i] &= unmask1;
-         for (unsigned i = right_mask1; right_mask1 < 256; i++)
+         for (unsigned i = right_mask1; i < 256; i++)
             mask_buf[i] &= unmask1;
          for (unsigned i = left_mask1; i < right_mask1; i++)
             mask_buf[i] &= mask1;
@@ -54,7 +54,7 @@ static inline void generate_window_dual_mask(uint16_t *mask_buf, unsigned left_m
       case 2: // XOR
          for (unsigned i = 0; i < left_mask1; i++)
             mask_buf[i] ^= unmask1;
-         for (unsigned i = right_mask1; right_mask1 < 256; i++)
+         for (unsigned i = right_mask1; i < 256; i++)
             mask_buf[i] ^= unmask1;
          for (unsigned i = left_mask1; i < right_mask1; i++)
             mask_buf[i] ^= mask1;
@@ -63,7 +63,7 @@ static inline void generate_window_dual_mask(uint16_t *mask_buf, unsigned left_m
       case 3: // XNOR
          for (unsigned i = 0; i < left_mask1; i++)
             mask_buf[i] ^= ~unmask1;
-         for (unsigned i = right_mask1; right_mask1 < 256; i++)
+         for (unsigned i = right_mask1; i < 256; i++)
             mask_buf[i] ^= ~unmask1;
          for (unsigned i = left_mask1; i < right_mask1; i++)
             mask_buf[i] ^= ~mask1;
