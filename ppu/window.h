@@ -20,7 +20,7 @@ static inline void generate_window_dual_mask(uint16_t *mask_buf, unsigned left_m
 {
    uint16_t mask0 = inverse0 ? 0xffff : 0;
    uint16_t unmask0 = mask0 ^ 0xffff;
-   uint16_t mask1 = inverse1 ? 0xffff : 0;
+   uint16_t mask1 = inverse1 ? 0x0 : 0xffff;
    uint16_t unmask1 = mask1 ^ 0xffff;
 
    for (unsigned i = 0; i < left_mask0; i++)
