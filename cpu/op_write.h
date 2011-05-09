@@ -156,7 +156,7 @@ static inline void cpu_op_sta_idp_b(void)
 static inline void cpu_op_sta_idp_w(void)
 {
    uint8_t dp = cpu_read_pc();
-   uint32_t addr = cpu_readw_dp(dp);
+   uint16_t addr = cpu_readw_dp(dp);
    cpu_writew(addr, REGS.a.w);
 }
 
@@ -164,7 +164,7 @@ static inline void cpu_op_sta_idp_w(void)
 static inline void cpu_op_sta_ildp_b(void)
 {
    uint8_t dp = cpu_read_pc();
-   uint16_t addr = cpu_readl_dp(dp);
+   uint32_t addr = cpu_readl_dp(dp);
    cpu_writel(addr, REGS.a.b.l);
 }
 
