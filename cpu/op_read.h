@@ -135,6 +135,8 @@ DECL_GROUP_TWO(READ_ADDRX)
    }
 
 DECL_GROUP_ONE(READ_ADDRY)
+CPU_OP_READ_ADDRY_B(ldx)
+CPU_OP_READ_ADDRY_W(ldx)
 
 // Long addressing (24-bit address), e.g. lda.l $7e1337
 #define CPU_OP_READ_LONG_B_DECL(op) cpu_op_read_long_b_##op

@@ -198,7 +198,7 @@ const cpu_op_t ssnes_cpu_op_table_EMUL[256] = {
    cpu_op_tyx_b,                    // bb
    ALUOP(ADDRX_B, ldy),             // bc
    ALUOP(ADDRX_B, lda),             // bd
-   ALUOP(ADDRX_B, ldx),             // be
+   ALUOP(ADDRY_B, ldx),             // be
    ALUOP(LONGX_B, lda),             // bf
    ALUOP(CONST_B, cpy),             // c0
    ALUOP(IDPX_B, cmp),              // c1
@@ -457,7 +457,7 @@ const cpu_op_t ssnes_cpu_op_table_MX[256] = {
    cpu_op_tyx_b,                    // bb
    ALUOP(ADDRX_B, ldy),             // bc
    ALUOP(ADDRX_B, lda),             // bd
-   ALUOP(ADDRX_B, ldx),             // be
+   ALUOP(ADDRY_B, ldx),             // be
    ALUOP(LONGX_B, lda),             // bf
    ALUOP(CONST_B, cpy),             // c0
    ALUOP(IDPX_B, cmp),              // c1
@@ -716,7 +716,7 @@ const cpu_op_t ssnes_cpu_op_table_mx[256] = {
    cpu_op_tyx_w,                    // bb
    ALUOP(ADDRX_W, ldy),             // bc
    ALUOP(ADDRX_W, lda),             // bd
-   ALUOP(ADDRX_W, ldx),             // be
+   ALUOP(ADDRY_W, ldx),             // be
    ALUOP(LONGX_W, lda),             // bf
    ALUOP(CONST_W, cpy),             // c0
    ALUOP(IDPX_W, cmp),              // c1
@@ -975,7 +975,7 @@ const cpu_op_t ssnes_cpu_op_table_mX[256] = {
    cpu_op_tyx_b,                    // bb
    ALUOP(ADDRX_B, ldy),             // bc
    ALUOP(ADDRX_W, lda),             // bd
-   ALUOP(ADDRX_B, ldx),             // be
+   ALUOP(ADDRY_B, ldx),             // be
    ALUOP(LONGX_W, lda),             // bf
    ALUOP(CONST_B, cpy),             // c0
    ALUOP(IDPX_W, cmp),              // c1
@@ -1234,7 +1234,7 @@ const cpu_op_t ssnes_cpu_op_table_Mx[256] = {
    cpu_op_tyx_w,                    // bb
    ALUOP(ADDRX_W, ldy),             // bc
    ALUOP(ADDRX_B, lda),             // bd
-   ALUOP(ADDRX_W, ldx),             // be
+   ALUOP(ADDRY_W, ldx),             // be
    ALUOP(LONGX_B, lda),             // bf
    ALUOP(CONST_W, cpy),             // c0
    ALUOP(IDPX_B, cmp),              // c1
