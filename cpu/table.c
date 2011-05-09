@@ -145,7 +145,7 @@ const cpu_op_t ssnes_cpu_op_table_EMUL[256] = {
    STOREOP(DP_B, x),                // 86
    cpu_op_sta_ildp_b,               // 87
    CPU_OP_RMW_REG_B_DECL(y, dec),   // 88
-   ALUOP(CONST_B, bit),             // 89
+   ALUOP(CONST_B, bit_imm),         // 89
    cpu_op_txa_MX,                   // 8a
    cpu_op_phb,                      // 8b
    STOREOP(ADDR_B, y),              // 8c
@@ -404,7 +404,7 @@ const cpu_op_t ssnes_cpu_op_table_MX[256] = {
    STOREOP(DP_B, x),                // 86
    cpu_op_sta_ildp_b,               // 87
    CPU_OP_RMW_REG_B_DECL(y, dec),   // 88
-   ALUOP(CONST_B, bit),             // 89
+   ALUOP(CONST_B, bit_imm),         // 89
    cpu_op_txa_MX,                   // 8a
    cpu_op_phb,                      // 8b
    STOREOP(ADDR_B, y),              // 8c
@@ -663,7 +663,7 @@ const cpu_op_t ssnes_cpu_op_table_mx[256] = {
    STOREOP(DP_W, x),                // 86
    cpu_op_sta_ildp_w,               // 87
    CPU_OP_RMW_REG_W_DECL(y, dec),   // 88
-   ALUOP(CONST_W, bit),             // 89
+   ALUOP(CONST_W, bit_imm),         // 89
    cpu_op_txa_mx,                   // 8a
    cpu_op_phb,                      // 8b
    STOREOP(ADDR_W, y),              // 8c
@@ -922,7 +922,7 @@ const cpu_op_t ssnes_cpu_op_table_mX[256] = {
    STOREOP(DP_B, x),                // 86
    cpu_op_sta_ildp_w,               // 87
    CPU_OP_RMW_REG_B_DECL(y, dec),   // 88
-   ALUOP(CONST_W, bit),             // 89
+   ALUOP(CONST_W, bit_imm),         // 89
    cpu_op_txa_mX,                   // 8a
    cpu_op_phb,                      // 8b
    STOREOP(ADDR_B, y),              // 8c
@@ -1181,7 +1181,7 @@ const cpu_op_t ssnes_cpu_op_table_Mx[256] = {
    STOREOP(DP_W, x),                // 86
    cpu_op_sta_ildp_b,               // 87
    CPU_OP_RMW_REG_W_DECL(y, dec),   // 88
-   ALUOP(CONST_B, bit),             // 89
+   ALUOP(CONST_B, bit_imm),         // 89
    cpu_op_txa_Mx,                   // 8a
    cpu_op_phb,                      // 8b
    STOREOP(ADDR_W, y),              // 8c

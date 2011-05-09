@@ -76,6 +76,8 @@
 
 DECL_GROUP_ONE(READ_CONST)
 DECL_GROUP_TWO(READ_CONST)
+CPU_OP_READ_CONST_B(bit_imm)
+CPU_OP_READ_CONST_W(bit_imm)
 
 // Absolute addressing, e.g. lda $1337
 #define CPU_OP_READ_ADDR_B_DECL(op) cpu_op_read_addr_b_##op
@@ -217,7 +219,7 @@ CPU_OP_READ_DPR_W(ldx, y)
 #define CPU_OP_READ_IDP_B(op) \
    static inline void CPU_OP_READ_IDP_B_DECL(op) (void) \
    { \
-      uint16_t addr = cpu_read_dp(cpu_read_pc()); \
+      uint16_t addr = cpu_readw_dp(cpu_read_pc()); \
       cpu_op_##op##_b (cpu_read(addr)); \
    }
 
@@ -225,7 +227,7 @@ CPU_OP_READ_DPR_W(ldx, y)
 #define CPU_OP_READ_IDP_W(op) \
    static inline void CPU_OP_READ_IDP_W_DECL(op) (void) \
    { \
-      uint16_t addr = cpu_read_dp(cpu_read_pc()); \
+      uint16_t addr = cpu_readw_dp(cpu_read_pc()); \
       cpu_op_##op##_w (cpu_readw(addr)); \
    }
 

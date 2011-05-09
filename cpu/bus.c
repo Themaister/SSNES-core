@@ -367,7 +367,7 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
          if (!STATUS.regs.cg_odd)
          {
             uint16_t res = STATUS.regs.cgbuf | ((uint16_t)data << 8);
-            //dprintf(stderr, "Writing $%04x to CGRAM $%02x.\n", (unsigned)res, (unsigned)STATUS.regs.cgadd);
+            dprintf("Writing $%04x to CGRAM $%02x.\n", (unsigned)res, (unsigned)STATUS.regs.cgadd);
             WRITE_CGRAMW(STATUS.regs.cgadd, res);
             STATUS.regs.cgadd++;
          }

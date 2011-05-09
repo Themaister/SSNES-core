@@ -24,11 +24,21 @@ static inline void run_dma_channel(unsigned channel)
 
    uint16_t dest_addr = 0x2100 | (chan->dest + transfer_addr[chan->ctrl & 7][chan->trans_cnt++ & 3]);
    //dprintf(stderr, "DMA read: $%x\n", (unsigned)chan->src.l);
-   uint8_t data = cpu_readl(chan->src.l);
 
    //dprintf(stderr, "DMA: Write $%x -> $%x || Size: $%x\n", (unsigned)data, (unsigned)dest_addr, (unsigned)chan->size.w);
 
-   ssnes_bus_write_2000(dest_addr, data);
+   // Is this correct?! :D Transfer direction for DMA.
+   if ((~chan->ctrl) & 0x80)
+   {
+      uint8_t data = cpu_readl(chan->src.l);
+      ssnes_bus_write_2000(dest_addr, data);
+   }
+   else
+   {
+      uint8_t data = ssnes_bus_read_2000(dest_addr);
+      cpu_writel(chan->src.l, data);
+   }
+
    //cpu_writel(dest_addr, data);
 
    if (!(chan->ctrl & 0x08))

@@ -95,6 +95,16 @@ static inline void cpu_op_bit_w(uint16_t rd)
    REGS.p.z = (rd & REGS.a.w) == 0;
 }
 
+static inline void cpu_op_bit_imm_b(uint8_t rd)
+{
+   REGS.p.z = (rd & REGS.a.b.l) == 0;
+}
+
+static inline void cpu_op_bit_imm_w(uint16_t rd)
+{
+   REGS.p.z = (rd & REGS.a.w) == 0;
+}
+
 static inline void cpu_op_cmp_b(uint8_t rd)
 {
    int r = REGS.a.b.l - rd;

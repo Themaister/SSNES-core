@@ -74,23 +74,34 @@ static inline void cpu_writelw(uint32_t addr, uint16_t data)
 
 static inline uint8_t cpu_read_pc(void)
 {
-   return cpu_readl_ndbg(REGS.pc.l++);
+   uint8_t ret = cpu_readl_ndbg(REGS.pc.l);
+   REGS.pc.w.l++;
+   return ret;
 }
 
 static inline uint16_t cpu_readw_pc(void)
 {
+   long_reg_t pc = REGS.pc;
    uint16_t res = 0;
-   res |= cpu_readl_ndbg(REGS.pc.l++);
-   res |= ((uint16_t)cpu_readl_ndbg(REGS.pc.l++)) << 8;
+   res |= cpu_readl_ndbg(pc.l);
+   pc.w.l++;
+   res |= ((uint16_t)cpu_readl_ndbg(pc.l)) << 8;
+   pc.w.l++;
+   REGS.pc = pc;
    return res;
 }
 
 static inline uint32_t cpu_readl_pc(void)
 {
+   long_reg_t pc = REGS.pc;
    uint32_t res = 0;
-   res |= cpu_readl_ndbg(REGS.pc.l++);
-   res |= ((uint16_t)cpu_readl_ndbg(REGS.pc.l++)) << 8;
-   res |= ((uint32_t)cpu_readl_ndbg(REGS.pc.l++)) << 16;
+   res |= cpu_readl_ndbg(pc.l);
+   pc.w.l++;
+   res |= ((uint16_t)cpu_readl_ndbg(pc.l)) << 8;
+   pc.w.l++;
+   res |= ((uint32_t)cpu_readl_ndbg(pc.l)) << 16;
+   pc.w.l++;
+   REGS.pc = pc;
    return res;
 }
 
