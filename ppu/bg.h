@@ -7,11 +7,11 @@
 #include <assert.h>
 
 #if 0
-static void ppu_merge_bg(uint16_t * restrict dst, const uint16_t * restrict src, uint16_t * restrict z_dst, const uint16_t * restrict z_src, const uint16_t * restrict winmask)
+static void ppu_merge_bg(uint16_t * restrict dst, const uint16_t * restrict src, uint16_t * restrict z_dst, const uint16_t * restrict z_src)
 {
    for (unsigned i = 0; i < 256; i++)
    {
-      if ((z_src[i] & winmask[i]) > z_dst[i])
+      if (z_src[i] > z_dst[i])
       {
          dst[i] = src[i];
          z_dst[i] = z_src[i];
