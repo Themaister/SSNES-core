@@ -239,7 +239,7 @@ DECL_GROUP_ONE(READ_IDP)
 #define CPU_OP_READ_IDPX_B(op) \
    static inline void CPU_OP_READ_IDPX_B_DECL(op) (void) \
    { \
-      uint16_t dp = cpu_read_pc() + REGS.x.w; \
+      uint16_t dp = (uint16_t)cpu_read_pc() + REGS.x.w; \
       uint16_t addr = cpu_readw_dp(dp); \
       cpu_op_##op##_b (cpu_read(addr)); \
    }
@@ -248,7 +248,7 @@ DECL_GROUP_ONE(READ_IDP)
 #define CPU_OP_READ_IDPX_W(op) \
    static inline void CPU_OP_READ_IDPX_W_DECL(op) (void) \
    { \
-      uint16_t dp = cpu_read_pc() + REGS.x.w; \
+      uint16_t dp = (uint16_t)cpu_read_pc() + REGS.x.w; \
       uint16_t addr = cpu_readw_dp(dp); \
       cpu_op_##op##_w (cpu_readw(addr)); \
    }

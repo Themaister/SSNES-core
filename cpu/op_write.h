@@ -99,14 +99,14 @@ CPU_OP_STORE_DP_W(zero);
 #define CPU_OP_STORE_DPR_B(reg, regindex) \
    static inline void CPU_OP_STORE_DPR_B_DECL(reg, regindex) (void) \
    { \
-      cpu_write_dp(cpu_read_pc() + REGS.regindex.w, REGS.reg.b.l); \
+      cpu_write_dp((uint16_t)cpu_read_pc() + REGS.regindex.w, REGS.reg.b.l); \
    }
 
 #define CPU_OP_STORE_DPR_W_DECL(reg, regindex) cpu_op_store_dpr_w_##reg##_##regindex
 #define CPU_OP_STORE_DPR_W(reg, regindex) \
    static inline void CPU_OP_STORE_DPR_W_DECL(reg, regindex) (void) \
    { \
-      cpu_write_dp(cpu_read_pc() + REGS.regindex.w, REGS.reg.b.l); \
+      cpu_writew_dp((uint16_t)cpu_read_pc() + REGS.regindex.w, REGS.reg.w); \
    }
 
 CPU_OP_STORE_DPR_B(a, x); // sta $dp, x
