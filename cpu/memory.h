@@ -129,7 +129,7 @@ static inline uint16_t cpu_readw_dp(uint16_t addr)
    return res;
 }
 
-static inline uint32_t cpu_readl_dp(uint8_t addr)
+static inline uint32_t cpu_readl_dp(uint16_t addr)
 {
    uint32_t res = 0;
    res |= cpu_read_dp(addr);
@@ -170,7 +170,7 @@ static inline void cpu_write_sp(uint8_t addr, uint8_t data)
 
 static inline void cpu_writew_sp(uint8_t addr, uint16_t data)
 {
-   cpu_writel(REGS.sp.w + addr, data & 0xFF);
+   cpu_writel(REGS.sp.w + addr, data & 0xff);
    cpu_writel(REGS.sp.w + addr + 1, data >> 8);
 }
 

@@ -29,7 +29,7 @@ static inline void cpu_op_adc_b(uint8_t rd)
    REGS.p.n = result & 0x80;
    REGS.p.z = (uint8_t)result == 0;
 
-   REGS.a.b.l = result;
+   REGS.a.b.l = (uint8_t)result;
 }
 
 static inline void cpu_op_adc_w(uint16_t rd)
@@ -64,7 +64,7 @@ static inline void cpu_op_adc_w(uint16_t rd)
    REGS.p.n = result & 0x8000;
    REGS.p.z = (uint16_t)result == 0;
 
-   REGS.a.w = result;
+   REGS.a.w = (uint16_t)result;
 }
 
 static inline void cpu_op_and_b(uint8_t rd)
@@ -248,7 +248,7 @@ static inline void cpu_op_sbc_b(uint8_t rd)
    REGS.p.n = result & 0x80;
    REGS.p.z = (uint8_t)result == 0;
 
-   REGS.a.b.l = result;
+   REGS.a.b.l = (uint8_t)result;
 }
 
 static inline void cpu_op_sbc_w(uint16_t rd)
@@ -287,7 +287,7 @@ static inline void cpu_op_sbc_w(uint16_t rd)
    REGS.p.n = result & 0x8000;
    REGS.p.z = (uint16_t)result == 0;
 
-   REGS.a.w = result;
+   REGS.a.w = (uint16_t)result;
 }
 
 // Modifying ALU ops. Data is read, modified and written back.
