@@ -48,19 +48,10 @@ uint8_t ssnes_bus_read_2000(uint32_t addr)
    {
       // OAMDATAREAD
       case 0x2138:
-         STATUS.regs.oam_odd ^= true;
-         if (!STATUS.regs.oam_odd)
-         {
-            // Not sure of read semantics when we go past available memory.
-            if (STATUS.regs.oam_addr.w < 256 + 16)
-               res = MEM.oam.b[((uint16_t)STATUS.regs.oam_addr.w++ << 1) + 1];
-            else
-               res = 0;
-
-            STATUS.regs.oam_addr.w &= isel_if(STATUS.regs.oam_addr.w & 0x100, 0x10f, 0x1ff);
-         }
-         else
-            res = MEM.oam.b[(uint16_t)STATUS.regs.oam_addr.w << 1];
+         addr = STATUS.regs.oam_addr;
+         addr &= isel_if(addr & 0x200, 0x21f, 0x1ff);
+         res = MEM.oam.b[addr];
+         STATUS.regs.oam_addr = (addr + 1) & 0x3ff;
          return res;
 
       case 0x2134: // MPYL
@@ -88,11 +79,9 @@ uint8_t ssnes_bus_read_2000(uint32_t addr)
 
       // CGDATAREAD
       case 0x213b:
-         STATUS.regs.cg_odd ^= true;
-         if (!STATUS.regs.cg_odd)
-            res = MEM.cgram.b[((uint16_t)STATUS.regs.cgadd++ << 1) + 1];
-         else
-            res = MEM.cgram.b[(uint16_t)STATUS.regs.cgadd << 1];
+         addr = STATUS.regs.cgadd;
+         res = MEM.cgram.b[addr];
+         STATUS.regs.cgadd = (addr + 1) & 0x1ff;
          return res;
 
       case 0x213e: // STAT77
@@ -249,38 +238,32 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
          PPU.obsel = data;
          return;
 
-      // "OAM reset" isn't in yet. But the buffering stuff should work.
       case 0x2102: // OAMADDL
-         STATUS.regs.oam_addr_buf.b.l = data;
+         STATUS.regs.oam_addr_buf = (STATUS.regs.oam_addr_buf & 0x200) | ((unsigned)data << 1);
          STATUS.regs.oam_addr = STATUS.regs.oam_addr_buf;
-         STATUS.regs.oam_odd = false;
          return;
       case 0x2103: // OAMADDH
-         STATUS.regs.oam_addr_buf.b.h = data & 0x1;
+         STATUS.regs.oam_addr_buf = (STATUS.regs.oam_addr_buf & 0x1fe) | (((unsigned)data & 1) << 9);
          STATUS.regs.oam_addr = STATUS.regs.oam_addr_buf;
-         STATUS.regs.oam_odd = false;
          return;
 
       case 0x2104: // OAMDATA
-         STATUS.regs.oam_odd ^= true;
-         if (!STATUS.regs.oam_odd)
-         {
-            uint16_t oam_data = STATUS.regs.oam_buf | ((uint16_t)data << 8);
-            //dprintf(stderr, "\tWriting OAM $%04x => $%x (word)\n", (unsigned)oam_data, (unsigned)STATUS.regs.oam_addr.w);
-            // Not sure of semantics when we try to write in hi-table but over byte 32 ...
-            WRITE_OAMW(STATUS.regs.oam_addr.w++, oam_data);
-         }
-         else
-         {
-            //dprintf(stderr, "\tWriting OAM buf <= $%02x\n", (unsigned)data);
-            // Writes to high table takes place immediately.
+         addr = STATUS.regs.oam_addr;
+         addr &= isel_if(addr & 0x200, 0x21f, 0x1ff); // We only care about 32 lower bits if we're doing writes to high table.
 
-            if (STATUS.regs.oam_addr.w & 0x100)
-               MEM.oam.b[STATUS.regs.oam_addr.w << 1] = data;
-
-            STATUS.regs.oam_buf = data;
+         if (addr & 0x200)
+         {
+            MEM.oam.b[addr] = data;
          }
-         STATUS.regs.oam_addr.w &= isel_if(STATUS.regs.oam_addr.w & 0x100, 0x10f, 0x1ff);
+         else if (addr & 1) // Yay, we can write!
+         {
+            uint16_t wd = ((uint16_t)data << 8) | STATUS.regs.oam_buf;
+            WRITE_OAMW(addr >> 1, wd);
+         }
+
+         iup_if(STATUS.regs.oam_buf, ~addr & 1, data);
+
+         STATUS.regs.oam_addr = (addr + 1) & 0x3ff;
          return;
 
       case 0x2105: // BGMODE
@@ -384,23 +367,20 @@ void ssnes_bus_write_2000(uint32_t addr, uint8_t data)
 
       /////////////// CGRAM
       case 0x2121: // CGADD
-         STATUS.regs.cgadd = data;
-         STATUS.regs.cg_odd = false;
+         STATUS.regs.cgadd = (unsigned)data << 1;
          return;
 
       case 0x2122: // CGDATA
-         STATUS.regs.cg_odd ^= true;
-         if (!STATUS.regs.cg_odd)
+         addr = STATUS.regs.cgadd;
+         if (addr & 1)
          {
-            uint16_t res = STATUS.regs.cgbuf | ((uint16_t)data << 8);
-            dprintf("Writing $%04x to CGRAM $%02x.\n", (unsigned)res, (unsigned)STATUS.regs.cgadd);
-            WRITE_CGRAMW(STATUS.regs.cgadd, res);
-            STATUS.regs.cgadd++;
+            uint16_t wd = ((uint16_t)(data & 0x7f) << 8) | STATUS.regs.cgbuf;
+            WRITE_CGRAMW(addr >> 1, wd);
          }
          else
-         {
             STATUS.regs.cgbuf = data;
-         }
+
+         STATUS.regs.cgadd = (addr + 1) & 0x1ff;
          return;
       /////////////////////
       

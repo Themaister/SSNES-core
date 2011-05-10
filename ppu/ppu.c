@@ -9,8 +9,8 @@
 // This is definitely not good for cache, so we'll have to see what we can do to improve this ...
 static uint16_t *xbgr2rgb_lut = NULL;
 
-#define COLOR_LUT(color, bright) (xbgr2rgb_lut[((color) & 0x7fff) | ((unsigned)(bright) << 15)])
-#define COLOR_LUT_S(color, bright) (xbgr2rgb_lut[((color) & 0x7fff) | (unsigned)(bright)])
+#define COLOR_LUT(color, bright) (xbgr2rgb_lut[(color) | ((unsigned)(bright) << 15)])
+#define COLOR_LUT_S(color, bright) (xbgr2rgb_lut[(color) | (unsigned)(bright)])
 static inline uint16_t xbgr2rgb(unsigned color, unsigned bright)
 {
    bright++;

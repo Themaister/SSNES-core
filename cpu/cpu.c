@@ -108,7 +108,7 @@ static void cpu_check_irq(void)
       STATUS.ppu.frame_ready = false;
 
       // OAM reset (correct? :V) on vblank if not force-blank.
-      iup_if(STATUS.regs.oam_addr.w, ~PPU.inidisp & 0x80, STATUS.regs.oam_addr_buf.w);
+      iup_if(STATUS.regs.oam_addr, ~PPU.inidisp & 0x80, STATUS.regs.oam_addr_buf);
 
       iup_if(STATUS.pending_irq.nmi, STATUS.regs.nmitimen & 0x80, true);
 

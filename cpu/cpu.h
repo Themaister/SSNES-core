@@ -97,17 +97,15 @@ struct cpu_status
    {
       uint8_t nmitimen;
 
-      uint8_t cgadd;
-      bool cg_odd;
+      unsigned cgadd;
       uint8_t cgbuf;
 
       uint8_t vmain;
       word_reg_t vram_addr;
       word_reg_t vram_rd_buf;
 
-      word_reg_t oam_addr;
-      word_reg_t oam_addr_buf;
-      bool oam_odd;
+      unsigned oam_addr;
+      unsigned oam_addr_buf;
       uint8_t oam_buf;
 
       long_reg_t wram_addr;
