@@ -173,7 +173,7 @@ static void ppu_render_sprite_big(uint16_t * restrict pixels, uint32_t oam, unsi
 static inline void ppu_render_sprites(uint16_t * restrict line, const uint8_t *oam_hi, unsigned scanline, const uint16_t * restrict mask_win, const uint16_t * restrict z_prio, uint16_t * restrict z_buf)
 {
    unsigned offset = ((unsigned)PPU.obsel & 7) << 13;
-   unsigned name = (((unsigned)PPU.obsel & 0x18) + 1) << 9;
+   unsigned name = (((unsigned)PPU.obsel & 0x18) + 8) << 9;
    for (int i = 31; i >= 0; i--)
    {
       // Any sprites to render?
