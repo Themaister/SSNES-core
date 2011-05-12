@@ -261,8 +261,8 @@ DECL_GROUP_ONE(READ_IDPX)
    static inline void CPU_OP_READ_IDPY_B_DECL(op) (void) \
    { \
       uint8_t dp = cpu_read_pc(); \
-      uint16_t addr = cpu_readw_dp(dp); \
-      cpu_op_##op##_b (cpu_read(addr + REGS.y.w)); \
+      uint32_t addr = (uint32_t)cpu_readw_dp(dp) + (uint32_t)REGS.y.w; \
+      cpu_op_##op##_b (cpu_read(addr)); \
    }
 
 #define CPU_OP_READ_IDPY_W_DECL(op) cpu_op_read_idpy_w_##op
@@ -270,8 +270,8 @@ DECL_GROUP_ONE(READ_IDPX)
    static inline void CPU_OP_READ_IDPY_W_DECL(op) (void) \
    { \
       uint8_t dp = cpu_read_pc(); \
-      uint16_t addr = cpu_readw_dp(dp); \
-      cpu_op_##op##_w (cpu_readw(addr + REGS.y.w)); \
+      uint32_t addr = (uint32_t)cpu_readw_dp(dp) + (uint32_t)REGS.y.w; \
+      cpu_op_##op##_w (cpu_readw(addr)); \
    }
 
 DECL_GROUP_ONE(READ_IDPY)
@@ -305,8 +305,8 @@ DECL_GROUP_ONE(READ_ILDP)
    static inline void CPU_OP_READ_ILDPY_B_DECL(op) (void) \
    { \
       uint8_t dp = cpu_read_pc(); \
-      uint32_t addr = cpu_readl_dp(dp); \
-      cpu_op_##op##_b (cpu_readl(addr + REGS.y.w)); \
+      uint32_t addr = cpu_readl_dp(dp) + (uint32_t)REGS.y.w; \
+      cpu_op_##op##_b (cpu_readl(addr)); \
    }
 
 #define CPU_OP_READ_ILDPY_W_DECL(op) cpu_op_read_ildpy_w_##op
@@ -314,8 +314,8 @@ DECL_GROUP_ONE(READ_ILDP)
    static inline void CPU_OP_READ_ILDPY_W_DECL(op) (void) \
    { \
       uint8_t dp = cpu_read_pc(); \
-      uint32_t addr = cpu_readl_dp(dp); \
-      cpu_op_##op##_w (cpu_readlw(addr + REGS.y.w)); \
+      uint32_t addr = cpu_readl_dp(dp) + (uint32_t)REGS.y.w; \
+      cpu_op_##op##_w (cpu_readlw(addr)); \
    }
 
 DECL_GROUP_ONE(READ_ILDPY)
@@ -344,7 +344,7 @@ DECL_GROUP_ONE(READ_SR)
 #define CPU_OP_READ_ISRY_B(op) \
    static inline void CPU_OP_READ_ISRY_B_DECL(op) (void) \
    { \
-      uint16_t addr = cpu_readw_sp(cpu_read_pc()) + REGS.y.w; \
+      uint32_t addr = (uint32_t)cpu_readw_sp(cpu_read_pc()) + (uint32_t)REGS.y.w; \
       cpu_op_##op##_b (cpu_read(addr)); \
    }
 
@@ -352,7 +352,7 @@ DECL_GROUP_ONE(READ_SR)
 #define CPU_OP_READ_ISRY_W(op) \
    static inline void CPU_OP_READ_ISRY_W_DECL(op) (void) \
    { \
-      uint16_t addr = cpu_readw_sp(cpu_read_pc()) + REGS.y.w; \
+      uint32_t addr = (uint32_t)cpu_readw_sp(cpu_read_pc()) + (uint32_t)REGS.y.w; \
       cpu_op_##op##_w (cpu_readw(addr)); \
    }
 
