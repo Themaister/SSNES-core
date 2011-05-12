@@ -166,6 +166,71 @@ static void init_memmap(
    }
 }
 
+static uint8_t lorom_sram_read(uint32_t addr)
+{
+   CPU.status.cycles += 8;
+   unsigned bank = (addr >> 16) - 0x70;
+   unsigned offset = addr & 0x7fff;
+   return MEM.sram[(bank << 15) | offset];
+}
+
+static void lorom_sram_write(uint32_t addr, uint8_t data)
+{
+   CPU.status.cycles += 8;
+   unsigned bank = (addr >> 16) - 0x70;
+   unsigned offset = addr & 0x7fff;
+   MEM.sram[(bank << 15) | offset] = data;
+}
+
+static uint8_t hirom_sram_read(uint32_t addr)
+{
+   unsigned bank = (addr >> 16) - 0x20;
+   unsigned offset = (addr & 0x7fff) - 0x6000;
+   return MEM.sram[(bank << 13) | offset];
+
+}
+
+static void hirom_sram_write(uint32_t addr, uint8_t data)
+{
+   unsigned bank = (addr >> 16) - 0x20;
+   unsigned offset = (addr & 0x7fff) - 0x6000;
+   MEM.sram[(bank << 13) | offset] = data;
+}
+
+static void init_sram_memmap(enum ssnes_mapper_type type)
+{
+   if (type == SSNES_MAPPER_HIROM)
+   {
+      for (unsigned i = 0x20; i < 0x40; i++)
+      {
+         ssnes_memmap_read_table[(i << 3) + 3] = hirom_sram_read;
+         ssnes_memmap_read_table[((i + 0x80) << 3) + 3] = hirom_sram_read;
+         ssnes_memmap_write_table[(i << 3) + 3] = hirom_sram_write;
+         ssnes_memmap_write_table[((i + 0x80) << 3) + 3] = hirom_sram_write;
+      }
+   }
+   else
+   {
+      for (unsigned i = 0x70; i < 0x7e; i++)
+      {
+         for (unsigned j = 0; j < 4; j++)
+         {
+            ssnes_memmap_read_table[(i << 3) + j] = lorom_sram_read;
+            ssnes_memmap_write_table[(i << 3) + j] = lorom_sram_write;
+         }
+      }
+
+      for (unsigned i = 0xf0; i < 0x100; i++)
+      {
+         for (unsigned j = 0; j < 4; j++)
+         {
+            ssnes_memmap_read_table[(i << 3) + j] = lorom_sram_read;
+            ssnes_memmap_write_table[(i << 3) + j] = lorom_sram_write;
+         }
+      }
+   }
+}
+
 void ssnes_memmap_init(enum ssnes_mapper_type type)
 {
    memmap_read_t rom_read = NULL;
@@ -200,4 +265,5 @@ void ssnes_memmap_init(enum ssnes_mapper_type type)
    assert(rom_write_fast);
 
    init_memmap(rom_read, rom_write, rom_read_fast, rom_write_fast);
+   init_sram_memmap(type);
 }

@@ -32,6 +32,8 @@ struct mem_state
 
    uint8_t apuram[64 * 1024];
 
+   uint8_t sram[128 * 1024];
+
    struct
    {
       uint8_t *sram;
