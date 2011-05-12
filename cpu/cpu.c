@@ -21,13 +21,14 @@ static void cpu_init_registers(void)
 {
    REGS.e = true;
    cpu_set_p(0x30);
-   REGS.sp.b.h = 0x01;
+   REGS.sp.w = 0x100;
    STATUS.pending_irq.reset = true;
 }
 
 void ssnes_cpu_reset(void)
 {
    memset(&ssnes_state, 0, sizeof(ssnes_state)); 
+   memset(&ssnes_state.mem.wram, 0x55, sizeof(ssnes_state.mem.wram));
    cpu_init_registers();
 }
 
@@ -202,6 +203,7 @@ void ssnes_cpu_run_frame(void)
             iup_if(REGS.wai_quit, REGS.wai, true);
             STATUS.pending_irq.reset = false;
             cpu_op_interrupt_reset_e();
+            REGS.sp.w = 0x1ff;
          }
          else if (STATUS.pending_irq.nmi)
          {

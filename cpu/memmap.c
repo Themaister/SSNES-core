@@ -19,7 +19,7 @@ static uint8_t lorom_read(uint32_t addr)
 
 static uint8_t lorom_read_fastrom(uint32_t addr)
 {
-   CPU.status.cycles += isel_if(~STATUS.regs.memsel | STATUS.dma_enable | STATUS.hdma_enable, 8, 6); // FastROM (needs to be 6 or 8 depending ...). DMA always takes 8 cycles even if FastROM.
+   CPU.status.cycles += isel_if(~STATUS.regs.memsel | STATUS.dma_enable, 8, 6); // FastROM (needs to be 6 or 8 depending ...). DMA always takes 8 cycles even if FastROM.
    return MEM.cart.rom[((addr & 0x7f0000) >> 1) | (0x7fff & addr)];
 }
 
@@ -47,7 +47,7 @@ static uint8_t hirom_read(uint32_t addr)
 
 static uint8_t hirom_read_fastrom(uint32_t addr)
 {
-   CPU.status.cycles += isel_if(~STATUS.regs.memsel | STATUS.dma_enable | STATUS.hdma_enable, 8, 6); // FastROM (needs to be 6 or 8 depending ...)
+   CPU.status.cycles += isel_if(~STATUS.regs.memsel | STATUS.dma_enable, 8, 6); // FastROM (needs to be 6 or 8 depending ...)
    return MEM.cart.rom[addr & 0x3fffff];
 }
 
@@ -166,35 +166,34 @@ static void init_memmap(
    }
 }
 
-static uint8_t lorom_sram_read(uint32_t addr)
+// Hack for now ... :v
+static uint8_t lorom_sram_read_8k(uint32_t addr)
 {
    CPU.status.cycles += 8;
-   unsigned bank = (addr >> 16) - 0x70;
-   unsigned offset = addr & 0x7fff;
-   return MEM.sram[(bank << 15) | offset];
+   unsigned offset = addr & 0x1fff;
+   return MEM.sram[offset];
 }
 
-static void lorom_sram_write(uint32_t addr, uint8_t data)
+static void lorom_sram_write_8k(uint32_t addr, uint8_t data)
 {
    CPU.status.cycles += 8;
-   unsigned bank = (addr >> 16) - 0x70;
-   unsigned offset = addr & 0x7fff;
-   MEM.sram[(bank << 15) | offset] = data;
+   unsigned offset = addr & 0x1fff;
+   MEM.sram[offset] = data;
 }
 
-static uint8_t hirom_sram_read(uint32_t addr)
+static uint8_t hirom_sram_read_8k(uint32_t addr)
 {
-   unsigned bank = (addr >> 16) - 0x20;
+   CPU.status.cycles += 8;
    unsigned offset = (addr & 0x7fff) - 0x6000;
-   return MEM.sram[(bank << 13) | offset];
+   return MEM.sram[offset];
 
 }
 
-static void hirom_sram_write(uint32_t addr, uint8_t data)
+static void hirom_sram_write_8k(uint32_t addr, uint8_t data)
 {
-   unsigned bank = (addr >> 16) - 0x20;
+   CPU.status.cycles += 8;
    unsigned offset = (addr & 0x7fff) - 0x6000;
-   MEM.sram[(bank << 13) | offset] = data;
+   MEM.sram[offset] = data;
 }
 
 static void init_sram_memmap(enum ssnes_mapper_type type)
@@ -203,10 +202,10 @@ static void init_sram_memmap(enum ssnes_mapper_type type)
    {
       for (unsigned i = 0x20; i < 0x40; i++)
       {
-         ssnes_memmap_read_table[(i << 3) + 3] = hirom_sram_read;
-         ssnes_memmap_read_table[((i + 0x80) << 3) + 3] = hirom_sram_read;
-         ssnes_memmap_write_table[(i << 3) + 3] = hirom_sram_write;
-         ssnes_memmap_write_table[((i + 0x80) << 3) + 3] = hirom_sram_write;
+         ssnes_memmap_read_table[(i << 3) + 3] = hirom_sram_read_8k;
+         ssnes_memmap_read_table[((i + 0x80) << 3) + 3] = hirom_sram_read_8k;
+         ssnes_memmap_write_table[(i << 3) + 3] = hirom_sram_write_8k;
+         ssnes_memmap_write_table[((i + 0x80) << 3) + 3] = hirom_sram_write_8k;
       }
    }
    else
@@ -215,8 +214,8 @@ static void init_sram_memmap(enum ssnes_mapper_type type)
       {
          for (unsigned j = 0; j < 4; j++)
          {
-            ssnes_memmap_read_table[(i << 3) + j] = lorom_sram_read;
-            ssnes_memmap_write_table[(i << 3) + j] = lorom_sram_write;
+            ssnes_memmap_read_table[(i << 3) + j] = lorom_sram_read_8k;
+            ssnes_memmap_write_table[(i << 3) + j] = lorom_sram_write_8k;
          }
       }
 
@@ -224,8 +223,8 @@ static void init_sram_memmap(enum ssnes_mapper_type type)
       {
          for (unsigned j = 0; j < 4; j++)
          {
-            ssnes_memmap_read_table[(i << 3) + j] = lorom_sram_read;
-            ssnes_memmap_write_table[(i << 3) + j] = lorom_sram_write;
+            ssnes_memmap_read_table[(i << 3) + j] = lorom_sram_read_8k;
+            ssnes_memmap_write_table[(i << 3) + j] = lorom_sram_write_8k;
          }
       }
    }
