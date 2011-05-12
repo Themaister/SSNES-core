@@ -34,14 +34,14 @@ CPU_OP_STORE_ADDR_W(zero);
 #define CPU_OP_STORE_ADDR_REGI_B(reg, regindex) \
    static inline void CPU_OP_STORE_ADDR_REGI_B_DECL(reg, regindex) (void) \
    { \
-      cpu_write(cpu_readw_pc() + REGS.regindex.w, REGS.reg.b.l); \
+      cpu_write((uint32_t)cpu_readw_pc() + (uint32_t)REGS.regindex.w, REGS.reg.b.l); \
    }
 
 #define CPU_OP_STORE_ADDR_REGI_W_DECL(reg, regindex) cpu_op_store_addr_regi_w_##reg##_##regindex
 #define CPU_OP_STORE_ADDR_REGI_W(reg, regindex) \
    static inline void CPU_OP_STORE_ADDR_REGI_W_DECL(reg, regindex) (void) \
    { \
-      cpu_writew(cpu_readw_pc() + REGS.regindex.w, REGS.reg.w); \
+      cpu_writew((uint32_t)cpu_readw_pc() + (uint32_t)REGS.regindex.w, REGS.reg.w); \
    }
 
 CPU_OP_STORE_ADDR_REGI_B(a, x); // sta $1337, x
@@ -57,14 +57,14 @@ CPU_OP_STORE_ADDR_REGI_W(zero, x);
 #define CPU_OP_STORE_LONG_REGI_B(reg, regindex) \
    static inline void CPU_OP_STORE_LONG_REGI_B_DECL(reg, regindex) (void) \
    { \
-      cpu_writel(cpu_readl_pc() + REGS.regindex.w, REGS.reg.b.l); \
+      cpu_writel(cpu_readl_pc() + (uint32_t)REGS.regindex.w, REGS.reg.b.l); \
    }
 
 #define CPU_OP_STORE_LONG_REGI_W_DECL(reg, regindex) cpu_op_store_long_regi_w_##reg##_##regindex
 #define CPU_OP_STORE_LONG_REGI_W(reg, regindex) \
    static inline void CPU_OP_STORE_LONG_REGI_W_DECL(reg, regindex) (void) \
    { \
-      cpu_writelw(cpu_readl_pc() + REGS.regindex.w, REGS.reg.w); \
+      cpu_writelw(cpu_readl_pc() + (uint32_t)REGS.regindex.w, REGS.reg.w); \
    }
 
 CPU_OP_STORE_LONG_REGI_B(a, y); // sta $7e1337, y
@@ -180,14 +180,14 @@ static inline void cpu_op_sta_ildp_w(void)
 static inline void cpu_op_sta_idpx_b(void)
 {
    uint16_t dp = cpu_read_pc();
-   uint16_t addr = cpu_readw_dp(dp + REGS.x.w);
+   uint16_t addr = cpu_readw_dp((dp + REGS.x.w) & 0xffff);
    cpu_write(addr, REGS.a.b.l);
 }
 
 static inline void cpu_op_sta_idpx_w(void)
 {
    uint16_t dp = cpu_read_pc();
-   uint16_t addr = cpu_readw_dp(dp + REGS.x.w);
+   uint16_t addr = cpu_readw_dp((dp + REGS.x.w) & 0xffff);
    cpu_writew(addr, REGS.a.w);
 }
 
@@ -195,14 +195,14 @@ static inline void cpu_op_sta_idpx_w(void)
 static inline void cpu_op_sta_idpy_b(void)
 {
    uint16_t dp = cpu_read_pc();
-   uint16_t addr = cpu_readw_dp(dp) + REGS.y.w;
+   uint32_t addr = (uint32_t)cpu_readw_dp(dp) + (uint32_t)REGS.y.w;
    cpu_write(addr, REGS.a.b.l);
 }
 
 static inline void cpu_op_sta_idpy_w(void)
 {
    uint16_t dp = cpu_read_pc();
-   uint16_t addr = cpu_readw_dp(dp) + REGS.y.w;
+   uint32_t addr = (uint32_t)cpu_readw_dp(dp) + (uint32_t)REGS.y.w;
    cpu_writew(addr, REGS.a.w);
 }
 
@@ -211,14 +211,14 @@ static inline void cpu_op_sta_idpy_w(void)
 static inline void cpu_op_sta_ildpy_b(void)
 {
    uint16_t dp = cpu_read_pc();
-   uint32_t addr = cpu_readl_dp(dp) + REGS.y.w;
+   uint32_t addr = cpu_readl_dp(dp) + (uint32_t)REGS.y.w;
    cpu_writel(addr, REGS.a.b.l);
 }
 
 static inline void cpu_op_sta_ildpy_w(void)
 {
    uint16_t dp = cpu_read_pc();
-   uint32_t addr = cpu_readl_dp(dp) + REGS.y.w;
+   uint32_t addr = cpu_readl_dp(dp) + (uint32_t)REGS.y.w;
    cpu_writelw(addr, REGS.a.w);
 }
 
@@ -241,14 +241,14 @@ static inline void cpu_op_sta_sr_w(void)
 static inline void cpu_op_sta_isry_b(void)
 {
    uint8_t sr = cpu_read_pc();
-   uint16_t addr = cpu_readw_sp(sr) + REGS.y.w;
+   uint32_t addr = (uint32_t)cpu_readw_sp(sr) + (uint32_t)REGS.y.w;
    cpu_write(addr, REGS.a.b.l);
 }
 
 static inline void cpu_op_sta_isry_w(void)
 {
    uint8_t sr = cpu_read_pc();
-   uint16_t addr = cpu_readw_sp(sr) + REGS.y.w;
+   uint32_t addr = (uint32_t)cpu_readw_sp(sr) + (uint32_t)REGS.y.w;
    cpu_writew(addr, REGS.a.w);
 }
 

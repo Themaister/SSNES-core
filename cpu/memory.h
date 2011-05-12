@@ -34,17 +34,17 @@ static inline void cpu_writel_ndbg(uint32_t addr, uint8_t data)
    ssnes_memmap_write_table[addr >> 13](addr, data);
 }
 
-static inline uint8_t cpu_read(uint16_t addr)
+static inline uint8_t cpu_read(uint32_t addr)
 {
-   return cpu_readl(REGS.db | addr);
+   return cpu_readl((REGS.db + addr) & 0xffffff);
 }
 
-static inline void cpu_write(uint16_t addr, uint8_t data)
+static inline void cpu_write(uint32_t addr, uint8_t data)
 {
-   cpu_writel(REGS.db | addr, data);
+   cpu_writel((REGS.db + addr) & 0xffffff, data);
 }
 
-static inline uint16_t cpu_readw(uint16_t addr)
+static inline uint16_t cpu_readw(uint32_t addr)
 {
    uint16_t res = 0;
    res |= cpu_read(addr);
@@ -52,7 +52,7 @@ static inline uint16_t cpu_readw(uint16_t addr)
    return res;
 }
 
-static inline void cpu_writew(uint16_t addr, uint16_t data)
+static inline void cpu_writew(uint32_t addr, uint16_t data)
 {
    cpu_write(addr, data & 0xFF);
    cpu_write(addr + 1, data >> 8);

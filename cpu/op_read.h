@@ -104,7 +104,7 @@ DECL_GROUP_TWO(READ_ADDR)
 #define CPU_OP_READ_ADDRX_B(op) \
    static inline void CPU_OP_READ_ADDRX_B_DECL(op) (void) \
    { \
-      uint16_t addr = cpu_readw_pc() + REGS.x.w; \
+      uint32_t addr = (uint32_t)cpu_readw_pc() + (uint32_t)REGS.x.w; \
       cpu_op_##op##_b (cpu_read(addr)); \
    }
 
@@ -112,7 +112,7 @@ DECL_GROUP_TWO(READ_ADDR)
 #define CPU_OP_READ_ADDRX_W(op) \
    static inline void CPU_OP_READ_ADDRX_W_DECL(op) (void) \
    { \
-      uint16_t addr = cpu_readw_pc() + REGS.x.w; \
+      uint32_t addr = (uint32_t)cpu_readw_pc() + (uint32_t)REGS.x.w; \
       cpu_op_##op##_w (cpu_readw(addr)); \
    }
 
@@ -124,7 +124,7 @@ DECL_GROUP_TWO(READ_ADDRX)
 #define CPU_OP_READ_ADDRY_B(op) \
    static inline void CPU_OP_READ_ADDRY_B_DECL(op) (void) \
    { \
-      uint16_t addr = cpu_readw_pc() + REGS.y.w; \
+      uint32_t addr = (uint32_t)cpu_readw_pc() + (uint32_t)REGS.y.w; \
       cpu_op_##op##_b (cpu_read(addr)); \
    }
 
@@ -132,7 +132,7 @@ DECL_GROUP_TWO(READ_ADDRX)
 #define CPU_OP_READ_ADDRY_W(op) \
    static inline void CPU_OP_READ_ADDRY_W_DECL(op) (void) \
    { \
-      uint16_t addr = cpu_readw_pc() + REGS.y.w; \
+      uint32_t addr = (uint32_t)cpu_readw_pc() + (uint32_t)REGS.y.w; \
       cpu_op_##op##_w (cpu_readw(addr)); \
    }
 
@@ -162,14 +162,14 @@ DECL_GROUP_ONE(READ_LONG)
 #define CPU_OP_READ_LONGX_B(op) \
    static inline void CPU_OP_READ_LONGX_B_DECL(op) (void) \
    { \
-      cpu_op_##op##_b (cpu_readl(cpu_readl_pc() + REGS.x.w)); \
+      cpu_op_##op##_b (cpu_readl(cpu_readl_pc() + (uint32_t)REGS.x.w)); \
    }
 
 #define CPU_OP_READ_LONGX_W_DECL(op) cpu_op_read_longx_w_##op
 #define CPU_OP_READ_LONGX_W(op) \
    static inline void CPU_OP_READ_LONGX_W_DECL(op) (void) \
    { \
-      cpu_op_##op##_w (cpu_readlw(cpu_readl_pc() + REGS.x.w)); \
+      cpu_op_##op##_w (cpu_readlw(cpu_readl_pc() + (uint32_t)REGS.x.w)); \
    }
 
 DECL_GROUP_ONE(READ_LONGX)
