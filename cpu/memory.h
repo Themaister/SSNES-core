@@ -133,7 +133,7 @@ static inline uint32_t cpu_readl_dp(uint16_t addr)
 {
    uint32_t res = 0;
    res |= cpu_read_dp(addr);
-   res |= ((uint16_t)cpu_read_dp(addr + 1)) << 8;
+   res |= ((uint32_t)cpu_read_dp(addr + 1)) << 8;
    res |= ((uint32_t)cpu_read_dp(addr + 2)) << 16;
    return res;
 }
@@ -152,7 +152,7 @@ static inline void cpu_writew_dp(uint16_t addr, uint16_t data)
 // Stack-relative
 static inline uint8_t cpu_read_sp(uint16_t addr)
 {
-   return cpu_readl(REGS.sp.w + addr);
+   return cpu_readl((REGS.sp.w + addr) & 0xffff);
 }
 
 static inline uint16_t cpu_readw_sp(uint16_t addr)
@@ -163,15 +163,15 @@ static inline uint16_t cpu_readw_sp(uint16_t addr)
    return res;
 }
 
-static inline void cpu_write_sp(uint8_t addr, uint8_t data)
+static inline void cpu_write_sp(uint16_t addr, uint8_t data)
 {
-   cpu_writel(REGS.sp.w + addr, data);
+   cpu_writel((REGS.sp.w + addr) & 0xffff, data);
 }
 
-static inline void cpu_writew_sp(uint8_t addr, uint16_t data)
+static inline void cpu_writew_sp(uint16_t addr, uint16_t data)
 {
-   cpu_writel(REGS.sp.w + addr, data & 0xff);
-   cpu_writel(REGS.sp.w + addr + 1, data >> 8);
+   cpu_writel((REGS.sp.w + addr) & 0xffff, data & 0xff);
+   cpu_writel((REGS.sp.w + addr + 1) & 0xffff, data >> 8);
 }
 
 #endif
