@@ -6,6 +6,12 @@
 #include <string.h>
 #include <stdio.h>
 
+static uint16_t *ppu_buffer;
+const uint16_t *ssnes_ppu_buffer(void)
+{
+   return ppu_buffer;
+}
+
 // This is definitely not good for cache, so we'll have to see what we can do to improve this ...
 static uint16_t *xbgr2rgb_lut = NULL;
 
@@ -35,7 +41,7 @@ static uint16_t window_mask_none_buf[256] ALIGNED;
 
 void ssnes_ppu_init(void)
 {
-   ALLOCATE(PPU.buffer, 1024, 1024 * 256 * sizeof(uint16_t));
+   ALLOCATE(ppu_buffer, 1024, 1024 * 256 * sizeof(uint16_t));
    ALLOCATE(xbgr2rgb_lut, 1024, 1 << 20);
 
    init_xbgr_lut();
@@ -132,5 +138,5 @@ void ssnes_ppu_scanline(unsigned scanline)
          break;
    }
 
-   blit_scanline_lo(PPU.buffer + 1024 * scanline, out_buf);
+   blit_scanline_lo(ppu_buffer + 1024 * scanline, out_buf);
 }

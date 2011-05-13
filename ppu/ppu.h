@@ -49,12 +49,13 @@ struct ppu_state
    uint8_t wbglog; // $212a
    uint8_t wobjlog; // $212b
 
-   uint16_t *buffer;
 };
 
 void ssnes_ppu_init(void);
 void ssnes_ppu_deinit(void);
 
 void ssnes_ppu_scanline(unsigned scanline);
+
+const uint16_t *ssnes_ppu_buffer(void);
 
 #endif

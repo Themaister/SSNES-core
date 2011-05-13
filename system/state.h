@@ -32,14 +32,14 @@ struct mem_state
 
    uint8_t apuram[64 * 1024];
 
-   uint8_t sram[128 * 1024];
+   uint8_t sram[64 * 1024];
 
-   struct
-   {
-      uint8_t *sram;
-      uint8_t *rom;
-   } cart;
 };
+
+struct ssnes_cart_state
+{
+   uint8_t *rom;
+} ssnes_cart;
 
 struct ssnes_state
 {
@@ -51,5 +51,6 @@ struct ssnes_state
 };
 
 extern struct ssnes_state ssnes_state;
+extern struct ssnes_cart_state ssnes_cart;
 
 #endif

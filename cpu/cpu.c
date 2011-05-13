@@ -105,7 +105,7 @@ static void cpu_check_irq(void)
 {
    if (STATUS.ppu.frame_ready)
    {
-      ssnes_video_cb(PPU.buffer, 256, 224);
+      ssnes_video_cb(ssnes_ppu_buffer(), 256, 224);
       STATUS.ppu.frame_ready = false;
 
       // OAM reset (correct? :V) on vblank if not force-blank.

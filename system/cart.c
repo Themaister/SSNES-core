@@ -136,8 +136,8 @@ static enum ssnes_mapper_type find_mapper_type(const uint8_t *data, size_t size)
 
 void ssnes_cartridge_load(const uint8_t *data, size_t size)
 {
-   ALLOCATE(MEM.cart.rom, 1024, 1 << 22);
-   memcpy(MEM.cart.rom, data, size < (1 << 22) ? size : (1 << 22));
+   ALLOCATE(ssnes_cart.rom, 1024, 1 << 22);
+   memcpy(ssnes_cart.rom, data, size < (1 << 22) ? size : (1 << 22));
    ssnes_memmap_init(find_mapper_type(data, size));
 }
 
