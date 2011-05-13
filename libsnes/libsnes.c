@@ -3,7 +3,9 @@
 
 #include "system/system.h"
 #include "system/cart.h"
+#include "system/state.h"
 #include "cpu/cpu.h"
+#include <string.h>
 
 snes_video_refresh_t ssnes_video_cb;
 snes_audio_sample_t ssnes_audio_cb;
@@ -83,21 +85,26 @@ void snes_run(void)
 
 unsigned snes_serialize_size(void)
 {
-   return 0;
+   return sizeof(ssnes_state);
 }
 
 bool snes_serialize(uint8_t *data, unsigned size)
 {
-   (void)data;
-   (void)size;
-   return false;
+   if (size != sizeof(ssnes_state))
+      return false;
+
+   // Totally non-portable, but works as a quick 'n dirty hack for now. :)
+   memcpy(data, &ssnes_state, sizeof(ssnes_state));
+   return true;
 }
 
 bool snes_unserialize(const uint8_t *data, unsigned size)
 {
-   (void)data;
-   (void)size;
-   return false;
+   if (size != sizeof(ssnes_state))
+      return false;
+
+   memcpy(&ssnes_state, data, sizeof(ssnes_state));
+   return true;
 }
 
 void snes_cheat_reset(void)
