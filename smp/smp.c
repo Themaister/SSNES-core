@@ -113,6 +113,7 @@ unsigned ssnes_smp_run(unsigned cycles)
 {
    // We try to scale master cycles from CPU down to SMP cycles (1.024MHz).
    cycles /= 21;
+   cycles++;
    unsigned ran_cycles = 0;
    while (ran_cycles < cycles)
    {
@@ -124,7 +125,7 @@ unsigned ssnes_smp_run(unsigned cycles)
 
       unsigned cycles = ssnes_smp_cycle_table[opcode];
       ran_cycles += cycles;
-      smp_update_timers(ran_cycles);
+      smp_update_timers(cycles);
    }
 
    return ran_cycles * 21;

@@ -133,6 +133,15 @@ uint8_t ssnes_bus_read_4000(uint32_t addr)
       case 0x4212: // HVBJOY
          return PPU.hvbjoy;
 
+      case 0x4016: // JOYSER0
+         tmp = (STATUS.input[0].latch_data >> 15) & 1;
+         STATUS.input[0].latch_data >>= 1;
+         return tmp;
+      case 0x4017: // JOYSER1
+         tmp = (STATUS.input[1].latch_data >> 15) & 1;
+         STATUS.input[1].latch_data >>= 1;
+         return tmp | 0x1c;
+
       case 0x4214: // RDDIVL
          return CPU.alu.div_quot.b.l;
       case 0x4215: // RDDIVH
@@ -466,6 +475,15 @@ void ssnes_bus_write_4000(uint32_t addr, uint8_t data)
 
    switch (baddr)
    {
+      case 0x4016: // JOYSER0
+         if (data & 0x01)
+            STATUS.input[0].latch_data = (int32_t)(0xffff0000 | STATUS.input[0].input_data.w);
+         break;
+      case 0x4017: // JOYSER0
+         if (data & 0x01)
+            STATUS.input[1].latch_data = (int32_t)(0xffff0000 | STATUS.input[1].input_data.w);
+         break;
+
       case 0x4200: // NMITIMEN
          STATUS.regs.nmitimen = data;
          return;

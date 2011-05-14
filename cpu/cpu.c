@@ -117,8 +117,7 @@ static void cpu_check_irq(void)
 
       ssnes_poll_cb();
       // Joypad autopoll
-      if (STATUS.regs.nmitimen & 0x01)
-         input_autopoll();
+      input_autopoll(STATUS.regs.nmitimen & 0x01);
 
       PPU.stat78 ^= 0x80; // Interlace field.
    }
@@ -182,6 +181,10 @@ static void cpu_start_frame(void)
    PPU.vsync = false;
 }
 
+#ifdef SSNES_DEBUG
+unsigned ssnes_debug_instruction_count[256];
+#endif
+
 void ssnes_cpu_run_frame(void)
 {
    cpu_start_frame();
@@ -200,6 +203,7 @@ void ssnes_cpu_run_frame(void)
       {
          if (STATUS.pending_irq.reset)
          {
+            dprintf("RESET\n");
             iup_if(REGS.wai_quit, REGS.wai, true);
             STATUS.pending_irq.reset = false;
             cpu_op_interrupt_reset_e();
@@ -207,6 +211,7 @@ void ssnes_cpu_run_frame(void)
          }
          else if (STATUS.pending_irq.nmi)
          {
+            dprintf("NMI\n");
             iup_if(REGS.wai_quit, REGS.wai, true);
             STATUS.pending_irq.nmi = false;
 
@@ -217,6 +222,7 @@ void ssnes_cpu_run_frame(void)
          }
          else if (STATUS.pending_irq.irq)
          {
+            dprintf("IRQ\n");
             STATUS.irq.irq_flag = 0x80;
             iup_if(REGS.wai_quit, REGS.wai, true);
             STATUS.pending_irq.irq = false;
@@ -241,6 +247,10 @@ void ssnes_cpu_run_frame(void)
             print_registers();
 
             ssnes_cpu_op_table[opcode]();
+
+#ifdef SSNES_DEBUG
+            ssnes_debug_instruction_count[opcode]++;
+#endif
 
             //STATUS.cycles += ssnes_cpu_cycle_table[opcode];
             STATUS.cycles += 6;

@@ -24,4 +24,10 @@ void ssnes_deinit(void)
    ssnes_dsp_deinit();
 
    ssnes_pool_free();
+
+#ifdef SSNES_DEBUG
+   dprintf("OPCODE STATS:\n");
+   for (unsigned i = 0; i < 256; i++)
+      dprintf("Opcode $%02x: %u\n", i, ssnes_debug_instruction_count[i]);
+#endif
 }

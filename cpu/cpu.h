@@ -121,8 +121,10 @@ struct cpu_status
 
    struct
    {
+      word_reg_t input_data;
       word_reg_t data1;
       word_reg_t data2;
+      int32_t latch_data; // Rely on aritmethic right shift semantics to get 1's shifted in :)
    } input[2];
 };
 
@@ -143,5 +145,9 @@ struct cpu_state
    struct cpu_status status;
    struct cpu_alu_state alu;
 };
+
+#ifdef SSNES_DEBUG
+extern unsigned ssnes_debug_instruction_count[256];
+#endif
 
 #endif

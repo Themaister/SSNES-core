@@ -6,19 +6,19 @@
 // Straight ALU ops. Performed on A register.
 static inline void cpu_op_adc_b(uint8_t rd)
 {
-   int result;
+   uint16_t result;
 
    if (!REGS.p.d) 
    {
-      result = REGS.a.b.l + rd + REGS.p.c;
+      result = (uint16_t)REGS.a.b.l + (uint16_t)rd + (uint16_t)REGS.p.c;
    } 
    else 
    {
-      result = (REGS.a.b.l & 0x0f) + (rd & 0x0f) + (REGS.p.c << 0);
+      result = (REGS.a.b.l & 0x0f) + (rd & 0x0f) + ((uint16_t)REGS.p.c << 0);
       if (result > 0x09) 
          result += 0x06;
       REGS.p.c = result > 0x0f;
-      result = (REGS.a.b.l & 0xf0) + (rd & 0xf0) + (REGS.p.c << 4) + (result & 0x0f);
+      result = (REGS.a.b.l & 0xf0) + (rd & 0xf0) + ((uint16_t)REGS.p.c << 4) + (result & 0x0f);
    }
 
    REGS.p.v = ~(REGS.a.b.l ^ rd) & (REGS.a.b.l ^ result) & 0x80;
@@ -27,34 +27,34 @@ static inline void cpu_op_adc_b(uint8_t rd)
 
    REGS.p.c = result > 0xff;
    REGS.p.n = result & 0x80;
-   REGS.p.z = (uint8_t)result == 0;
+   REGS.p.z = (result & 0xff) == 0;
 
-   REGS.a.b.l = (uint8_t)result;
+   REGS.a.b.l = result & 0xff;
 }
 
 static inline void cpu_op_adc_w(uint16_t rd)
 {
-   int result;
+   uint32_t result;
 
    if (!REGS.p.d) 
    {
-      result = REGS.a.w + rd + REGS.p.c;
+      result = (uint32_t)REGS.a.w + (uint32_t)rd + (uint32_t)REGS.p.c;
    } 
    else 
    {
-      result = (REGS.a.w & 0x000f) + (rd & 0x000f) + (REGS.p.c <<  0);
+      result = (REGS.a.w & 0x000f) + (rd & 0x000f) + ((uint32_t)REGS.p.c <<  0);
       if (result > 0x0009) 
          result += 0x0006;
       REGS.p.c = result > 0x000f;
-      result = (REGS.a.w & 0x00f0) + (rd & 0x00f0) + (REGS.p.c <<  4) + (result & 0x000f);
+      result = (REGS.a.w & 0x00f0) + (rd & 0x00f0) + ((uint32_t)REGS.p.c <<  4) + (result & 0x000f);
       if (result > 0x009f) 
          result += 0x0060;
       REGS.p.c = result > 0x00ff;
-      result = (REGS.a.w & 0x0f00) + (rd & 0x0f00) + (REGS.p.c <<  8) + (result & 0x00ff);
+      result = (REGS.a.w & 0x0f00) + (rd & 0x0f00) + ((uint32_t)REGS.p.c <<  8) + (result & 0x00ff);
       if (result > 0x09ff) 
          result += 0x0600;
       REGS.p.c = result > 0x0fff;
-      result = (REGS.a.w & 0xf000) + (rd & 0xf000) + (REGS.p.c << 12) + (result & 0x0fff);
+      result = (REGS.a.w & 0xf000) + (rd & 0xf000) + ((uint32_t)REGS.p.c << 12) + (result & 0x0fff);
    }
 
    REGS.p.v = ~(REGS.a.w ^ rd) & (REGS.a.w ^ result) & 0x8000;
@@ -62,9 +62,9 @@ static inline void cpu_op_adc_w(uint16_t rd)
       result += 0x6000;
    REGS.p.c = result > 0xffff;
    REGS.p.n = result & 0x8000;
-   REGS.p.z = (uint16_t)result == 0;
+   REGS.p.z = (result & 0xffff) == 0;
 
-   REGS.a.w = (uint16_t)result;
+   REGS.a.w = result & 0xffff;
 }
 
 static inline void cpu_op_and_b(uint8_t rd)
@@ -107,7 +107,7 @@ static inline void cpu_op_bit_imm_w(uint16_t rd)
 
 static inline void cpu_op_cmp_b(uint8_t rd)
 {
-   int r = REGS.a.b.l - rd;
+   int r = (int)REGS.a.b.l - (int)rd;
    REGS.p.n = r & 0x80;
    REGS.p.z = (uint8_t)r == 0;
    REGS.p.c = r >= 0;
@@ -115,7 +115,7 @@ static inline void cpu_op_cmp_b(uint8_t rd)
 
 static inline void cpu_op_cmp_w(uint16_t rd)
 {
-   int r = REGS.a.w - rd;
+   int r = (int)REGS.a.w - (int)rd;
    REGS.p.n = r & 0x8000;
    REGS.p.z = (uint16_t)r == 0;
    REGS.p.c = r >= 0;
@@ -123,7 +123,7 @@ static inline void cpu_op_cmp_w(uint16_t rd)
 
 static inline void cpu_op_cpx_b(uint8_t rd)
 {
-   int r = REGS.x.b.l - rd;
+   int r = (int)REGS.x.b.l - (int)rd;
    REGS.p.n = r & 0x80;
    REGS.p.z = (uint8_t)r == 0;
    REGS.p.c = r >= 0;
@@ -131,7 +131,7 @@ static inline void cpu_op_cpx_b(uint8_t rd)
 
 static inline void cpu_op_cpx_w(uint16_t rd)
 {
-   int r = REGS.x.w - rd;
+   int r = (int)REGS.x.w - (int)rd;
    REGS.p.n = r & 0x8000;
    REGS.p.z = (uint16_t)r == 0;
    REGS.p.c = r >= 0;
@@ -139,7 +139,7 @@ static inline void cpu_op_cpx_w(uint16_t rd)
 
 static inline void cpu_op_cpy_b(uint8_t rd)
 {
-   int r = REGS.y.b.l - rd;
+   int r = (int)REGS.y.b.l - (int)rd;
    REGS.p.n = r & 0x80;
    REGS.p.z = (uint8_t)r == 0;
    REGS.p.c = r >= 0;
@@ -147,7 +147,7 @@ static inline void cpu_op_cpy_b(uint8_t rd)
 
 static inline void cpu_op_cpy_w(uint16_t rd)
 {
-   int r = REGS.y.w - rd;
+   int r = (int)REGS.y.w - (int)rd;
    REGS.p.n = r & 0x8000;
    REGS.p.z = (uint16_t)r == 0;
    REGS.p.c = r >= 0;
@@ -225,20 +225,20 @@ static inline void cpu_op_ora_w(uint16_t rd)
 
 static inline void cpu_op_sbc_b(uint8_t rd)
 {
-   int result;
+   uint16_t result;
    rd ^= 0xff;
 
    if (!REGS.p.d) 
    {
-      result = REGS.a.b.l + rd + REGS.p.c;
+      result = (uint16_t)REGS.a.b.l + (uint16_t)rd + (uint16_t)REGS.p.c;
    } 
    else 
    {
-      result = (REGS.a.b.l & 0x0f) + (rd & 0x0f) + (REGS.p.c << 0);
+      result = (REGS.a.b.l & 0x0f) + (rd & 0x0f) + ((uint16_t)REGS.p.c << 0);
       if (result <= 0x0f) 
          result -= 0x06;
       REGS.p.c = result > 0x0f;
-      result = (REGS.a.b.l & 0xf0) + (rd & 0xf0) + (REGS.p.c << 4) + (result & 0x0f);
+      result = (REGS.a.b.l & 0xf0) + (rd & 0xf0) + ((uint16_t)REGS.p.c << 4) + (result & 0x0f);
    }
 
    REGS.p.v = ~(REGS.a.b.l ^ rd) & (REGS.a.b.l ^ result) & 0x80;
@@ -246,38 +246,38 @@ static inline void cpu_op_sbc_b(uint8_t rd)
       result -= 0x60;
    REGS.p.c = result > 0xff;
    REGS.p.n = result & 0x80;
-   REGS.p.z = (uint8_t)result == 0;
+   REGS.p.z = (result & 0xff) == 0;
 
-   REGS.a.b.l = (uint8_t)result;
+   REGS.a.b.l = result & 0xff;
 }
 
 static inline void cpu_op_sbc_w(uint16_t rd)
 {
-   int result;
+   uint32_t result;
    rd ^= 0xffff;
 
    if (!REGS.p.d) 
    {
-      result = REGS.a.w + rd + REGS.p.c;
+      result = (uint32_t)REGS.a.w + (uint32_t)rd + (uint32_t)REGS.p.c;
    } 
    else 
    {
-      result = (REGS.a.w & 0x000f) + (rd & 0x000f) + (REGS.p.c <<  0);
+      result = (REGS.a.w & 0x000f) + (rd & 0x000f) + ((uint32_t)REGS.p.c <<  0);
       if (result <= 0x000f) 
          result -= 0x0006;
       REGS.p.c = result > 0x000f;
 
-      result = (REGS.a.w & 0x00f0) + (rd & 0x00f0) + (REGS.p.c <<  4) + (result & 0x000f);
+      result = (REGS.a.w & 0x00f0) + (rd & 0x00f0) + ((uint32_t)REGS.p.c <<  4) + (result & 0x000f);
       if (result <= 0x00ff) 
          result -= 0x0060;
       REGS.p.c = result > 0x00ff;
 
-      result = (REGS.a.w & 0x0f00) + (rd & 0x0f00) + (REGS.p.c <<  8) + (result & 0x00ff);
+      result = (REGS.a.w & 0x0f00) + (rd & 0x0f00) + ((uint32_t)REGS.p.c <<  8) + (result & 0x00ff);
       if (result <= 0x0fff) 
          result -= 0x0600;
       REGS.p.c = result > 0x0fff;
 
-      result = (REGS.a.w & 0xf000) + (rd & 0xf000) + (REGS.p.c << 12) + (result & 0x0fff);
+      result = (REGS.a.w & 0xf000) + (rd & 0xf000) + ((uint32_t)REGS.p.c << 12) + (result & 0x0fff);
    }
 
    REGS.p.v = ~(REGS.a.w ^ rd) & (REGS.a.w ^ result) & 0x8000;
@@ -285,9 +285,9 @@ static inline void cpu_op_sbc_w(uint16_t rd)
       result -= 0x6000;
    REGS.p.c = result > 0xffff;
    REGS.p.n = result & 0x8000;
-   REGS.p.z = (uint16_t)result == 0;
+   REGS.p.z = (result & 0xffff) == 0;
 
-   REGS.a.w = (uint16_t)result;
+   REGS.a.w = result & 0xffff;
 }
 
 // Modifying ALU ops. Data is read, modified and written back.

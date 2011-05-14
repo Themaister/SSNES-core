@@ -80,50 +80,97 @@ static inline void cpu_run_dma(void)
 static inline void hdma_do_transfer(unsigned i)
 {
    bool indirect = STATUS.dma_channels[i].ctrl & 0x40;
+   bool direction = STATUS.dma_channels[i].ctrl & 0x80;
+
    uint32_t base_addr = indirect ? (((uint32_t)STATUS.hdma_channels[i].indirect_bank << 16) | STATUS.dma_channels[i].size.w) : STATUS.hdma_channels[i].table_addr.w;
 
    uint16_t addr = 0x2100 | (uint16_t)STATUS.dma_channels[i].dest;
 
    unsigned mode = STATUS.dma_channels[i].ctrl & 7;
 
-   switch (mode)
+   if (!direction) // CPU -> PPU transfer.
    {
-      case 0: // p
-         ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 0));
-         break;
+      switch (mode)
+      {
+         case 0: // p
+            ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 0));
+            break;
 
-      case 1: // p, p+1
-         ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 0));
-         ssnes_bus_write_2000(addr + 1, cpu_readl(base_addr + 1));
-         break;
+         case 1: // p, p+1
+            ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 0));
+            ssnes_bus_write_2000(addr + 1, cpu_readl(base_addr + 1));
+            break;
 
-      case 2: // p, p
-      case 6:
-         ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 0));
-         ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 1));
-         break;
+         case 2: // p, p
+         case 6:
+            ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 0));
+            ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 1));
+            break;
 
-      case 3: // p, p, p+1, p+1
-      case 7:
-         ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 0));
-         ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 1));
-         ssnes_bus_write_2000(addr + 1, cpu_readl(base_addr + 2));
-         ssnes_bus_write_2000(addr + 1, cpu_readl(base_addr + 3));
-         break;
+         case 3: // p, p, p+1, p+1
+         case 7:
+            ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 0));
+            ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 1));
+            ssnes_bus_write_2000(addr + 1, cpu_readl(base_addr + 2));
+            ssnes_bus_write_2000(addr + 1, cpu_readl(base_addr + 3));
+            break;
 
-      case 4: // p, p+1, p+2, p+3
-         ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 0));
-         ssnes_bus_write_2000(addr + 1, cpu_readl(base_addr + 1));
-         ssnes_bus_write_2000(addr + 2, cpu_readl(base_addr + 2));
-         ssnes_bus_write_2000(addr + 3, cpu_readl(base_addr + 3));
-         break;
+         case 4: // p, p+1, p+2, p+3
+            ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 0));
+            ssnes_bus_write_2000(addr + 1, cpu_readl(base_addr + 1));
+            ssnes_bus_write_2000(addr + 2, cpu_readl(base_addr + 2));
+            ssnes_bus_write_2000(addr + 3, cpu_readl(base_addr + 3));
+            break;
 
-      case 5: // p, p+1, p, p+1
-         ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 0));
-         ssnes_bus_write_2000(addr + 1, cpu_readl(base_addr + 1));
-         ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 2));
-         ssnes_bus_write_2000(addr + 1, cpu_readl(base_addr + 3));
-         break;
+         case 5: // p, p+1, p, p+1
+            ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 0));
+            ssnes_bus_write_2000(addr + 1, cpu_readl(base_addr + 1));
+            ssnes_bus_write_2000(addr + 0, cpu_readl(base_addr + 2));
+            ssnes_bus_write_2000(addr + 1, cpu_readl(base_addr + 3));
+            break;
+      }
+   }
+   else // PPU -> CPU transfer.
+   {
+      switch (mode)
+      {
+         case 0: // p
+            cpu_writel(base_addr + 0, ssnes_bus_read_2000(addr + 0));
+            break;
+
+         case 1: // p, p+1
+            cpu_writel(base_addr + 0, ssnes_bus_read_2000(addr + 0));
+            cpu_writel(base_addr + 1, ssnes_bus_read_2000(addr + 1));
+            break;
+
+         case 2: // p, p
+         case 6:
+            cpu_writel(base_addr + 0, ssnes_bus_read_2000(addr + 0));
+            cpu_writel(base_addr + 1, ssnes_bus_read_2000(addr + 0));
+            break;
+
+         case 3: // p, p, p+1, p+1
+         case 7:
+            cpu_writel(base_addr + 0, ssnes_bus_read_2000(addr + 0));
+            cpu_writel(base_addr + 1, ssnes_bus_read_2000(addr + 0));
+            cpu_writel(base_addr + 2, ssnes_bus_read_2000(addr + 1));
+            cpu_writel(base_addr + 3, ssnes_bus_read_2000(addr + 1));
+            break;
+
+         case 4: // p, p+1, p+2, p+3
+            cpu_writel(base_addr + 0, ssnes_bus_read_2000(addr + 0));
+            cpu_writel(base_addr + 1, ssnes_bus_read_2000(addr + 1));
+            cpu_writel(base_addr + 2, ssnes_bus_read_2000(addr + 2));
+            cpu_writel(base_addr + 3, ssnes_bus_read_2000(addr + 3));
+            break;
+
+         case 5: // p, p+1, p, p+1
+            cpu_writel(base_addr + 0, ssnes_bus_read_2000(addr + 0));
+            cpu_writel(base_addr + 1, ssnes_bus_read_2000(addr + 1));
+            cpu_writel(base_addr + 2, ssnes_bus_read_2000(addr + 0));
+            cpu_writel(base_addr + 3, ssnes_bus_read_2000(addr + 1));
+            break;
+      }
    }
 
    static const unsigned table_inc[8] = { 1, 2, 2, 4, 4, 4, 2, 4 };
