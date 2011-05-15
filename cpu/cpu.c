@@ -253,7 +253,8 @@ void ssnes_cpu_run_frame(void)
 #endif
 
             //STATUS.cycles += ssnes_cpu_cycle_table[opcode];
-            STATUS.cycles += 6;
+            //STATUS.cycles += 6;
+            STATUS.cycles += 0;
          }
       }
 

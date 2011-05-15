@@ -19,6 +19,9 @@ lib: $(TARGET)
 %.o: %.c $(HEADERS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(INCDIRS)
 
+%.o: %.cpp $(HEADERS)
+	$(CXX) -c -o $@ $< $(CXXFLAGS) $(INCDIRS)
+
 $(TARGET): $(OBJ)
 	$(CC) -shared -o $@ $(OBJ) $(LDFLAGS)
 

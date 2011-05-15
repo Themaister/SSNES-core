@@ -123,7 +123,8 @@ unsigned ssnes_smp_run(unsigned cycles)
       print_registers();
       ssnes_smp_optable[opcode]();
 
-      unsigned cycles = ssnes_smp_cycle_table[opcode];
+      //unsigned cycles = ssnes_smp_cycle_table[opcode];
+      unsigned cycles = 2;
       ran_cycles += cycles;
       smp_update_timers(cycles);
    }
