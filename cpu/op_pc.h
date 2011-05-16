@@ -9,6 +9,7 @@
 #define CPU_OP_BRANCH_REG(reg) \
    static inline void CPU_OP_BRANCH_REG_DECL(reg) (void) \
    { \
+      CPU_IO_STEP(1); \
       int8_t rel = cpu_read_pc(); \
       uint16_t addr = REGS.pc.w.l; \
       REGS.pc.w.l = isel_if(REGS.p.reg, addr + rel, addr); \
@@ -18,6 +19,7 @@
 #define CPU_OP_BRANCH_REG_N(reg) \
    static inline void CPU_OP_BRANCH_REG_N_DECL(reg) (void) \
    { \
+      CPU_IO_STEP(1); \
       int8_t rel = cpu_read_pc(); \
       uint16_t addr = REGS.pc.w.l; \
       REGS.pc.w.l = isel_if(REGS.p.reg, addr, addr + rel); \
@@ -34,12 +36,14 @@ CPU_OP_BRANCH_REG_N(c) // bcc
 
 static inline void cpu_op_bra(void) 
 {
+   CPU_IO_STEP(1);
    int8_t rel = cpu_read_pc();
    REGS.pc.w.l += rel;
 }
 
 static inline void cpu_op_brl(void) 
 {
+   CPU_IO_STEP(1);
    int16_t rel = cpu_readw_pc();
    REGS.pc.w.l += rel;
 }
@@ -67,6 +71,7 @@ static inline void cpu_op_jmp_iaddr(void)
 // This seems to read indirect data from program bank, while the others do not? :(
 static inline void cpu_op_jmp_iaddrx(void) 
 {
+   CPU_IO_STEP(1);
    uint16_t addr = cpu_readw_pc() + REGS.x.w;
    long_reg_t src;
    src.w.h = REGS.pc.w.h;
@@ -78,6 +83,7 @@ static inline void cpu_op_jmp_iaddrx(void)
 
 static inline void cpu_op_jmp_iladdr(void) 
 {
+   CPU_IO_STEP(1);
    uint16_t addr = cpu_readw_pc();
    long_reg_t dst;
    dst.b.ll = cpu_readl(addr++);
@@ -88,6 +94,7 @@ static inline void cpu_op_jmp_iladdr(void)
 
 static inline void cpu_op_jsr_addr(void) 
 {
+   CPU_IO_STEP(1);
    uint16_t addr = cpu_readw_pc();
    long_reg_t pc = REGS.pc;
    pc.w.l--;
@@ -99,6 +106,7 @@ static inline void cpu_op_jsr_addr(void)
 
 static inline void cpu_op_jsr_long_n(void) 
 {
+   CPU_IO_STEP(1);
    uint32_t addr = cpu_readl_pc();
    long_reg_t pc = REGS.pc;
    pc.w.l--;
@@ -116,6 +124,7 @@ static inline void cpu_op_jsr_long_e(void)
 
 static inline void cpu_op_jsr_iaddrx_n(void) 
 {
+   CPU_IO_STEP(1);
    uint16_t addr = cpu_readw_pc() + REGS.x.w;
    long_reg_t pc = REGS.pc;
    pc.w.l--;
@@ -142,6 +151,7 @@ static inline void cpu_op_rti_e(void)
 
 static inline void cpu_op_rti_n(void) 
 {
+   CPU_IO_STEP(2);
    cpu_set_p(cpu_stack_pull());
    REGS.x.b.h = isel_if(REGS.p.x, 0x00, REGS.x.b.h);
    REGS.y.b.h = isel_if(REGS.p.x, 0x00, REGS.y.b.h);
@@ -153,6 +163,7 @@ static inline void cpu_op_rti_n(void)
 
 static inline void cpu_op_rts(void) 
 {
+   CPU_IO_STEP(3);
    REGS.pc.b.ll = cpu_stack_pull();
    REGS.pc.b.lh = cpu_stack_pull();
    REGS.pc.w.l++;
@@ -160,6 +171,7 @@ static inline void cpu_op_rts(void)
 
 static inline void cpu_op_rtl_n(void) 
 {
+   CPU_IO_STEP(2);
    REGS.pc.b.ll = cpu_stack_pull();
    REGS.pc.b.lh = cpu_stack_pull();
    REGS.pc.b.hl = cpu_stack_pull();

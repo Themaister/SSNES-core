@@ -72,7 +72,7 @@ static void smp_write_regs(uint16_t addr, uint8_t data, uint8_t mask)
 
       case 0xf3:
          SMP.dsp_data ^= (SMP.dsp_data ^ data) & mask;
-         ssnes_dsp_write(SMP.dsp_addr, SMP.dsp_data);
+         SMP.dsp_write = true;
          return;
 
       case 0xf4:
@@ -122,6 +122,7 @@ static uint8_t smp_read_regs(uint16_t addr)
       case 0xf2:
          return SMP.dsp_addr;
       case 0xf3:
+         // We don't let there be good sync for reads yet :/
          return ssnes_dsp_read(SMP.dsp_addr);
 
       case 0xf4:

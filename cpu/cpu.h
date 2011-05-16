@@ -10,6 +10,8 @@ void ssnes_cpu_deinit(void);
 void ssnes_cpu_run_frame(void);
 void ssnes_cpu_reset(void);
 
+#define CPU_FREQUENCY (21477272)
+
 struct cpu_regs
 {
    // GPP and index regs
@@ -49,6 +51,8 @@ struct hdma_channel
    uint8_t line_counter;
    uint8_t indirect_bank;
 };
+
+#define CPU_IO_STEP(cycle) STATUS.cycles += (cycle) * 6
 
 struct cpu_status
 {

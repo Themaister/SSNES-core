@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include "system/util.h"
 
+#define SMP_FREQUENCY (1024000)
+
 struct smp_state
 {
    uint16_t pc;
@@ -40,6 +42,10 @@ struct smp_state
    uint8_t t0_out;
    uint8_t t1_out;
    uint8_t t2_out;
+
+   unsigned dsp_cycles;
+   bool dsp_write;
+   bool dsp_read; // Current unused as we don't sync up for DSP reads.
 };
 
 unsigned ssnes_smp_run(unsigned cycles);

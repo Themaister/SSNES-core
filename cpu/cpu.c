@@ -17,12 +17,20 @@ void ssnes_cpu_init(void)
 void ssnes_cpu_deinit(void)
 {}
 
+// Depends on regions, and probably not inaccurate anyways. :)
+#define CYCLES_PER_SCANLINE (1364)
+#define SCANLINES_PER_FRAME (262)
+#define CYCLES_PER_FRAME (CYCLES_PER_SCANLINE * SCANLINES_PER_FRAME)
+
 static void cpu_init_registers(void)
 {
    REGS.e = true;
    cpu_set_p(0x30);
    REGS.sp.w = 0x100;
    STATUS.pending_irq.reset = true;
+
+   STATUS.cycles = CYCLES_PER_FRAME + 100;
+   STATUS.smp_cycles = CYCLES_PER_FRAME + 100;
 }
 
 void ssnes_cpu_reset(void)
@@ -32,10 +40,6 @@ void ssnes_cpu_reset(void)
    cpu_init_registers();
 }
 
-// Depends on regions, and probably not inaccurate anyways. :)
-#define CYCLES_PER_SCANLINE (1364)
-#define SCANLINES_PER_FRAME (262)
-#define CYCLES_PER_FRAME (CYCLES_PER_SCANLINE * SCANLINES_PER_FRAME)
 
 static void cpu_check_cycles(void)
 {
@@ -45,14 +49,15 @@ static void cpu_check_cycles(void)
       STATUS.ppu.scanline_ready = false;
    }
 
-   // Check if we have to jump to SMP/DSP or whatever.
+   // Check if we have to jump to SMP or whatever.
    if (STATUS.smp_state && STATUS.cycles > STATUS.smp_cycles)
    {
       STATUS.smp_cycles += ssnes_smp_run(STATUS.cycles - STATUS.smp_cycles);
-      STATUS.smp_state = false;
    }
    else if ((int)STATUS.cycles - (int)STATUS.smp_cycles > 100)
       STATUS.smp_cycles += ssnes_smp_run(STATUS.cycles - STATUS.smp_cycles);
+
+   STATUS.smp_state = false;
 
    // Check HDMA
    if (STATUS.hdma_run && STATUS.ppu.hcount > 0x116 * 4)
@@ -251,10 +256,6 @@ void ssnes_cpu_run_frame(void)
 #ifdef SSNES_DEBUG
             ssnes_debug_instruction_count[opcode]++;
 #endif
-
-            //STATUS.cycles += ssnes_cpu_cycle_table[opcode];
-            //STATUS.cycles += 6;
-            STATUS.cycles += 0;
          }
       }
 

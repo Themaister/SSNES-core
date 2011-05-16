@@ -61,6 +61,7 @@ CPU_OP_RMW_REG_W(a, ror);
 #define CPU_OP_RMW_ADDR_B(op) \
    static inline void CPU_OP_RMW_ADDR_B_DECL(op) (void) \
    { \
+      CPU_IO_STEP(1); \
       uint16_t addr = cpu_readw_pc(); \
       uint8_t res = cpu_op_##op##_b (cpu_read(addr)); \
       cpu_write(addr, res); \
@@ -70,6 +71,7 @@ CPU_OP_RMW_REG_W(a, ror);
 #define CPU_OP_RMW_ADDR_W(op) \
    static inline void CPU_OP_RMW_ADDR_W_DECL(op) (void) \
    { \
+      CPU_IO_STEP(1); \
       uint16_t addr = cpu_readw_pc(); \
       uint16_t res = cpu_op_##op##_w (cpu_readw(addr)); \
       cpu_writew(addr, res); \
@@ -86,6 +88,7 @@ CPU_OP_RMW_ADDR_W(trb)
 #define CPU_OP_RMW_ADDRX_B(op) \
    static inline void CPU_OP_RMW_ADDRX_B_DECL(op) (void) \
    { \
+      CPU_IO_STEP(1); \
       uint32_t addr = (uint32_t)cpu_readw_pc() + (uint32_t)REGS.x.w; \
       uint8_t res = cpu_op_##op##_b (cpu_read(addr)); \
       cpu_write(addr, res); \
@@ -96,6 +99,7 @@ CPU_OP_RMW_ADDR_W(trb)
 #define CPU_OP_RMW_ADDRX_W(op) \
    static inline void CPU_OP_RMW_ADDRX_W_DECL(op) (void) \
    { \
+      CPU_IO_STEP(1); \
       uint32_t addr = (uint32_t)cpu_readw_pc() + (uint32_t)REGS.x.w; \
       uint16_t res = cpu_op_##op##_w (cpu_readw(addr)); \
       cpu_writew(addr, res); \
@@ -108,6 +112,7 @@ DECL_GROUP_TWO(ADDRX)
 #define CPU_OP_RMW_DP_B(op) \
    static inline void CPU_OP_RMW_DP_B_DECL(op) (void) \
    { \
+      CPU_IO_STEP(1); \
       uint8_t dp = cpu_read_pc(); \
       uint8_t res = cpu_op_##op##_b (cpu_read_dp(dp)); \
       cpu_write_dp(dp, res); \
@@ -118,6 +123,7 @@ DECL_GROUP_TWO(ADDRX)
 #define CPU_OP_RMW_DP_W(op) \
    static inline void CPU_OP_RMW_DP_W_DECL(op) (void) \
    { \
+      CPU_IO_STEP(1); \
       uint8_t dp = cpu_read_pc(); \
       uint16_t res = cpu_op_##op##_w (cpu_readw_dp(dp)); \
       cpu_writew_dp(dp, res); \
@@ -134,6 +140,7 @@ CPU_OP_RMW_DP_W(trb)
 #define CPU_OP_RMW_DPX_B(op) \
    static inline void CPU_OP_RMW_DPX_B_DECL(op) (void) \
    { \
+      CPU_IO_STEP(1); \
       uint16_t dp = (uint16_t)cpu_read_pc() + REGS.x.w; \
       uint8_t res = cpu_op_##op##_b (cpu_read_dp(dp)); \
       cpu_write_dp(dp, res); \
@@ -143,6 +150,7 @@ CPU_OP_RMW_DP_W(trb)
 #define CPU_OP_RMW_DPX_W(op) \
    static inline void CPU_OP_RMW_DPX_W_DECL(op) (void) \
    { \
+      CPU_IO_STEP(1); \
       uint16_t dp = (uint16_t)cpu_read_pc() + REGS.x.w; \
       uint16_t res = cpu_op_##op##_w (cpu_readw_dp(dp)); \
       cpu_writew_dp(dp, res); \

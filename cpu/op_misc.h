@@ -5,6 +5,7 @@
 
 static inline void cpu_op_rep(void)
 {
+   CPU_IO_STEP(1);
    uint8_t mask = cpu_read_pc();
    uint8_t old_mask = cpu_get_p();
    cpu_set_p(old_mask & (~mask));
@@ -15,6 +16,7 @@ static inline void cpu_op_rep(void)
 
 static inline void cpu_op_sep(void)
 {
+   CPU_IO_STEP(1);
    uint8_t mask = cpu_read_pc();
    uint8_t old_mask = cpu_get_p();
    cpu_set_p(old_mask | mask);
@@ -24,13 +26,19 @@ static inline void cpu_op_sep(void)
 }
 
 static inline void cpu_op_nop(void)
-{}
+{
+   CPU_IO_STEP(1);
+}
 
 static inline void cpu_op_wdm(void)
-{}
+{
+   cpu_read_pc();
+}
 
 static inline void cpu_op_xba(void)
 {
+   CPU_IO_STEP(2);
+
    word_reg_t a = REGS.a;
    REGS.a.b.h = a.b.l;
    uint8_t lo = a.b.h;
@@ -42,6 +50,7 @@ static inline void cpu_op_xba(void)
 
 static inline void cpu_op_xce(void)
 {
+   CPU_IO_STEP(1);
    bool carry = REGS.p.c;
    REGS.p.c = REGS.e;
    REGS.e = carry;
@@ -64,11 +73,13 @@ static inline void cpu_op_xce(void)
 
 static inline void cpu_op_tcs_e(void)
 {
+   CPU_IO_STEP(1);
    REGS.sp.b.l = REGS.a.b.l;
 }
 
 static inline void cpu_op_tcs_n(void)
 {
+   CPU_IO_STEP(1);
    REGS.sp.w = REGS.a.w;
 }
 
@@ -82,6 +93,7 @@ static inline void cpu_op_tsc(void)
 
 static inline void cpu_op_tsx_b(void)
 {
+   CPU_IO_STEP(1);
    REGS.x.b.l = REGS.sp.b.l;
    REGS.p.n = (REGS.x.b.l & 0x80);
    REGS.p.z = (REGS.x.b.l == 0);
@@ -89,6 +101,7 @@ static inline void cpu_op_tsx_b(void)
 
 static inline void cpu_op_tsx_w(void)
 {
+   CPU_IO_STEP(1);
    REGS.x.w = REGS.sp.w;
    REGS.p.n = (REGS.x.w & 0x8000);
    REGS.p.z = (REGS.x.w == 0);
@@ -96,6 +109,7 @@ static inline void cpu_op_tsx_w(void)
 
 static inline void cpu_op_tcd(void)
 {
+   CPU_IO_STEP(1);
    uint32_t trans = REGS.a.w;
    REGS.dp = trans;
    REGS.p.n = trans & 0x8000;
@@ -282,60 +296,71 @@ static inline void cpu_op_txy_w(void)
 
 static inline void cpu_op_pha_b(void)
 {
+   CPU_IO_STEP(1);
    cpu_stack_push(REGS.a.b.l);
 }
 
 static inline void cpu_op_pha_w(void)
 {
+   CPU_IO_STEP(1);
    cpu_stack_push(REGS.a.b.h);
    cpu_stack_push(REGS.a.b.l);
 }
 
 static inline void cpu_op_phx_b(void)
 {
+   CPU_IO_STEP(1);
    cpu_stack_push(REGS.a.b.l);
 }
 
 static inline void cpu_op_phx_w(void)
 {
+   CPU_IO_STEP(1);
    cpu_stack_push(REGS.x.b.h);
    cpu_stack_push(REGS.x.b.l);
 }
 
 static inline void cpu_op_phy_b(void)
 {
+   CPU_IO_STEP(1);
    cpu_stack_push(REGS.y.b.l);
 }
 
 static inline void cpu_op_phy_w(void)
 {
+   CPU_IO_STEP(1);
    cpu_stack_push(REGS.y.b.h);
    cpu_stack_push(REGS.y.b.l);
 }
 
 static inline void cpu_op_phb(void)
 {
+   CPU_IO_STEP(1);
    cpu_stack_push(REGS.db >> 16);
 }
 
 static inline void cpu_op_phd(void)
 {
+   CPU_IO_STEP(1);
    cpu_stack_push(REGS.dp >> 8);
    cpu_stack_push(REGS.dp & 0xFF);
 }
 
 static inline void cpu_op_phk(void)
 {
+   CPU_IO_STEP(1);
    cpu_stack_push(REGS.pc.b.hl);
 }
 
 static inline void cpu_op_php(void)
 {
+   CPU_IO_STEP(1);
    cpu_stack_push(cpu_get_p());
 }
 
 static inline void cpu_op_pla_b(void)
 {
+   CPU_IO_STEP(2);
    uint8_t val = cpu_stack_pull();
    REGS.a.b.l = val;
    REGS.p.z = (val == 0);
@@ -344,6 +369,7 @@ static inline void cpu_op_pla_b(void)
 
 static inline void cpu_op_pla_w(void)
 {
+   CPU_IO_STEP(2);
    word_reg_t val;
    val.b.l = cpu_stack_pull();
    val.b.h = cpu_stack_pull();
@@ -355,6 +381,7 @@ static inline void cpu_op_pla_w(void)
 
 static inline void cpu_op_plx_b(void)
 {
+   CPU_IO_STEP(2);
    uint8_t val = cpu_stack_pull();
    REGS.x.b.l = val;
    REGS.p.z = (val == 0);
@@ -363,6 +390,7 @@ static inline void cpu_op_plx_b(void)
 
 static inline void cpu_op_plx_w(void)
 {
+   CPU_IO_STEP(2);
    word_reg_t val;
    val.b.l = cpu_stack_pull();
    val.b.h = cpu_stack_pull();
@@ -374,6 +402,7 @@ static inline void cpu_op_plx_w(void)
 
 static inline void cpu_op_ply_b(void)
 {
+   CPU_IO_STEP(2);
    uint8_t val = cpu_stack_pull();
    REGS.y.b.l = val;
    REGS.p.z = (val == 0);
@@ -382,6 +411,7 @@ static inline void cpu_op_ply_b(void)
 
 static inline void cpu_op_ply_w(void)
 {
+   CPU_IO_STEP(2);
    word_reg_t val;
    val.b.l = cpu_stack_pull();
    val.b.h = cpu_stack_pull();
@@ -393,6 +423,7 @@ static inline void cpu_op_ply_w(void)
 
 static inline void cpu_op_plb(void)
 {
+   CPU_IO_STEP(2);
    uint32_t val = cpu_stack_pull();
    REGS.db = val << 16;
 
@@ -402,6 +433,7 @@ static inline void cpu_op_plb(void)
 
 static inline void cpu_op_pld(void)
 {
+   CPU_IO_STEP(2);
    word_reg_t w;
    w.b.l = cpu_stack_pull();
    w.b.h = cpu_stack_pull();
@@ -413,6 +445,7 @@ static inline void cpu_op_pld(void)
 
 static inline void cpu_op_plp_e(void)
 {
+   CPU_IO_STEP(2);
    cpu_set_p(cpu_stack_pull() | 0x30);
    REGS.x.b.h = isel_if(REGS.p.x, 0x00, REGS.x.b.h);
    REGS.y.b.h = isel_if(REGS.p.x, 0x00, REGS.y.b.h);
@@ -420,6 +453,7 @@ static inline void cpu_op_plp_e(void)
 
 static inline void cpu_op_plp_n(void)
 {
+   CPU_IO_STEP(2);
    cpu_set_p(cpu_stack_pull());
    REGS.x.b.h = isel_if(REGS.p.x, 0x00, REGS.x.b.h);
    REGS.y.b.h = isel_if(REGS.p.x, 0x00, REGS.y.b.h);
@@ -435,6 +469,7 @@ static inline void cpu_op_pea(void)
 
 static inline void cpu_op_pei_n(void)
 {
+   CPU_IO_STEP(1);
    uint8_t dp = cpu_read_pc();
    word_reg_t addr;
    addr.w = cpu_readw_dp(dp);
@@ -450,6 +485,7 @@ static inline void cpu_op_pei_e(void)
 
 static inline void cpu_op_per_n(void)
 {
+   CPU_IO_STEP(1);
    uint16_t val = cpu_readw_pc();
    long_reg_t rel = REGS.pc;
    rel.w.l += val;
@@ -459,12 +495,14 @@ static inline void cpu_op_per_n(void)
 
 static inline void cpu_op_per_e(void)
 {
+   CPU_IO_STEP(1);
    cpu_op_per_n();
    REGS.sp.b.h = 0x01;
 }
 
 static inline void cpu_op_wai(void)
 {
+   CPU_IO_STEP(1);
    if (!REGS.wai_quit)
    {
       REGS.wai = true;
@@ -479,11 +517,13 @@ static inline void cpu_op_wai(void)
 
 static inline void cpu_op_stp(void)
 {
+   CPU_IO_STEP(1);
    REGS.pc.l--;
 }
 
 static inline void cpu_op_mvn_b(void)
 {
+   CPU_IO_STEP(2);
    uint32_t db = ((uint32_t)cpu_read_pc()) << 16;
    uint32_t sb = ((uint32_t)cpu_read_pc()) << 16;
    REGS.db = db;
@@ -496,6 +536,7 @@ static inline void cpu_op_mvn_b(void)
 
 static inline void cpu_op_mvp_b(void)
 {
+   CPU_IO_STEP(2);
    uint32_t db = ((uint32_t)cpu_read_pc()) << 16;
    uint32_t sb = ((uint32_t)cpu_read_pc()) << 16;
    REGS.db = db;
@@ -508,6 +549,7 @@ static inline void cpu_op_mvp_b(void)
 
 static inline void cpu_op_mvn_w(void)
 {
+   CPU_IO_STEP(2);
    uint32_t db = ((uint32_t)cpu_read_pc()) << 16;
    uint32_t sb = ((uint32_t)cpu_read_pc()) << 16;
    REGS.db = db;
@@ -520,6 +562,7 @@ static inline void cpu_op_mvn_w(void)
 
 static inline void cpu_op_mvp_w(void)
 {
+   CPU_IO_STEP(2);
    uint32_t db = ((uint32_t)cpu_read_pc()) << 16;
    uint32_t sb = ((uint32_t)cpu_read_pc()) << 16;
    REGS.db = db;

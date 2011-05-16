@@ -110,10 +110,28 @@ static inline void smp_update_timers(unsigned cycles)
    }
 }
 
+static inline void check_dsp(unsigned cycles)
+{
+   SMP.dsp_cycles += cycles;
+
+   if (SMP.dsp_write)
+   {
+      ssnes_dsp_write(SMP.dsp_addr, SMP.dsp_data);
+      ssnes_dsp_run(SMP.dsp_cycles);
+      SMP.dsp_write = false;
+      SMP.dsp_cycles = 0;
+   }
+   else if (SMP.dsp_cycles > 1000) // 1 ms maximal difference on reads.
+   {
+      ssnes_dsp_run(SMP.dsp_cycles);
+      SMP.dsp_cycles = 0;
+   }
+}
+
 unsigned ssnes_smp_run(unsigned cycles)
 {
    // We try to scale master cycles from CPU down to SMP cycles (1.024MHz).
-   cycles /= 20;
+   cycles /= 21;
    cycles++;
    unsigned ran_cycles = 0;
    while (ran_cycles < cycles)
@@ -124,14 +142,11 @@ unsigned ssnes_smp_run(unsigned cycles)
       print_registers();
       ssnes_smp_optable[opcode]();
 
-      //unsigned cycles = ssnes_smp_cycle_table[opcode];
-      unsigned cycles = 2;
+      unsigned cycles = ssnes_smp_cycle_table[opcode];
       ran_cycles += cycles;
       smp_update_timers(cycles);
-
-      // Probably stupid to run it so often, but for testing ... ;P
-      ssnes_dsp_run(cycles);
+      check_dsp(cycles);
    }
 
-   return ran_cycles * 20;
+   return ran_cycles * 21;
 }

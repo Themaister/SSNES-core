@@ -17,20 +17,14 @@ extern const cpu_op_t ssnes_cpu_op_table_Mx[256];
 extern const cpu_op_t ssnes_cpu_op_table_MX[256];
 extern const cpu_op_t *ssnes_cpu_op_table_index[];
 
-extern const uint8_t ssnes_cpu_cycle_table_EMUL[256];
-extern const uint8_t ssnes_cpu_cycle_table_mx[256];
-extern const uint8_t ssnes_cpu_cycle_table_mX[256];
-extern const uint8_t ssnes_cpu_cycle_table_Mx[256];
-extern const uint8_t ssnes_cpu_cycle_table_MX[256];
-extern const uint8_t* ssnes_cpu_cycle_table_index[];
-
+#ifdef SSNES_DEBUG
 extern const char* ssnes_cpu_opcode_names[];
+#endif
 
 static inline void cpu_update_table(void)
 {
    unsigned reg_val = (REGS.e << 2) | (REGS.p.m << 1) | REGS.p.x;
    ssnes_cpu_op_table = ssnes_cpu_op_table_index[reg_val];
-   ssnes_cpu_cycle_table = ssnes_cpu_cycle_table_index[reg_val];
 }
 
 #endif

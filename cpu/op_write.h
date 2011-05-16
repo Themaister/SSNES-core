@@ -179,6 +179,7 @@ static inline void cpu_op_sta_ildp_w(void)
 // sta (dp, x)
 static inline void cpu_op_sta_idpx_b(void)
 {
+   CPU_IO_STEP(1);
    uint16_t dp = cpu_read_pc();
    uint16_t addr = cpu_readw_dp((dp + REGS.x.w) & 0xffff);
    cpu_write(addr, REGS.a.b.l);
@@ -186,6 +187,7 @@ static inline void cpu_op_sta_idpx_b(void)
 
 static inline void cpu_op_sta_idpx_w(void)
 {
+   CPU_IO_STEP(1);
    uint16_t dp = cpu_read_pc();
    uint16_t addr = cpu_readw_dp((dp + REGS.x.w) & 0xffff);
    cpu_writew(addr, REGS.a.w);
@@ -194,6 +196,7 @@ static inline void cpu_op_sta_idpx_w(void)
 // sta (dp), y
 static inline void cpu_op_sta_idpy_b(void)
 {
+   CPU_IO_STEP(1);
    uint16_t dp = cpu_read_pc();
    uint32_t addr = (uint32_t)cpu_readw_dp(dp) + (uint32_t)REGS.y.w;
    cpu_write(addr, REGS.a.b.l);
@@ -201,6 +204,7 @@ static inline void cpu_op_sta_idpy_b(void)
 
 static inline void cpu_op_sta_idpy_w(void)
 {
+   CPU_IO_STEP(1);
    uint16_t dp = cpu_read_pc();
    uint32_t addr = (uint32_t)cpu_readw_dp(dp) + (uint32_t)REGS.y.w;
    cpu_writew(addr, REGS.a.w);
@@ -226,12 +230,14 @@ static inline void cpu_op_sta_ildpy_w(void)
 // sta 13, s
 static inline void cpu_op_sta_sr_b(void)
 {
+   CPU_IO_STEP(1);
    uint8_t sr = cpu_read_pc();
    cpu_write_sp(sr, REGS.a.b.l);
 }
 
 static inline void cpu_op_sta_sr_w(void)
 {
+   CPU_IO_STEP(1);
    uint8_t sr = cpu_read_pc();
    cpu_writew_sp(sr, REGS.a.w);
 }
@@ -240,6 +246,7 @@ static inline void cpu_op_sta_sr_w(void)
 // sta (13, s), y
 static inline void cpu_op_sta_isry_b(void)
 {
+   CPU_IO_STEP(1);
    uint8_t sr = cpu_read_pc();
    uint32_t addr = (uint32_t)cpu_readw_sp(sr) + (uint32_t)REGS.y.w;
    cpu_write(addr, REGS.a.b.l);
@@ -247,6 +254,7 @@ static inline void cpu_op_sta_isry_b(void)
 
 static inline void cpu_op_sta_isry_w(void)
 {
+   CPU_IO_STEP(1);
    uint8_t sr = cpu_read_pc();
    uint32_t addr = (uint32_t)cpu_readw_sp(sr) + (uint32_t)REGS.y.w;
    cpu_writew(addr, REGS.a.w);
