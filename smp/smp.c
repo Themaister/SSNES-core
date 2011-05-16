@@ -1,4 +1,5 @@
 #include "smp.h"
+#include "dsp/dsp.h"
 #include <string.h>
 #include <stdint.h>
 #include "system/state.h"
@@ -112,7 +113,7 @@ static inline void smp_update_timers(unsigned cycles)
 unsigned ssnes_smp_run(unsigned cycles)
 {
    // We try to scale master cycles from CPU down to SMP cycles (1.024MHz).
-   cycles /= 21;
+   cycles /= 20;
    cycles++;
    unsigned ran_cycles = 0;
    while (ran_cycles < cycles)
@@ -127,7 +128,10 @@ unsigned ssnes_smp_run(unsigned cycles)
       unsigned cycles = 2;
       ran_cycles += cycles;
       smp_update_timers(cycles);
+
+      // Probably stupid to run it so often, but for testing ... ;P
+      ssnes_dsp_run(cycles);
    }
 
-   return ran_cycles * 21;
+   return ran_cycles * 20;
 }

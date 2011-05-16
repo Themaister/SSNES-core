@@ -2,6 +2,7 @@
 #include "system/state.h"
 #include "system/macros.h"
 #include "iplrom.h"
+#include "dsp/dsp.h"
 
 #include <stdio.h>
 
@@ -71,6 +72,7 @@ static void smp_write_regs(uint16_t addr, uint8_t data, uint8_t mask)
 
       case 0xf3:
          SMP.dsp_data ^= (SMP.dsp_data ^ data) & mask;
+         ssnes_dsp_write(SMP.dsp_addr, SMP.dsp_data);
          return;
 
       case 0xf4:
@@ -117,6 +119,11 @@ static uint8_t smp_read_regs(uint16_t addr)
    uint8_t ret;
    switch (addr)
    {
+      case 0xf2:
+         return SMP.dsp_addr;
+      case 0xf3:
+         return ssnes_dsp_read(SMP.dsp_addr);
+
       case 0xf4:
          return STATUS.regs.apuio[0];
       case 0xf5:

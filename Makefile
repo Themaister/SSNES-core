@@ -3,9 +3,11 @@ HEADERS = $(wildcard */*.h)
 INCDIRS = -I.
 PIC = -fPIC
 CFLAGS += -O3 -g -Wall -std=c99 $(PIC)
+CXXFLAGS += -O3 -g -Wall $(PIC)
 
-SOURCES = $(wildcard */*.c)
-OBJ = $(SOURCES:.c=.o)
+CSOURCES = $(wildcard */*.c)
+CXXSOURCES = $(wildcard */*.cpp)
+OBJ = $(CSOURCES:.c=.o) $(CXXSOURCES:.cpp=.o)
 TEST_OBJ = main_test.o
 
 ifneq ($(DEBUG),)
