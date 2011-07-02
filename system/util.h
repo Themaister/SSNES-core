@@ -6,7 +6,7 @@
 typedef union
 {
    uint16_t w;
-#ifdef BIG_ENDIAN
+#ifdef SSNES_BIG_ENDIAN
    struct
    {
       uint8_t h;
@@ -26,7 +26,7 @@ typedef union
    uint32_t l;
    struct
    {
-#ifdef BIG_ENDIAN
+#ifdef SSNES_BIG_ENDIAN
       uint8_t hh;
       uint8_t hl;
       uint8_t lh;
@@ -40,7 +40,7 @@ typedef union
    } b;
    struct
    {
-#ifdef BIG_ENDIAN
+#ifdef SSNES_BIG_ENDIAN
       uint16_t h;
       uint16_t l;
 #else
@@ -51,7 +51,8 @@ typedef union
 } long_reg_t;
 
 // Not totally safe :)
-#ifdef BIG_ENDIAN
+#ifdef SSNES_BIG_ENDIAN
+// Ye, this is PPC only ... :D
 #include <ppc_intrinsics.h>
 static inline uint16_t read_le16_(const uint16_t *addr)
 {
@@ -77,7 +78,9 @@ static inline void write_le32_(uint32_t *addr, uint32_t data)
 #define READ_32LE(addr)        read_le32_(addr)
 #define WRITE_16LE(addr, in)   write_le16_(addr, in)
 #define WRITE_32LE(addr, in)   write_le32_(addr, in)
+
 #else
+
 #define READ_16LE(addr)        (*(const uint16_t*)(addr))
 #define READ_32LE(addr)        (*(const uint32_t*)(addr))
 #define WRITE_16LE(addr, data) (*(uint16_t*)(addr) = data)

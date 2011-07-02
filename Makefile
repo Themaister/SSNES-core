@@ -1,4 +1,4 @@
-TARGET = libsnes.dylib
+TARGET = libsnes.so
 HEADERS = $(wildcard */*.h)
 INCDIRS = -I.
 PIC = -fPIC
@@ -15,8 +15,8 @@ ifneq ($(DEBUG),)
 endif
 
 ifeq ($(BIG_ENDIAN),1)
-   CFLAGS += -DBIG_ENDIAN=1
-   CXXFLAGS += -DBIG_ENDIAN=1
+   CFLAGS += -DSSNES_BIG_ENDIAN=1
+   CXXFLAGS += -DSSNES_BIG_ENDIAN=1
 endif
 
 all: lib
@@ -30,7 +30,7 @@ lib: $(TARGET)
 	$(CXX) -c -o $@ $< $(CXXFLAGS) $(INCDIRS)
 
 $(TARGET): $(OBJ)
-	$(CXX) -dynamiclib -o $@ $(OBJ) $(LDFLAGS)
+	$(CXX) -shared -o $@ $(OBJ) $(LDFLAGS)
 
 
 clean:

@@ -7,9 +7,18 @@
 #include "system/util.h"
 #include "memmap.h"
 
+#include <assert.h>
+
 // Somewhat memory mapped ...
 static inline uint8_t cpu_readl(uint32_t addr)
 {
+   if (addr >= 0x1000000)
+   {
+      fprintf(stderr, "PC = %x, addr = %x, wram = %x\n", (unsigned)REGS.pc.l, addr, STATUS.regs.wram_addr.l);
+      assert(0);
+   }
+
+   addr &= 0xffffff;
    uint8_t result = ssnes_memmap_read_table[addr >> 13](addr);
    dprintf("\tRead: $%02x <= $%06x\n", (unsigned)result, (unsigned)addr);
    return result;

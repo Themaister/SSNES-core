@@ -216,6 +216,7 @@ static inline void cpu_op_sta_ildpy_b(void)
 {
    uint16_t dp = cpu_read_pc();
    uint32_t addr = cpu_readl_dp(dp) + (uint32_t)REGS.y.w;
+   addr &= 0xffffff;
    cpu_writel(addr, REGS.a.b.l);
 }
 
@@ -223,6 +224,7 @@ static inline void cpu_op_sta_ildpy_w(void)
 {
    uint16_t dp = cpu_read_pc();
    uint32_t addr = cpu_readl_dp(dp) + (uint32_t)REGS.y.w;
+   addr &= 0xffffff;
    cpu_writelw(addr, REGS.a.w);
 }
 
