@@ -6,7 +6,7 @@
 
 #include <assert.h>
 
-#if 0
+#if 1
 static void ppu_merge_bg(uint16_t * restrict dst, const uint16_t * restrict src, uint16_t * restrict z_dst, const uint16_t * restrict z_src)
 {
    for (unsigned i = 0; i < 256; i++)

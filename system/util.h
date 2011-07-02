@@ -51,11 +51,35 @@ typedef union
 } long_reg_t;
 
 // Not totally safe :)
-#ifdef ARCH_BIG_ENDIAN
-#error "meh ..."
+#ifdef BIG_ENDIAN
+#include <ppc_intrinsics.h>
+static inline uint16_t read_le16_(const uint16_t *addr)
+{
+   return __lhbrx(addr, 0);
+}
+
+static inline uint32_t read_le32_(const uint32_t *addr)
+{
+   return __lwbrx(addr, 0);
+}
+
+static inline void write_le16_(uint16_t *addr, uint16_t data)
+{
+   __sthbrx(data, addr, 0);
+}
+
+static inline void write_le32_(uint32_t *addr, uint32_t data)
+{
+   __stwbrx(data, addr, 0);
+}
+
+#define READ_16LE(addr)        read_le16_(addr)
+#define READ_32LE(addr)        read_le32_(addr)
+#define WRITE_16LE(addr, in)   write_le16_(addr, in)
+#define WRITE_32LE(addr, in)   write_le32_(addr, in)
 #else
-#define READ_16LE(addr) (*(const uint16_t*)(addr))
-#define READ_32LE(addr) (*(const uint32_t*)(addr))
+#define READ_16LE(addr)        (*(const uint16_t*)(addr))
+#define READ_32LE(addr)        (*(const uint32_t*)(addr))
 #define WRITE_16LE(addr, data) (*(uint16_t*)(addr) = data)
 #define WRITE_32LE(addr, data) (*(uint32_t*)(addr) = data)
 #endif

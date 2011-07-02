@@ -39,7 +39,7 @@ struct mem_state
 struct ssnes_cart_state
 {
    uint8_t *rom;
-} ssnes_cart;
+};
 
 struct ssnes_state
 {
